@@ -1,0 +1,20 @@
+# GameMaker: file personali e temporanei
+*.resource_order
+*.old
+
+# Esportazioni e build
+*.yyz
+*.zip
+*.exe
+build/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Mac
+.DS_Store
+._*
