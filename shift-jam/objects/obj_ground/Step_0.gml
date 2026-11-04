@@ -11,8 +11,8 @@ case 0:
             var side = irandom(2);
             var sx, sy;
             if (side == 0)      { sx = random(room_width); sy = -10; }
-            else if (side == 1) { sx = -10; sy = random(room_height * 0.8); }
-            else                { sx = room_width + 10; sy = random(room_height * 0.8); }
+            else if (side == 1) { sx = -10; sy = random(ground_y); }
+            else                { sx = room_width + 10; sy = random(ground_y); }
             instance_create_layer(sx, sy, "Instances", obj_grunt);
         }
         if (mass) spawn_timer = 4;
