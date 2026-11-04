@@ -39,6 +39,7 @@
     {"id":{"name":"rm_ground","path":"rooms/rm_ground/rm_ground.yy",},},
     {"id":{"name":"rm_title","path":"rooms/rm_title/rm_title.yy",},},
     {"id":{"name":"spr_boss_mothership","path":"sprites/spr_boss_mothership/spr_boss_mothership.yy",},},
+    {"id":{"name":"spr_enemy_grunt","path":"sprites/spr_enemy_grunt/spr_enemy_grunt.yy",},},
     {"id":{"name":"spr_enemy_moth","path":"sprites/spr_enemy_moth/spr_enemy_moth.yy",},},
     {"id":{"name":"spr_enemy_spear","path":"sprites/spr_enemy_spear/spr_enemy_spear.yy",},},
     {"id":{"name":"spr_enemy_stalker","path":"sprites/spr_enemy_stalker/spr_enemy_stalker.yy",},},
