@@ -3,6 +3,10 @@ spd = random_range(0.5, 0.9);
 cling_dist = random_range(12, 22);   // a che distanza si ferma (cosi' si ammucchiano)
 clinging_now = false;
 face = 270;   // direzione in cui guarda (verso il mecha)
+fling = false;   // true quando l'esplosione lo scaglia via
+fvx = 0;
+fvy = 0;
+spin = 0;
 if (obj_ground.mass) {
     // ondata finale: piu' veloci, e si fermano ovunque fino a coprire lo schermo
     spd = random_range(1.5, 2.5);

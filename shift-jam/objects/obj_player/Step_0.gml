@@ -47,10 +47,16 @@ if (attack && transform_timer == 0) {
             }
         }
         if (killed) audio_play_sound(snd_enemy_die, 3, false);
-        // la falciata cancella i proiettili nemici nel suo raggio
+        // PARATA: la falciata annulla tutti i proiettili nemici nel suo raggio, con una scintilla
+        var parried = 0;
         with (obj_ebullet) {
-            if (point_distance(x, y, other.x, other.y) <= other.sweep_radius) instance_destroy();
+            if (point_distance(x, y, other.x, other.y) <= other.parry_radius) {
+                array_push(other.sparks, [x, y, 12]);
+                parried += 1;
+                instance_destroy();
+            }
         }
+        if (parried > 0) audio_play_sound(snd_parry, 7, false);
         // PARATA: la falciata respinge i palmi d'oro del Custode
         with (obj_palm) {
             if (!reflected && point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
@@ -87,4 +93,11 @@ if (invuln == 0) {
             instance_destroy();
         }
     }
+}
+
+// le scintille delle parate si spengono in 12 fotogrammi
+for (var k = array_length(sparks) - 1; k >= 0; k--) {
+    var sk = sparks[k];
+    sk[@ 2] -= 1;
+    if (sk[2] <= 0) array_delete(sparks, k, 1);
 }

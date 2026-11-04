@@ -4,15 +4,23 @@ if (sweep_anim > 0) sweep_anim -= 1;
 var st = obj_ground.state;
 var g = obj_ground;
 
-// --- movimento (solo orizzontale): libero nei primi 10 secondi, poi ogni alieno aggrappato rallenta ---
+// --- movimento in tutte le direzioni: libero nei primi 10 secondi, poi ogni alieno aggrappato rallenta ---
 if (st == 0 && !g.mass) {
     var clinging = 0;
     with (obj_grunt) if (clinging_now) clinging += 1;
     var spd = mech_speed;
     if (g.t > g.free_time) spd = mech_speed * max(0, 1 - clinging / 8);   // 8 aggrappati = fermo
     var mx = (keyboard_check(vk_right) || keyboard_check(ord("D"))) - (keyboard_check(vk_left) || keyboard_check(ord("A")));
-    // a terra il mecha non vola: si muove solo a destra e sinistra
+    var my = (keyboard_check(vk_down) || keyboard_check(ord("S"))) - (keyboard_check(vk_up) || keyboard_check(ord("W")));
+    if (mx != 0 && my != 0) { mx *= 0.707; my *= 0.707; }   // in diagonale non va piu' veloce
     x = clamp(x + mx * spd, 24, room_width - 24);
+    y = clamp(y + my * spd, 40, bottom_y);
+}
+
+// --- sommerso: la marea di alieni lo schiaccia verso il fondo dello schermo ---
+// cosi' la navicella, dopo l'esplosione, riparte proprio da li'
+if ((st == 0 && g.mass) || st == 1) {
+    y = min(bottom_y, y + 0.4 + (bottom_y - y) * 0.015);
 }
 
 // --- falciata: impossibile durante l'ondata finale ---
