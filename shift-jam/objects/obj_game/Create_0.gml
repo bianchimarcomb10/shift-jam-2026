@@ -5,5 +5,8 @@ global.hp = 3;          // il giocatore regge 3 colpi
 spawn_timer = 150;      // 2,5 secondi di volo prima della prima ondata
 wave = 0;
 game_over = false;
+boss_wave = 8;          // dopo 8 ondate arriva il Custode
+boss_spawned = false;
+finale = false;         // true durante il finale "Silenzio"
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
 if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - 80, "Instances", obj_player);

@@ -1,6 +1,19 @@
 /// Ondate alternate: sciami di Falene (da falciare) e Lance (da colpire da lontano).
+if (finale) exit;   // durante il finale non succede piu' niente
+
 if (game_over) {
     if (keyboard_check_pressed(vk_shift)) room_goto(rm_game);   // si riprova dallo spazio, senza rifare il prologo
+    exit;
+}
+
+if (boss_spawned) exit;
+
+// finite le ondate, quando lo schermo e' libero arriva il Custode
+if (wave >= boss_wave) {
+    if (instance_number(obj_enemy) == 0) {
+        boss_spawned = true;
+        instance_create_layer(room_width / 2, -90, "Instances", obj_boss);
+    }
     exit;
 }
 
