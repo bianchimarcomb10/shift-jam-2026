@@ -61,6 +61,9 @@ case 2:
 
 case 3:
     // --- la navicella vola via da sola; fuori dallo schermo parte lo spazio ---
+    // il terreno scende sempre piu' in fretta: si capisce che la navicella sta salendo
+    scroll += min(6, 0.5 + scroll * 0.03);
+    if (ground_layer != -1) layer_y(ground_layer, scroll);
     if (obj_mech_ground.y < -40) room_goto(rm_game);
     break;
 }
