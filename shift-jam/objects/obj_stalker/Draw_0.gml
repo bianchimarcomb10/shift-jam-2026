@@ -1,6 +1,9 @@
-// rombo rosso scuro; il nucleo si accende nell'ultimo mezzo secondo prima del colpo
-draw_set_colour(make_colour_rgb(140, 40, 50));
-draw_triangle(x, y - 11, x - 9, y, x + 9, y, false);
-draw_triangle(x, y + 11, x - 9, y, x + 9, y, false);
-draw_set_colour((fire_timer < 30) ? c_white : make_colour_rgb(80, 20, 30));
-draw_circle(x, y, 3, false);
+// guarda sempre verso il giocatore
+var face = 270;
+if (instance_exists(obj_player)) face = point_direction(x, y, obj_player.x, obj_player.y);
+draw_sprite_ext(spr_enemy_stalker, 0, x, y, 1, 1, face - 90, c_white, 1);
+// il nucleo si accende nell'ultimo mezzo secondo prima del colpo
+if (fire_timer < 30) {
+    draw_set_colour(c_white);
+    draw_circle(x, y, 3, false);
+}

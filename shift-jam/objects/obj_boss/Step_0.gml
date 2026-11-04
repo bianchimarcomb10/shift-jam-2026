@@ -40,8 +40,8 @@ if (phase == 1) {
             // cannoni laterali: raffica mirata da sinistra e da destra
             if (instance_exists(obj_player)) {
                 for (var c = -1; c <= 1; c += 2) {
-                    var cx = x + c * 60;
-                    var cy = y + 30;
+                    var cx = x + c * 40;   // ai lati della prua
+                    var cy = y + 60;
                     var base = point_direction(cx, cy, obj_player.x, obj_player.y);
                     for (var k = -1; k <= 1; k++) {
                         var b1 = instance_create_layer(cx, cy, "Instances", obj_ebullet);
@@ -56,7 +56,7 @@ if (phase == 1) {
         } else {
             // ventaglio verso il basso
             for (var k2 = -4; k2 <= 4; k2++) {
-                var b2 = instance_create_layer(x, y + 30, "Instances", obj_ebullet);
+                var b2 = instance_create_layer(x, y + 70, "Instances", obj_ebullet);
                 b2.dir = 270 + k2 * 14;
                 b2.spd = 2.2;
             }

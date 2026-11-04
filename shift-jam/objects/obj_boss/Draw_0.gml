@@ -1,21 +1,6 @@
 if (phase == 1) {
-    // ===== NAVE MADRE =====
-    draw_set_colour(make_colour_rgb(70, 60, 90));
-    draw_rectangle(x - 80, y - 26, x + 80, y + 26, false);
-    draw_triangle(x - 80, y - 26, x - 100, y, x - 80, y + 26, false);
-    draw_triangle(x + 80, y - 26, x + 100, y, x + 80, y + 26, false);
-    draw_set_colour(make_colour_rgb(100, 90, 125));
-    draw_rectangle(x - 60, y - 40, x + 60, y - 26, false);
-    // cannoni laterali
-    draw_set_colour(c_dkgray);
-    draw_rectangle(x - 64, y + 20, x - 56, y + 34, false);
-    draw_rectangle(x + 56, y + 20, x + 64, y + 34, false);
-    // hangar
-    draw_set_colour(c_black);
-    draw_rectangle(x - 18, y + 14, x + 18, y + 26, false);
-    // nel centro pulsa qualcosa di chiaro: e' cio' che sta dentro
-    draw_set_colour(make_colour_rgb(225, 215, 190));
-    draw_circle(x, y - 4, 6 + sin(t / 10), false);
+    // ===== NAVE MADRE: la Dreadnought, girata verso il basso e ingrandita =====
+    draw_sprite_ext(spr_boss_mothership, 0, x, y, 1.5, 1.5, 180, c_white, 1);
     exit;
 }
 
