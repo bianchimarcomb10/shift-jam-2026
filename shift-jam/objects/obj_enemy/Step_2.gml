@@ -1,17 +1,24 @@
-/// End Step, ereditato da tutti i nemici (Falene, Lance...):
-/// se due nemici si sovrappongono, ognuno si sposta un po' via dall'altro.
+/// End Step, ereditato da tutti i nemici:
+/// se due nemici si sovrappongono, chi puo' si sposta.
+/// Le Falene in formazione e il boss seguono un percorso fisso: non vengono mai spinti,
+/// sono gli altri a scansarsi del tutto. Tra due nemici "liberi" ognuno fa meta' strada.
+if (object_index == obj_boss) exit;
+if (object_index == obj_moth && form > 0) exit;
+
+var me = id;
 with (obj_enemy) {
-    if (id != other.id) {
-        var min_d = radius + other.radius + 2;   // distanza minima tra i due bordi, piu' 2 px
-        var d = point_distance(x, y, other.x, other.y);
+    if (id != me) {
+        var fixed = (object_index == obj_boss) || (object_index == obj_moth && form > 0);
+        var min_d = radius + me.radius + 2;   // distanza minima tra i due bordi, piu' 2 px
+        var d = point_distance(x, y, me.x, me.y);
         if (d < min_d) {
             if (d == 0) {
-                other.x += choose(-1, 1);   // esattamente sovrapposti: una spinta a caso
+                me.x += choose(-1, 1);   // esattamente sovrapposti: una spinta a caso
             } else {
-                var a = point_direction(x, y, other.x, other.y);
-                var push = (min_d - d) / 2;   // meta' della spinta: l'altra meta' la fa l'altro nemico
-                other.x += lengthdir_x(push, a);
-                other.y += lengthdir_y(push, a);
+                var share = fixed ? 1 : 0.5;   // contro un percorso fisso mi sposto tutto io
+                var a = point_direction(x, y, me.x, me.y);
+                me.x += lengthdir_x((min_d - d) * share, a);
+                me.y += lengthdir_y((min_d - d) * share, a);
             }
         }
     }

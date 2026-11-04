@@ -1,3 +1,5 @@
+if (wait > 0) { wait -= 1; y = -40; exit; }   // aspetta il suo turno sopra lo schermo
+
 if (instance_exists(obj_player)) {
     var dir = point_direction(x, y, obj_player.x, obj_player.y);
     x += lengthdir_x(spd, dir);

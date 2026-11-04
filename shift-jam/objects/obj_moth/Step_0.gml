@@ -35,6 +35,12 @@ if (form > 0) {
             x = (side == 1) ? (-20 + tt * 1.6) : (room_width + 20 - tt * 1.6);
             y = 30 + 260 * dsin(k * 180) + ((side == 1) ? 0 : 40);
             break;
+
+        case 5: // CORRIDOIO LATERALE: attraversa lo schermo da un lato all'altro,
+                // sotto la fascia dove stanno le Lance, ondeggiando appena
+            x = (side == 1) ? (-20 + tt * 1.8) : (room_width + 20 - tt * 1.8);
+            y = base_y + 26 * dsin(tt * 3);
+            break;
     }
     if (x != px || y != py) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
 
