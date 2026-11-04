@@ -1,0 +1,21 @@
+if (!reflected) {
+    // insegue il giocatore, ma gira lentamente
+    if (instance_exists(obj_player)) {
+        var target = point_direction(x, y, obj_player.x, obj_player.y);
+        dir += clamp(angle_difference(target, dir), -1.2, 1.2);
+    }
+} else if (instance_exists(obj_boss)) {
+    // respinto: vola dritto contro il Custode
+    var bs = instance_nearest(x, y, obj_boss);
+    dir = point_direction(x, y, bs.x, bs.y);
+    if (point_distance(x, y, bs.x, bs.y) < bs.radius + radius) {
+        bs.hp -= 15;     // molto piu' di un colpo normale
+        bs.stun = 45;    // e lo stordisce per 3/4 di secondo
+        if (bs.hp <= 0) with (bs) instance_destroy();
+        instance_destroy();
+        exit;
+    }
+}
+x += lengthdir_x(spd, dir);
+y += lengthdir_y(spd, dir);
+if (y < -40 || y > room_height + 40 || x < -40 || x > room_width + 40) instance_destroy();

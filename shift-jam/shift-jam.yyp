@@ -19,6 +19,8 @@
   },
   "name":"shift-jam",
   "resources":[
+    {"id":{"name":"obj_palm","path":"objects/obj_palm/obj_palm.yy",},},
+    {"id":{"name":"obj_stalker","path":"objects/obj_stalker/obj_stalker.yy",},},
     {"id":{"name":"obj_boss","path":"objects/obj_boss/obj_boss.yy",},},
     {"id":{"name":"obj_finale","path":"objects/obj_finale/obj_finale.yy",},},
     {"id":{"name":"obj_intro","path":"objects/obj_intro/obj_intro.yy",},},

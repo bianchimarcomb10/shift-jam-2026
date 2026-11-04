@@ -8,6 +8,7 @@ depth = -100;
 obj_game.finale = true;   // niente piu' ondate ne' interfaccia
 
 with (obj_ebullet) instance_destroy();
+with (obj_palm) instance_destroy();
 with (obj_enemy) if (object_index != obj_boss) instance_destroy();
 
 // il giocatore non comanda piu': la navicella va da sola

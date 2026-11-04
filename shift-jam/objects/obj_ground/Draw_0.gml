@@ -12,3 +12,19 @@ for (var i = 0; i < array_length(ruins); i++) {
     var r = ruins[i];
     draw_rectangle(r[0], r[1] + scroll, r[0] + r[2], r[1] + r[3] + scroll, false);
 }
+
+// esplosione della trasformazione: anelli bianchi che si allargano
+if (state >= 2 && t < 100 && state < 4) {
+    var tt = (state == 2) ? t : t + 60;
+    if (tt < 100) {
+        draw_set_colour(c_white);
+        for (var j = 0; j < 4; j++) {
+            var rr = (tt - j * 10) * 3;
+            if (rr > 0) {
+                draw_set_alpha(max(0, 1 - rr / 240));
+                draw_circle(boom_x, boom_y, rr, true);
+            }
+        }
+        draw_set_alpha(1);
+    }
+}
