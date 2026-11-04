@@ -10,7 +10,9 @@ if (transform_timer > 0) {
 
 draw_set_colour(c_aqua);
 if (form == 0) {
-    draw_triangle(x, y - 12, x - 9, y + 9, x + 9, y + 9, false);
+draw_sprite(spr_player_flame, (current_time div 80) mod 4, x, y);
+draw_sprite(spr_player_engine, 0, x, y);
+draw_sprite(spr_player_ship, 0, x, y);
 } else {
     draw_rectangle(x - 10, y - 10, x + 10, y + 10, false);
     if (sweep_anim > 0) {
