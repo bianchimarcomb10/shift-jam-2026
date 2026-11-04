@@ -1,4 +1,5 @@
 /// Interfaccia provvisoria: vita, forma attuale, comandi.
+if (finale) exit;   // nel finale lo schermo resta vuoto
 draw_set_colour(c_white);
 draw_set_halign(fa_left);
 draw_text(8, 8, "HP: " + string(global.hp));
