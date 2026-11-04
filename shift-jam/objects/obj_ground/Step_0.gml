@@ -2,28 +2,39 @@ t += 1;
 
 switch (state) {
 case 0:
-    // --- arrivano alieni da tutti i bordi, sempre piu' spesso ---
+    // --- arrivano alieni dall'alto e dai lati, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
         var n = 1 + t div 600;   // ogni 10 secondi un alieno in piu' per gruppo
+        if (mass) n = 6;         // ondata finale: una marea
         repeat (n) {
-            var side = irandom(3);
+            var side = irandom(2);
             var sx, sy;
             if (side == 0)      { sx = random(room_width); sy = -10; }
-            else if (side == 1) { sx = random(room_width); sy = room_height + 10; }
-            else if (side == 2) { sx = -10; sy = random(room_height); }
-            else                { sx = room_width + 10; sy = random(room_height); }
+            else if (side == 1) { sx = -10; sy = random(room_height * 0.8); }
+            else                { sx = room_width + 10; sy = random(room_height * 0.8); }
             instance_create_layer(sx, sy, "Instances", obj_grunt);
         }
-        spawn_interval = max(12, spawn_interval - 1);
-        spawn_timer = spawn_interval;
+        if (mass) spawn_timer = 4;
+        else {
+            spawn_interval = max(12, spawn_interval - 1);
+            spawn_timer = spawn_interval;
+        }
     }
 
-    // --- la barra sale col tempo e molto di piu' per ogni alieno aggrappato ---
     var clinging = 0;
     with (obj_grunt) if (clinging_now) clinging += 1;
-    bar += 0.0004 + clinging * 0.0015;
-    if (bar >= 1) { bar = 1; state = 1; t = 0; }
+
+    if (!mass) {
+        // la barra sale col tempo e per ogni alieno aggrappato, ma prima dell'ondata si ferma all'85%
+        bar = min(0.85, bar + 0.0003 + clinging * 0.0008);
+        // l'ondata finale parte a 25 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 15)
+        if (t >= mass_time || (bar >= 0.85 && t >= 900)) mass = true;
+    } else {
+        // durante l'ondata la barra si riempie in circa 3 secondi
+        bar += 0.006;
+        if (bar >= 1) { bar = 1; state = 1; t = 0; }
+    }
     break;
 
 case 1:

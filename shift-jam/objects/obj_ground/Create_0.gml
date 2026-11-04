@@ -5,6 +5,9 @@ t = 0;              // frame passati nello stato attuale
 spawn_timer = 30;
 spawn_interval = 45;   // frame tra un gruppo e l'altro: scende col tempo
 flash = 0;
+mass = false;       // true durante l'ondata finale: alieni ovunque, niente piu' attacco
+free_time = 600;    // primi 10 secondi (600 frame): il mecha si muove libero
+mass_time = 1500;   // a 25 secondi parte comunque l'ondata finale
 depth = 100;        // le rovine si disegnano sotto a tutto il resto
 
 // rovine provvisorie: rettangoli scuri in posizioni casuali

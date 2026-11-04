@@ -1,6 +1,7 @@
-/// Il mecha a terra: non si muove, ha un solo tasto (la falciata).
+/// Il mecha a terra: si muove e falcia; poi gli alieni lo bloccano.
 sweep_cooldown = 0;
 sweep_anim = 0;
 sweep_radius = 56;
 transformed = false;   // diventa true quando si preme SHIFT
+mech_speed = 2.5;      // come il mecha nello spazio
 vy = 0;                // velocita' verticale durante il decollo
