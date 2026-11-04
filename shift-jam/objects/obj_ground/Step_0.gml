@@ -2,6 +2,7 @@ t += 1;
 
 switch (state) {
 case 0:
+    if (flash > 0) flash = max(0, flash - 1 / 60);   // dissolvenza dal bianco in 1 secondo
     // --- arrivano alieni dall'alto e dai lati, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
