@@ -2,8 +2,23 @@ if (sweep_cooldown > 0) sweep_cooldown -= 1;
 if (sweep_anim > 0) sweep_anim -= 1;
 
 var st = obj_ground.state;
+var g = obj_ground;
 
-if (st == 0 && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || keyboard_check(ord("J")))) {
+// --- movimento: libero nei primi 10 secondi, poi ogni alieno aggrappato rallenta ---
+if (st == 0 && !g.mass) {
+    var clinging = 0;
+    with (obj_grunt) if (clinging_now) clinging += 1;
+    var spd = mech_speed;
+    if (g.t > g.free_time) spd = mech_speed * max(0, 1 - clinging / 8);   // 8 aggrappati = fermo
+    var mx = (keyboard_check(vk_right) || keyboard_check(ord("D"))) - (keyboard_check(vk_left) || keyboard_check(ord("A")));
+    var my = (keyboard_check(vk_down) || keyboard_check(ord("S"))) - (keyboard_check(vk_up) || keyboard_check(ord("W")));
+    if (mx != 0 && my != 0) { mx *= 0.7071; my *= 0.7071; }
+    x = clamp(x + mx * spd, 16, room_width - 16);
+    y = clamp(y + my * spd, 40, room_height - 16);
+}
+
+// --- falciata: impossibile durante l'ondata finale ---
+if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || keyboard_check(ord("J")))) {
     sweep_cooldown = 30;   // una falciata ogni mezzo secondo
     sweep_anim = 10;
     var kills = 0;

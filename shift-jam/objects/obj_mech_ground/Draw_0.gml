@@ -1,6 +1,6 @@
 var ox = 0;
 var oy = 0;
-if (obj_ground.state == 1) {   // sommerso: il mecha trema
+if (obj_ground.state == 1 || obj_ground.mass) {   // sommerso: il mecha trema
     ox = irandom_range(-2, 2);
     oy = irandom_range(-2, 2);
 }
