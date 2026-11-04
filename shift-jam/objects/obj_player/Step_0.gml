@@ -46,6 +46,13 @@ if (attack && transform_timer == 0) {
         with (obj_ebullet) {
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius) instance_destroy();
         }
+        // PARATA: la falciata respinge i palmi d'oro del Custode
+        with (obj_palm) {
+            if (!reflected && point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
+                reflected = true;
+                spd = 5;
+            }
+        }
     }
 }
 
@@ -55,6 +62,9 @@ if (invuln == 0) {
     var hit = false;
     with (obj_ebullet) {
         if (point_distance(x, y, other.x, other.y) < hr + 3) { hit = true; instance_destroy(); }
+    }
+    with (obj_palm) {
+        if (!reflected && point_distance(x, y, other.x, other.y) < hr + radius) { hit = true; instance_destroy(); }
     }
     with (obj_enemy) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
