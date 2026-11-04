@@ -44,18 +44,27 @@ case 1:
         t = 0;
         flash = 1;
         with (obj_grunt) instance_destroy();
-        obj_mech_ground.transformed = true;
+        // il mecha diventa la navicella: da qui la comandi tu, senza cambiare stanza
+        var px = obj_mech_ground.x;
+        var py = obj_mech_ground.y;
+        instance_destroy(obj_mech_ground);
+        var sf = instance_create_layer(0, 0, "Instances", obj_starfield);
+        sf.alpha = 0;   // le stelle compaiono piano piano mentre sali
+        instance_create_layer(px, py, "Instances", obj_player);
+        instance_create_layer(0, 0, "Instances", obj_game);   // da qui partono le ondate dello shoot 'em up
     }
     break;
 
 case 2:
-    // --- lampo bianco che svanisce in 1 secondo ---
-    flash = 1 - t / 60;
-    if (t >= 60) { flash = 0; state = 3; t = 0; }
+    // --- lampo bianco che svanisce in mezzo secondo (la navicella si muove gia') ---
+    flash = 1 - t / 30;
+    scroll += 2;
+    if (t >= 30) { flash = 0; state = 3; t = 0; }
     break;
 
 case 3:
-    // --- la navicella decolla; fuori dallo schermo parte lo shoot 'em up ---
-    if (obj_mech_ground.y < -40) room_goto(rm_game);
+    // --- volo: il terreno scende e sparisce, il cielo si scurisce, arrivano le stelle ---
+    if (scroll < room_height + 200) scroll += 3;
+    if (instance_exists(obj_starfield)) obj_starfield.alpha = min(1, obj_starfield.alpha + 0.008);
     break;
 }

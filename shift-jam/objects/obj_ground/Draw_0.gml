@@ -1,9 +1,14 @@
-/// Terreno e rovine provvisorie.
+/// Cielo, terreno e rovine provvisorie. Durante il volo scendono via (scroll).
+// il cielo passa dal marrone della terra al nero dello spazio
+var k = clamp(scroll / 700, 0, 1);
+draw_set_colour(merge_colour(make_colour_rgb(40, 32, 28), make_colour_rgb(4, 4, 10), k));
+draw_rectangle(0, 0, room_width, room_height, false);
+
 draw_set_colour(make_colour_rgb(70, 58, 48));
-draw_rectangle(0, ground_y + 12, room_width, room_height, false);
+draw_rectangle(0, ground_y + 12 + scroll, room_width, room_height + scroll, false);
 
 draw_set_colour(make_colour_rgb(55, 50, 50));
 for (var i = 0; i < array_length(ruins); i++) {
     var r = ruins[i];
-    draw_rectangle(r[0], r[1], r[0] + r[2], r[1] + r[3], false);
+    draw_rectangle(r[0], r[1] + scroll, r[0] + r[2], r[1] + r[3] + scroll, false);
 }
