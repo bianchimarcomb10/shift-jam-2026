@@ -1,4 +1,7 @@
-/// Rovine provvisorie.
+/// Terreno e rovine provvisorie.
+draw_set_colour(make_colour_rgb(70, 58, 48));
+draw_rectangle(0, ground_y + 12, room_width, room_height, false);
+
 draw_set_colour(make_colour_rgb(55, 50, 50));
 for (var i = 0; i < array_length(ruins); i++) {
     var r = ruins[i];

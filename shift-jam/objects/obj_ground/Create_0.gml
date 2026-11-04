@@ -8,12 +8,13 @@ flash = 0;
 mass = false;       // true durante l'ondata finale: alieni ovunque, niente piu' attacco
 free_time = 600;    // primi 10 secondi (600 frame): il mecha si muove libero
 mass_time = 1500;   // a 25 secondi parte comunque l'ondata finale
+ground_y = room_height - 70;   // il terreno: il mecha cammina qui sopra, non vola
 depth = 100;        // le rovine si disegnano sotto a tutto il resto
 
 // rovine provvisorie: rettangoli scuri in posizioni casuali
 ruins = [];
 for (var i = 0; i < 10; i++) {
-    ruins[i] = [random(room_width), random_range(40, room_height - 20), random_range(14, 44), random_range(10, 34)];
+    ruins[i] = [random(room_width), random_range(40, room_height - 120), random_range(14, 44), random_range(10, 34)];
 }
 
-instance_create_layer(room_width / 2, room_height * 0.6, "Instances", obj_mech_ground);
+instance_create_layer(room_width / 2, ground_y, "Instances", obj_mech_ground);
