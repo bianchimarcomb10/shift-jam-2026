@@ -9,10 +9,14 @@ mass = false;       // true durante l'ondata finale: alieni ovunque, niente piu'
 free_time = 600;    // primi 10 secondi (600 frame): il mecha si muove libero
 mass_time = 1500;   // a 25 secondi parte comunque l'ondata finale
 ground_y = room_height - 70;   // il terreno: il mecha cammina qui sopra, non vola
-scroll = 0;         // (non usato per ora: il terreno resta fermo)
+scroll = 0;         // di quanto scende il terreno mentre la navicella decolla
 boom_x = 0;
 boom_y = 0;
 depth = 100;        // le rovine si disegnano sotto a tutto il resto
+// Se nella room c'e' un livello chiamato "Ground" (tile o asset disegnati a mano),
+// il cielo e le rovine provvisorie non servono piu': questo oggetto disegna solo l'esplosione, sopra a tutto.
+ground_layer = layer_get_id("Ground");
+if (ground_layer != -1) depth = -10;
 
 // rovine provvisorie: rettangoli scuri in posizioni casuali
 ruins = [];
