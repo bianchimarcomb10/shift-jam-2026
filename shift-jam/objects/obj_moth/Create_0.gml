@@ -6,6 +6,8 @@ hp = 1;
 radius = 10;   // adattato alla sprite
 spd = 2.2;
 dir = 270;     // 270 = verso il basso
+home_time = 70;   // per quanti fotogrammi puo' ancora curvare verso il giocatore
+shots = 1;        // quanti colpi spara in formazione (se can_shoot)
 
 // dati della formazione (obj_game li sovrascrive subito dopo averla creata)
 form = 0;      // 1 serpente, 2 V, 3 anello, 4 tenaglia, 5 corridoio laterale

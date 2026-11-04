@@ -8,7 +8,7 @@ if (form > 0) {
     switch (form) {
         case 1: // SERPENTE: una fila che scende ondeggiando
             x = cx + amp * dsin(tt * 2);
-            y = -20 + tt * 1.5;
+            y = -20 + tt * 1.7;
             break;
 
         case 2: // V: scende compatta, si ferma, poi le falene picchiano una alla volta
@@ -17,7 +17,7 @@ if (form > 0) {
             y = min(-20 + tt * 1.3, 150) - abs(off) * 20;
             if (tt > 170 + idx * 22) {
                 form = 0;   // rompe la formazione
-                spd = 3;
+                spd = 3.3;
                 dir = (instance_exists(obj_player)) ? point_direction(x, y, obj_player.x, obj_player.y) : 270;
                 exit;
             }
@@ -28,6 +28,12 @@ if (form > 0) {
             var r = 52 + 14 * dsin(tt * 2.5);
             x = cx + lengthdir_x(r, a);
             y = -70 + tt * 0.9 + lengthdir_y(r, a);
+            // dall'ondata 6, a meta' discesa l'anello si apre in una raffica a raggiera
+            if (tt == 260 && instance_exists(obj_game) && obj_game.wave >= 6) {
+                var rb = instance_create_layer(x, y, "Instances", obj_ebullet);
+                rb.dir = a;
+                rb.spd = 1.8;
+            }
             break;
 
         case 4: // TENAGLIA: due archi che entrano dai lati e si incrociano
@@ -51,14 +57,18 @@ if (form > 0) {
             var b = instance_create_layer(x, y, "Instances", obj_ebullet);
             b.dir = point_direction(x, y, obj_player.x, obj_player.y);
             b.spd = 2.2;
-            can_shoot = false;   // un colpo solo
+            shots -= 1;
+            fire_timer = 50;
+            if (shots <= 0) can_shoot = false;
         }
     }
 } else {
-    // ---- LIBERA: curva lenta verso il giocatore ----
-    if (instance_exists(obj_player)) {
+    // ---- LIBERA: curva verso il giocatore, ma solo per poco e solo finche' gli sta sopra.
+    // Poi tira dritto ed esce dallo schermo (prima poteva girargli intorno per sempre).
+    if (home_time > 0) home_time -= 1;
+    if (home_time > 0 && instance_exists(obj_player) && y < obj_player.y - 30) {
         var target = point_direction(x, y, obj_player.x, obj_player.y);
-        dir += angle_difference(target, dir) * 0.04;
+        dir += angle_difference(target, dir) * 0.05;
     }
     x += lengthdir_x(spd, dir);
     y += lengthdir_y(spd, dir);
