@@ -1,4 +1,15 @@
 /// Forme provvisorie: triangolo = navicella, quadrato = mecha.
+// scintille delle parate: una crocetta bianca che si allarga e svanisce
+draw_set_colour(c_white);
+for (var k = 0; k < array_length(sparks); k++) {
+    var sp = sparks[k];
+    var sr = 2 + (12 - sp[2]) * 0.6;
+    draw_set_alpha(sp[2] / 12);
+    draw_line(sp[0] - sr, sp[1], sp[0] + sr, sp[1]);
+    draw_line(sp[0], sp[1] - sr, sp[0], sp[1] + sr);
+}
+draw_set_alpha(1);
+
 if (invuln > 0 && (invuln div 4) mod 2 == 0) exit;   // lampeggia dopo un colpo
 
 if (transform_timer > 0) {

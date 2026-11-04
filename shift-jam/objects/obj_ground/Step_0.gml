@@ -3,17 +3,18 @@ t += 1;
 switch (state) {
 case 0:
     if (flash > 0) flash = max(0, flash - 1 / 60);   // dissolvenza dal bianco in 1 secondo
-    // --- arrivano alieni dall'alto e dai lati, sempre piu' spesso ---
+    // --- arrivano alieni da tutti e quattro i bordi, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
         var n = 1 + t div 600;   // ogni 10 secondi un alieno in piu' per gruppo
         if (mass) n = 6;         // ondata finale: una marea
         repeat (n) {
-            var side = irandom(2);
+            var side = irandom(3);
             var sx, sy;
             if (side == 0)      { sx = random(room_width); sy = -10; }
-            else if (side == 1) { sx = -10; sy = random(ground_y); }
-            else                { sx = room_width + 10; sy = random(ground_y); }
+            else if (side == 1) { sx = -10; sy = random(room_height); }
+            else if (side == 2) { sx = room_width + 10; sy = random(room_height); }
+            else                { sx = random(room_width); sy = room_height + 10; }
             instance_create_layer(sx, sy, "Instances", obj_grunt);
         }
         if (mass) spawn_timer = 4;
@@ -43,10 +44,18 @@ case 1:
     if (keyboard_check_pressed(vk_shift)) {
         state = 2;
         t = 0;
-        flash = 1;
+        flash = 0.8;   // lampo breve: deve lasciar vedere gli alieni sbalzati via
         boom_x = obj_mech_ground.x;   // centro dell'esplosione
         boom_y = obj_mech_ground.y;
-        with (obj_grunt) instance_destroy();
+        // l'esplosione scaglia via tutti gli alieni, lontano dal mecha
+        with (obj_grunt) {
+            fling = true;
+            var fd = point_direction(other.boom_x, other.boom_y, x, y) + random_range(-15, 15);
+            var fs = random_range(5, 10);
+            fvx = lengthdir_x(fs, fd);
+            fvy = lengthdir_y(fs, fd);
+            spin = random_range(-20, 20);
+        }
         obj_mech_ground.transformed = true;
         audio_play_sound(snd_explosion_big, 10, false);
         audio_play_sound(snd_shift, 9, false);
@@ -54,9 +63,9 @@ case 1:
     break;
 
 case 2:
-    // --- esplosione: lampo bianco che svanisce in 1 secondo ---
-    flash = 1 - t / 60;
-    if (t >= 60) { flash = 0; state = 3; t = 0; }
+    // --- esplosione: lampo che svanisce in mezzo secondo, gli alieni volano via ---
+    flash = max(0, 0.8 - t / 30);
+    if (t >= 70) { flash = 0; state = 3; t = 0; }
     break;
 
 case 3:

@@ -33,7 +33,7 @@ case 4:   // le stelle si accendono sempre piu' in fretta e crescono finche' rie
         }
     }
     // sempre piu' stelle per fotogramma: all'inizio poche, poi una pioggia
-    repeat (1 + t div 8) {
+    repeat (1 + t div 14) {
         if (next_cell < array_length(cells)) {
             var c = cells[next_cell];
             array_push(stars, [c[0], c[1], t]);

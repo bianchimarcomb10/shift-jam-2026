@@ -5,3 +5,4 @@ sweep_radius = 56;
 transformed = false;   // diventa true quando si preme SHIFT
 mech_speed = 2.5;      // come il mecha nello spazio
 vy = 0;                // velocita' verticale durante il decollo
+bottom_y = room_height - 40;   // dove finisce schiacciato quando gli alieni lo sommergono
