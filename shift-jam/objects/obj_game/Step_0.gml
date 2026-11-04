@@ -2,7 +2,7 @@
 if (finale) exit;   // durante il finale non succede piu' niente
 
 if (game_over) {
-    if (keyboard_check_pressed(vk_shift)) room_goto(rm_game);   // si riprova dallo spazio, senza rifare il prologo
+    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
 
@@ -19,7 +19,8 @@ if (wave >= boss_wave) {
 
 // la nuova ondata parte solo quando la precedente e' quasi finita (al massimo 2 nemici rimasti),
 // cosi' due formazioni non si incrociano mai sullo schermo
-if (instance_number(obj_enemy) > 2) spawn_timer = max(spawn_timer, 45);
+// e mai finche' ci sono Lance in alto: altrimenti la formazione dopo ci passerebbe in mezzo
+if (instance_number(obj_enemy) > 2 || instance_exists(obj_spear)) spawn_timer = max(spawn_timer, 45);
 spawn_timer -= 1;
 if (spawn_timer <= 0) {
     wave += 1;

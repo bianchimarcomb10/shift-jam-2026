@@ -1,4 +1,4 @@
-if (wait > 0) { wait -= 1; y = -40; exit; }   // aspetta il suo turno sopra lo schermo
+if (wait > 0) { wait -= 1; exit; }   // aspetta il suo turno fuori dallo schermo, di lato
 
 if (instance_exists(obj_player)) {
     var dir = point_direction(x, y, obj_player.x, obj_player.y);
@@ -8,7 +8,7 @@ if (instance_exists(obj_player)) {
 if (y < 20) y += 1;   // entra nello schermo prima di inseguire
 
 fire_timer -= 1;
-if (fire_timer <= 0 && instance_exists(obj_player)) {
+if (fire_timer <= 0 && instance_exists(obj_player) && x > 0 && x < room_width) {   // spara solo quando e' sullo schermo
     var b = instance_create_layer(x, y, "Instances", obj_ebullet);
     b.dir = point_direction(x, y, obj_player.x, obj_player.y);
     b.spd = 2.4;

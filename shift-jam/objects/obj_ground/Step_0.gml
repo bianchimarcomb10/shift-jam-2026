@@ -48,6 +48,8 @@ case 1:
         boom_y = obj_mech_ground.y;
         with (obj_grunt) instance_destroy();
         obj_mech_ground.transformed = true;
+        audio_play_sound(snd_explosion_big, 10, false);
+        audio_play_sound(snd_shift, 9, false);
     }
     break;
 

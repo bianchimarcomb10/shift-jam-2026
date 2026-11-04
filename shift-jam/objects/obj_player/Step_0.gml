@@ -21,6 +21,7 @@ if (transform_timer > 0) {
     if (transform_timer == 0) form = 1 - form;
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
     transform_timer = 15;   // 15 frame = 0,25 s
+    audio_play_sound(snd_shift, 5, false);
     switch_cooldown = 24;   // 24 frame = 0,4 s
 }
 
@@ -30,18 +31,22 @@ if (attack && transform_timer == 0) {
     if (form == 0 && fire_cooldown == 0) {
         // Navicella: sparo in avanti, 10 colpi al secondo
         instance_create_layer(x, y - 12, "Instances", obj_shot);
+        audio_play_sound(snd_shot, 1, false);
         fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
     }
     if (form == 1 && sweep_cooldown == 0) {
         // Mecha: falciata a 360 gradi, ogni 0,5 s
         sweep_cooldown = 30;
         sweep_anim = 10;
+        audio_play_sound(snd_scythe, 4, false);
+        var killed = false;
         with (obj_enemy) {
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
                 hp -= 3;
-                if (hp <= 0) instance_destroy();
+                if (hp <= 0) { killed = true; instance_destroy(); }
             }
         }
+        if (killed) audio_play_sound(snd_enemy_die, 3, false);
         // la falciata cancella i proiettili nemici nel suo raggio
         with (obj_ebullet) {
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius) instance_destroy();
@@ -51,6 +56,7 @@ if (attack && transform_timer == 0) {
             if (!reflected && point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
                 reflected = true;
                 spd = 5;
+                audio_play_sound(snd_parry, 8, false);
             }
         }
     }
@@ -75,6 +81,7 @@ if (invuln == 0) {
     if (hit) {
         global.hp -= 1;
         invuln = 60;   // 1 secondo di invulnerabilita'
+        audio_play_sound(snd_hurt, 9, false);
         if (global.hp <= 0) {
             obj_game.game_over = true;
             instance_destroy();

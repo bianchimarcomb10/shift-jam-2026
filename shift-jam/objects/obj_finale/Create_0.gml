@@ -6,6 +6,7 @@ flash = 1;
 fade = 0;
 depth = -100;
 obj_game.finale = true;   // niente piu' ondate ne' interfaccia
+audio_play_sound(snd_explosion_big, 10, false);
 
 with (obj_ebullet) instance_destroy();
 with (obj_palm) instance_destroy();
