@@ -1,7 +1,62 @@
-if (instance_exists(obj_player)) {
-    var target = point_direction(x, y, obj_player.x, obj_player.y);
-    dir += angle_difference(target, dir) * 0.04;   // curva lenta verso il giocatore
+if (form > 0) {
+    // ---- IN FORMAZIONE: la posizione e' calcolata dal disegno, non dalla velocita' ----
+    t += 1;
+    var tt = t - delay;
+    if (tt < 0) { x = -100; y = -100; exit; }   // aspetta il suo turno fuori dallo schermo
+
+    var px = x, py = y;
+    switch (form) {
+        case 1: // SERPENTE: una fila che scende ondeggiando
+            x = cx + amp * dsin(tt * 2);
+            y = -20 + tt * 1.5;
+            break;
+
+        case 2: // V: scende compatta, si ferma, poi le falene picchiano una alla volta
+            var off = idx - (n - 1) / 2;
+            x = cx + off * 24;
+            y = min(-20 + tt * 1.3, 150) - abs(off) * 20;
+            if (tt > 170 + idx * 22) {
+                form = 0;   // rompe la formazione
+                spd = 3;
+                dir = (instance_exists(obj_player)) ? point_direction(x, y, obj_player.x, obj_player.y) : 270;
+                exit;
+            }
+            break;
+
+        case 3: // ANELLO: un cerchio che ruota e respira mentre scende
+            var a = idx * 360 / n + tt * 1.2;
+            var r = 52 + 14 * dsin(tt * 2.5);
+            x = cx + lengthdir_x(r, a);
+            y = -70 + tt * 0.9 + lengthdir_y(r, a);
+            break;
+
+        case 4: // TENAGLIA: due archi che entrano dai lati e si incrociano
+            var k = min(tt / 240, 1);
+            x = (side == 1) ? (-20 + tt * 1.6) : (room_width + 20 - tt * 1.6);
+            y = 30 + 260 * dsin(k * 180) + ((side == 1) ? 0 : 40);
+            break;
+    }
+    if (x != px || y != py) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
+
+    // colpo mirato (solo per alcune, e solo quando sono ben dentro lo schermo)
+    if (can_shoot && y > 20 && y < room_height * 0.55 && instance_exists(obj_player)) {
+        fire_timer -= 1;
+        if (fire_timer <= 0) {
+            var b = instance_create_layer(x, y, "Instances", obj_ebullet);
+            b.dir = point_direction(x, y, obj_player.x, obj_player.y);
+            b.spd = 2.2;
+            can_shoot = false;   // un colpo solo
+        }
+    }
+} else {
+    // ---- LIBERA: curva lenta verso il giocatore ----
+    if (instance_exists(obj_player)) {
+        var target = point_direction(x, y, obj_player.x, obj_player.y);
+        dir += angle_difference(target, dir) * 0.04;
+    }
+    x += lengthdir_x(spd, dir);
+    y += lengthdir_y(spd, dir);
 }
-x += lengthdir_x(spd, dir);
-y += lengthdir_y(spd, dir);
-if (y > room_height + 30 || x < -40 || x > room_width + 40) instance_destroy();
+if (y > room_height + 30 || x < -40 || x > room_width + 40) {
+    if (!(form > 0 && t - delay < 0)) instance_destroy();   // chi aspetta fuori non va distrutto
+}

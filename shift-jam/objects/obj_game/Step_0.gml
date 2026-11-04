@@ -1,4 +1,4 @@
-/// Ondate alternate: sciami di Falene (da falciare) e Lance (da colpire da lontano).
+/// Ondate: le Falene arrivano in formazioni geometriche, insieme a Lance e Inseguitori.
 if (finale) exit;   // durante il finale non succede piu' niente
 
 if (game_over) {
@@ -20,30 +20,33 @@ if (wave >= boss_wave) {
 spawn_timer -= 1;
 if (spawn_timer <= 0) {
     wave += 1;
-    var kind = wave mod 4;
-    if (kind == 1) {
-        // Sciame di Falene: arrivano in fila dall'alto e puntano il giocatore
-        var n = 8 + wave;
-        for (var i = 0; i < n; i++) {
-            instance_create_layer(random_range(20, room_width - 20), -20 - i * 14, "Instances", obj_moth);
-        }
-    } else if (kind == 2) {
-        // Lance: si fermano in alto e sparano dopo un avviso
-        repeat (2 + wave div 3) {
-            instance_create_layer(random_range(40, room_width - 40), -30, "Instances", obj_spear);
-        }
-    } else if (kind == 3) {
-        // Inseguitori: scendono piano verso di te
-        repeat (2 + wave div 4) {
-            instance_create_layer(random_range(30, room_width - 30), -20, "Instances", obj_stalker);
-        }
-    } else {
-        // ondata mista: obbliga a cambiare forma di continuo
-        for (var j = 0; j < 6; j++) {
-            instance_create_layer(random_range(20, room_width - 20), -20 - j * 14, "Instances", obj_moth);
-        }
-        instance_create_layer(random_range(40, room_width - 40), -30, "Instances", obj_spear);
-        instance_create_layer(random_range(30, room_width - 30), -20, "Instances", obj_stalker);
+    var kind = (wave - 1) mod 6;
+    var w = room_width;
+    switch (kind) {
+        case 0: // serpente
+            spawn_formation(1, 8 + wave div 2, random_range(120, w - 120), 100);
+            break;
+        case 1: // V che picchia + Lance
+            spawn_formation(2, 7, w / 2, 0);
+            repeat (1 + wave div 4) instance_create_layer(random_range(40, w - 40), -30, "Instances", obj_spear);
+            break;
+        case 2: // anello + Inseguitori
+            spawn_formation(3, 8, w / 2, 0);
+            repeat (1 + wave div 5) instance_create_layer(random_range(30, w - 30), -20, "Instances", obj_stalker);
+            break;
+        case 3: // tenaglia dai lati
+            spawn_formation(4, 10 + wave div 2, 0, 0);
+            break;
+        case 4: // due serpenti a specchio + Lance
+            spawn_formation(1, 6 + wave div 3, w * 0.28, 70);
+            spawn_formation(1, 6 + wave div 3, w * 0.72, -70);
+            repeat (2) instance_create_layer(random_range(40, w - 40), -30, "Instances", obj_spear);
+            break;
+        case 5: // misto: V piccola, Inseguitori, una Lancia
+            spawn_formation(2, 5, w / 2, 0);
+            repeat (2) instance_create_layer(random_range(30, w - 30), -20, "Instances", obj_stalker);
+            instance_create_layer(random_range(40, w - 40), -30, "Instances", obj_spear);
+            break;
     }
-    spawn_timer = 270;  // 4,5 secondi tra un'ondata e l'altra
+    spawn_timer = max(180, 270 - wave * 6);   // le ondate si fanno sempre piu' ravvicinate
 }

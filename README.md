@@ -1,2 +1,2 @@
-# shift-jam-2026
+# Shift into Silence
 Game Off 2026 entry: a mecha elegy
