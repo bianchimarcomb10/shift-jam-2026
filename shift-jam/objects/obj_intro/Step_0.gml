@@ -2,7 +2,7 @@ t += 1;
 
 switch (state) {
 case 0:   // titolo: aspetta SHIFT
-    if (keyboard_check_pressed(vk_shift)) { state = 1; t = 0; }
+    if (keyboard_check_pressed(vk_shift)) { state = 1; t = 0; audio_play_sound(snd_menu, 5, false); }
     break;
 
 case 1:   // il titolo sfuma nel nero in 2/3 di secondo
@@ -14,7 +14,7 @@ case 2:   // la frase resta 5 secondi (compare e svanisce piano)
     break;
 
 case 3:   // al posto della frase: "Press SHIFT"
-    if (keyboard_check_pressed(vk_shift)) { state = 4; t = 0; }
+    if (keyboard_check_pressed(vk_shift)) { state = 4; t = 0; audio_play_sound(snd_menu, 5, false); }
     break;
 
 case 4:   // le stelle si accendono sempre piu' in fretta finche' lo schermo diventa bianco

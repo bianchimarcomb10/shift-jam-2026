@@ -5,6 +5,7 @@ t += 1;
 // --- passaggio di fase: il guscio della nave madre si rompe ---
 if (phase == 1 && hp <= hp_p2) {
     phase = 2;
+    audio_play_sound(snd_explosion_big, 10, false);   // il guscio salta via
     hp = hp_p2;
     radius = 28;
     transition = 120;

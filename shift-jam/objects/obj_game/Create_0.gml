@@ -46,10 +46,12 @@ spawn_spears = function(_k) {
     }
 }
 
-/// Inseguitori che entrano dopo _wait fotogrammi (quando le Falene sono gia' passate).
+/// Inseguitori che entrano DAI LATI dopo _wait fotogrammi (quando le Falene sono gia' passate):
+/// cosi' non attraversano la fascia alta dove stanno le Lance.
 spawn_stalkers = function(_k, _wait) {
     for (var i = 0; i < _k; i++) {
-        var st = instance_create_layer(room_width * (i + 1) / (_k + 1), -40, "Instances", obj_stalker);
+        var sx = (i mod 2 == 0) ? -30 : room_width + 30;   // uno da sinistra, uno da destra
+        var st = instance_create_layer(sx, random_range(220, 360), "Instances", obj_stalker);
         st.wait = _wait + i * 40;
     }
 }
