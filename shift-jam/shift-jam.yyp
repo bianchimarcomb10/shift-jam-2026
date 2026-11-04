@@ -19,6 +19,7 @@
   },
   "name":"shift-jam",
   "resources":[
+    {"id":{"name":"obj_starfield","path":"objects/obj_starfield/obj_starfield.yy",},},
     {"id":{"name":"obj_grunt","path":"objects/obj_grunt/obj_grunt.yy",},},
     {"id":{"name":"obj_ground","path":"objects/obj_ground/obj_ground.yy",},},
     {"id":{"name":"obj_mech_ground","path":"objects/obj_mech_ground/obj_mech_ground.yy",},},

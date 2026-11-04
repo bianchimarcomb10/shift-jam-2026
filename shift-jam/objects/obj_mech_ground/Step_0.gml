@@ -29,8 +29,3 @@ if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || ke
     // ogni alieno falciato fa scendere un po' la barra: resisti di piu', ma non per sempre
     obj_ground.bar = max(0, obj_ground.bar - kills * 0.004);
 }
-
-if (st == 3) {
-    vy -= 0.15;   // accelera verso l'alto
-    y += vy;
-}

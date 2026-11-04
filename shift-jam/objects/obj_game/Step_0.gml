@@ -1,6 +1,6 @@
 /// Ondate alternate: sciami di Falene (da falciare) e Lance (da colpire da lontano).
 if (game_over) {
-    if (keyboard_check_pressed(vk_shift)) room_restart();
+    if (keyboard_check_pressed(vk_shift)) room_goto(rm_game);   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
 
