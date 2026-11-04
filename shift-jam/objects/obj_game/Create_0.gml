@@ -1,6 +1,7 @@
 /// Controllore della partita: manda le ondate di nemici.
 /// Nasce quando il mecha si trasforma (rm_ground) o all'inizio di rm_game.
 randomize();
+audio_master_gain(0.4);   // volume generale piu' basso
 global.hp = 3;          // il giocatore regge 3 colpi
 spawn_timer = 120;      // 2 secondi prima della prima ondata
 wave = 0;
@@ -32,8 +33,9 @@ spawn_formation = function(_form, _n, _cx, _amp) {
             m.delay = (i mod half) * 14 + ((m.side == -1) ? 100 : 0);
             m.base_y = (m.side == 1) ? 250 : 340;
         }
-        // dall'ondata 3, una falena su tre spara un colpo
-        m.can_shoot = (wave >= 3 && irandom(2) == 0);
+        // dall'ondata 2 una falena su due spara; dall'ondata 8 spara due colpi
+        m.can_shoot = (wave >= 2 && irandom(1) == 0);
+        m.shots = (wave >= 8) ? 2 : 1;
     }
 }
 

@@ -31,7 +31,7 @@ if (attack && transform_timer == 0) {
     if (form == 0 && fire_cooldown == 0) {
         // Navicella: sparo in avanti, 10 colpi al secondo
         instance_create_layer(x, y - 12, "Instances", obj_shot);
-        audio_play_sound(snd_shot, 1, false);
+        audio_play_sound(snd_shot, 1, false, 0.5);   // lo sparo e' continuo: ancora piu' basso
         fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
     }
     if (form == 1 && sweep_cooldown == 0) {

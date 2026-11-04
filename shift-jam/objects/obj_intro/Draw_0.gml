@@ -27,12 +27,13 @@ case 3:
     break;
 
 case 4:
+    // nessuna dissolvenza: ogni stella nasce come un punto e cresce,
+    // e il bianco finale e' fatto solo di stelle che si toccano
     for (var i = 0; i < array_length(stars); i++) {
-        draw_point(stars[i][0], stars[i][1]);
+        var k = clamp((t - stars[i][2]) / star_grow, 0, 1);
+        var r = max(0.6, star_max_r * k * k);   // cresce piano e poi in fretta
+        draw_circle(stars[i][0], stars[i][1], r, false);
     }
-    // nell'ultimo secondo e mezzo il bianco copre tutto
-    draw_set_alpha(clamp((t - 150) / 90, 0, 1));
-    draw_rectangle(0, 0, room_width, room_height, false);
     break;
 }
 
