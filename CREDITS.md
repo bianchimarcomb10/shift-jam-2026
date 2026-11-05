@@ -10,3 +10,4 @@ Game by Marco Bianchi (Chelios).
 | Void - Fleet Pack 1 - Kla'ed | Baldur (per Foozle) | https://foozlecc.itch.io/void-fleet-pack-1 | CC0 |
 | Void - Environment Pack | Baldur (per Foozle) | https://foozlecc.itch.io/void-environment-pack | CC0 |
 | Pixelart Clouds - Asset Pack (ricolorato) | RocketNinjaGames | https://rocketninjagames.itch.io/pixelart-clouds-asset-pack | CC0 |
+| 1-Bit Pack (ricolorato) | Kenney | https://kenney.nl/assets/1-bit-pack | CC0 |
