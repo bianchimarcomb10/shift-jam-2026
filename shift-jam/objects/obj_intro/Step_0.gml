@@ -14,7 +14,11 @@ case 2:   // la frase resta 5 secondi (compare e svanisce piano)
     break;
 
 case 3:   // al posto della frase: "Press SHIFT"
-    if (keyboard_check_pressed(vk_shift)) { state = 4; t = 0; audio_play_sound(snd_menu, 5, false); }
+    if (keyboard_check_pressed(vk_shift)) {
+        state = 4; t = 0;
+        audio_master_gain(1);   // volume pieno solo per questo momento
+        audio_play_sound(snd_menu, 5, false);
+    }
     break;
 
 case 4:   // le stelle si accendono sempre piu' in fretta e crescono finche' riempiono tutto il cielo
