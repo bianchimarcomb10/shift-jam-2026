@@ -7,9 +7,10 @@ if (instance_exists(obj_game)) {
 for (var i = 0; i < array_length(clouds); i++) {
     var cl = clouds[i];
     cl[@ 1] += cl[3];
-    if (cl[1] - cl[2] > room_height) {
-        cl[@ 1] = -cl[2] - random(200);
+    if (cl[1] - 24 > room_height) {
+        cl[@ 1] = -30 - random(200);
         cl[@ 0] = random(room_width);
+        cl[@ 2] = irandom(5);
     }
 }
 // le stelle compaiono solo quando l'atmosfera si dirada
