@@ -21,7 +21,7 @@ if (transform_timer > 0) {
     if (transform_timer == 0) form = 1 - form;
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
     transform_timer = 6;    // 6 frame = 0,1 s: cambiare forma deve essere un riflesso, non una scelta lenta
-    audio_play_sound(snd_shift, 5, false);
+    audio_play_sound(snd_shift, 5, false, 0.5);
     switch_cooldown = 12;   // 12 frame = 0,2 s
 }
 
@@ -31,14 +31,14 @@ if (attack && transform_timer == 0) {
     if (form == 0 && fire_cooldown == 0) {
         // Navicella: sparo in avanti, 10 colpi al secondo
         instance_create_layer(x, y - 12, "Instances", obj_shot);
-        audio_play_sound(snd_shot, 1, false, 0.5);   // lo sparo e' continuo: ancora piu' basso
+        audio_play_sound(snd_shot, 1, false, 0.15);   // lo sparo e' continuo: molto basso
         fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
     }
     if (form == 1 && sweep_cooldown == 0) {
         // Mecha: falciata a 360 gradi, ogni 0,5 s
         sweep_cooldown = 30;
         sweep_anim = 10;
-        audio_play_sound(snd_scythe, 4, false);
+        audio_play_sound(snd_scythe, 4, false, 0.5);
         var killed = false;
         with (obj_enemy) {
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
@@ -46,7 +46,7 @@ if (attack && transform_timer == 0) {
                 if (hp <= 0) { killed = true; instance_destroy(); }
             }
         }
-        if (killed) audio_play_sound(snd_enemy_die, 3, false);
+        if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
         // PARATA: la falciata annulla tutti i proiettili nemici nel suo raggio, con una scintilla
         // e i colpi parati tornano indietro contro i nemici (al massimo 12 per falciata)
         var parried = 0;
@@ -62,13 +62,13 @@ if (attack && transform_timer == 0) {
                 instance_destroy();
             }
         }
-        if (parried > 0) audio_play_sound(snd_parry, 7, false);
+        if (parried > 0) audio_play_sound(snd_parry, 7, false, 0.5);
         // PARATA: la falciata respinge i palmi d'oro del Custode
         with (obj_palm) {
             if (!reflected && point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
                 reflected = true;
                 spd = 5;
-                audio_play_sound(snd_parry, 8, false);
+                audio_play_sound(snd_parry, 8, false, 0.5);
             }
         }
     }
