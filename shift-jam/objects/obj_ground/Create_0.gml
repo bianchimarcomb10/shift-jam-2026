@@ -1,14 +1,15 @@
 /// Prologo a terra: il mecha resiste finche' gli alieni non lo sommergono.
 audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
+global.continues = 0;     // nuova partita: si riparte da zero sconfitte
 state = 0;          // 0 = combatte, 1 = sommerso (aspetta SHIFT), 2 = esplosione, 3 = la navicella vola via
 bar = 0;            // accerchiamento: da 0 (libero) a 1 (sommerso)
 t = 0;              // frame passati nello stato attuale
 spawn_timer = 30;
-spawn_interval = 45;   // frame tra un gruppo e l'altro: scende col tempo
+spawn_interval = 30;   // frame tra un gruppo e l'altro: scende col tempo
 flash = 1;          // si parte dal bianco della sequenza d'apertura
 mass = false;       // true durante l'ondata finale: alieni ovunque, niente piu' attacco
-free_time = 600;    // primi 10 secondi (600 frame): il mecha si muove libero
-mass_time = 1500;   // a 25 secondi parte comunque l'ondata finale
+free_time = 360;    // primi 6 secondi (360 frame): il mecha si muove libero
+mass_time = 900;    // a 15 secondi parte comunque l'ondata finale
 ground_y = room_height - 70;   // dove si disegna il terreno provvisorio
 scroll = 0;         // di quanto scende il terreno mentre la navicella decolla
 boom_x = 0;

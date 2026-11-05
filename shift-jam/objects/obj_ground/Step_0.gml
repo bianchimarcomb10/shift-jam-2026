@@ -6,7 +6,7 @@ case 0:
     // --- arrivano alieni da tutti e quattro i bordi, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
-        var n = 1 + t div 600;   // ogni 10 secondi un alieno in piu' per gruppo
+        var n = 1 + t div 360;   // ogni 6 secondi un alieno in piu' per gruppo
         if (mass) n = 6;         // ondata finale: una marea
         repeat (n) {
             var side = irandom(3);
@@ -29,12 +29,12 @@ case 0:
 
     if (!mass) {
         // la barra sale col tempo e per ogni alieno aggrappato, ma prima dell'ondata si ferma all'85%
-        bar = min(0.85, bar + 0.0003 + clinging * 0.0008);
-        // l'ondata finale parte a 25 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 15)
-        if (t >= mass_time || (bar >= 0.85 && t >= 900)) mass = true;
+        bar = min(0.85, bar + 0.0005 + clinging * 0.0012);
+        // l'ondata finale parte a 15 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 9)
+        if (t >= mass_time || (bar >= 0.85 && t >= 540)) mass = true;
     } else {
-        // durante l'ondata la barra si riempie in circa 3 secondi
-        bar += 0.006;
+        // durante l'ondata la barra si riempie in circa 2 secondi
+        bar += 0.009;
         if (bar >= 1) { bar = 1; state = 1; t = 0; }
     }
     break;

@@ -13,6 +13,39 @@ boss_preview = false;   // la sagoma della nave madre e' gia' passata?
 boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 draw_set_font(fnt_main);
+
+/// SUTRA DEL CONTINUE: a ogni ripartenza dopo un game over compare a schermo uno di questi testi.
+/// Sono 8 (circa 5 game over di un giocatore medio + 3 di scorta). Escono in ordine casuale
+/// ma senza ripetersi finche' non sono usciti tutti. Traduzioni nostre, brevi, dall'originale.
+if (!variable_global_exists("continues")) global.continues = 0;
+if (!variable_global_exists("sutra_bag")) global.sutra_bag = [];
+sutras = [
+    ["Form is emptiness,\nemptiness is form.", "- Heart Sutra"],
+    ["No old age and death,\nand no end of old age and death.", "- Heart Sutra"],
+    ["Gone, gone, gone beyond,\ngone all the way beyond.\nAwake!", "- Heart Sutra"],
+    ["All conditioned things are like a dream, an illusion, a bubble, a shadow, like dew or a flash of lightning.", "- Diamond Sutra"],
+    ["The past mind cannot be grasped. The present mind cannot be grasped. The future mind cannot be grasped.", "- Diamond Sutra"],
+    ["Originally there is not a single thing.\nWhere could the dust fall?", "- Huineng, Platform Sutra"],
+    ["The Great Way is not difficult for those who have no preferences.", "- Sengcan, Xinxin Ming"],
+    ["To study the self\nis to forget the self.", "- Dogen, Genjokoan"]
+];
+sutra = -1;          // quale sutra si vede ora (-1 = nessuno)
+sutra_timer = 0;
+if (global.continues > 0) {
+    // il sacchetto vuoto si riempie di nuovo e si mescola
+    if (array_length(global.sutra_bag) == 0) {
+        for (var si = 0; si < array_length(sutras); si++) array_push(global.sutra_bag, si);
+        for (var si = array_length(global.sutra_bag) - 1; si > 0; si--) {
+            var sj = irandom(si);
+            var tmp = global.sutra_bag[si];
+            global.sutra_bag[si] = global.sutra_bag[sj];
+            global.sutra_bag[sj] = tmp;
+        }
+    }
+    sutra = array_pop(global.sutra_bag);
+    sutra_timer = 300;     // 5 secondi a schermo
+    spawn_timer = 300;     // la prima ondata aspetta che il testo sia sparito
+}
 if (!instance_exists(obj_sky)) instance_create_layer(0, 0, "Instances", obj_sky);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
 if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - 80, "Instances", obj_player);
