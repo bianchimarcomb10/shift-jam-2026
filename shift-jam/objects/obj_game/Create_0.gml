@@ -1,4 +1,4 @@
-/// Controllore della partita: manda le ondate di nemici.
+spr/// Controllore della partita: manda le ondate di nemici.
 /// Nasce quando il mecha si trasforma (rm_ground) o all'inizio di rm_game.
 randomize();
 audio_master_gain(0.4);   // volume generale piu' basso
