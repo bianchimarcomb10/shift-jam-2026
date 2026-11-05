@@ -13,6 +13,7 @@ if (t > 120) {
     scale = 1 - e;
 }
 
-// resta una stella per qualche secondo, poi buio e si torna al titolo
-if (t > 1320) fade = min(1, (t - 1320) / 120);
-if (t > 1500) room_goto(rm_title);
+// mentre la navicella si confonde tra le stelle: la poesia di Ryokan (da 10 a 20 s),
+// poi "A game by..." (da 20,5 s); infine buio e si torna al titolo
+if (t > 1560) fade = min(1, (t - 1560) / 120);
+if (t > 1740) room_goto(rm_title);
