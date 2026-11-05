@@ -2,6 +2,19 @@
 if (finale) exit;   // nel finale lo schermo resta vuoto
 draw_set_colour(c_white);
 draw_set_halign(fa_left);
+// il sutra della ripartenza: entra e sfuma, al centro dello schermo
+if (sutra_timer > 0 && sutra >= 0) {
+    var sa = clamp(min((300 - sutra_timer) / 45, sutra_timer / 60), 0, 1);
+    var gw = display_get_gui_width();
+    draw_set_alpha(sa);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_text_ext(gw / 2, room_height / 2 - 30, sutras[sutra][0], 16, gw - 48);
+    draw_text(gw / 2, room_height / 2 + 50, sutras[sutra][1]);
+    draw_set_alpha(1);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+}
 draw_text(8, 8, "HP: " + string(global.hp));
 if (instance_exists(obj_player)) {
     draw_text(8, 24, "FORM: " + ((obj_player.form == 0) ? "SHIP" : "MECHA"));

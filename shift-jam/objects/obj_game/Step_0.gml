@@ -1,8 +1,9 @@
 /// Ondate: le Falene arrivano in formazioni geometriche, insieme a Lance e Inseguitori.
 if (finale) exit;   // durante il finale non succede piu' niente
+if (sutra_timer > 0) sutra_timer -= 1;
 
 if (game_over) {
-    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
+    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
 
