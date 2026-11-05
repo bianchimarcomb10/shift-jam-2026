@@ -8,3 +8,4 @@ Game by Marco Bianchi (Chelios).
 | --- | --- | --- | --- |
 | Void - Main Ship | Baldur (per Foozle) | https://foozlecc.itch.io/void-main-ship | CC0 |
 | Void - Fleet Pack 1 - Kla'ed | Baldur (per Foozle) | https://foozlecc.itch.io/void-fleet-pack-1 | CC0 |
+| Void - Environment Pack | Baldur (per Foozle) | https://foozlecc.itch.io/void-environment-pack | CC0 |
