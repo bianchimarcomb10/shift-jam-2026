@@ -6,7 +6,6 @@ global.hp = 3;          // il giocatore regge 3 colpi
 spawn_timer = 120;      // 2 secondi prima della prima ondata
 wave = 0;
 game_over = false;
-boss_wave = 16;         // dopo 16 ondate arriva il boss
 boss_spawned = false;
 finale = false;         // true durante il finale "Silenzio"
 preview_timer = 0;      // > 0 mentre le sagome dell'ondata salgono sullo sfondo
@@ -14,6 +13,7 @@ boss_preview = false;   // la sagoma della nave madre e' gia' passata?
 boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 draw_set_font(fnt_main);
+if (!instance_exists(obj_sky)) instance_create_layer(0, 0, "Instances", obj_sky);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
 if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - 80, "Instances", obj_player);
 
@@ -39,7 +39,8 @@ spawn_formation = function(_form, _n, _cx, _amp) {
             m.base_y = (m.side == 1) ? 250 : 340;
         }
         // dall'ondata 2 una falena su due spara; dall'ondata 8 spara due colpi
-        m.can_shoot = (wave >= 2 && (wave >= 10 || irandom(1) == 0));   // dalla 10 sparano tutte
+        m.can_shoot = (wave >= 2 && (wave >= 10 || i mod 2 == 0));   // una su due, dalla 10 tutte
+        m.fire_timer = 60 + (i * 37) mod 140;   // sempre lo stesso ritmo: si puo' imparare
         m.shots = 1 + wave div 5;   // 1, poi 2 dalla 5, 3 dalla 10, 4 dalla 15
     }
 }
@@ -49,7 +50,7 @@ spawn_formation = function(_form, _n, _cx, _amp) {
 spawn_spears = function(_k) {
     for (var i = 0; i < _k; i++) {
         var sp = instance_create_layer(room_width * (i + 1) / (_k + 1), -30, "Instances", obj_spear);
-        sp.stop_y = random_range(50, 100);
+        sp.stop_y = 50 + (i mod 2) * 40;   // a zig-zag, sempre uguale
     }
 }
 
@@ -58,44 +59,61 @@ spawn_spears = function(_k) {
 spawn_stalkers = function(_k, _wait) {
     for (var i = 0; i < _k; i++) {
         var sx = (i mod 2 == 0) ? -30 : room_width + 30;   // uno da sinistra, uno da destra
-        var st = instance_create_layer(sx, random_range(220, 360), "Instances", obj_stalker);
+        var st = instance_create_layer(sx, 230 + (i mod 3) * 55, "Instances", obj_stalker);
+        st.fire_timer = 70 + i * 20;
         st.wait = _wait + i * 40;
     }
 }
 
-/// Che cosa contiene l'ondata numero "wave": quante Falene, Lance e Inseguitori.
-/// Serve all'anteprima, che deve mostrare la stessa ondata che poi arriva.
+/// LE 16 ONDATE, scritte a mano: ogni partita e' uguale, si imparano a memoria.
+/// Ogni riga e' un comando:
+///   ["snake", quante, centro x, ampiezza]   serpente
+///   ["v", quante, centro x]                 V che si ferma e picchia
+///   ["ring", quante, centro x]              anello che ruota
+///   ["pincer", quante]                      tenaglia dai lati
+///   ["corridor", quante]                    corridoio laterale
+///   ["spears", quante]                      Lance in fila in alto
+///   ["stalkers", quante, attesa]            Inseguitori dai lati dopo "attesa" fotogrammi
+///   ["wall", attesa]                        muro di colpi dopo "attesa" fotogrammi
+/// Per cambiare il gioco basta cambiare questa tabella.
+waves = [
+    /* 1  */ [["snake", 8, 180, 100]],
+    /* 2  */ [["v", 7, 180]],
+    /* 3  */ [["snake", 6, 110, 50], ["wall", 220]],                        // primo muro: da solo, per impararlo
+    /* 4  */ [["pincer", 10]],
+    /* 5  */ [["spears", 2], ["corridor", 10]],
+    /* 6  */ [["ring", 8, 180], ["stalkers", 1, 300], ["wall", 240]],
+    /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
+    /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
+    /* 9  */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
+    /* 10 */ [["ring", 8, 120], ["ring", 8, 240], ["wall", 200]],
+    /* 11 */ [["pincer", 14], ["snake", 6, 180, 50], ["wall", 180], ["wall", 320]],
+    /* 12 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
+    /* 13 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
+    /* 14 */ [["v", 10, 180], ["ring", 8, 180], ["wall", 200], ["wall", 340]],
+    /* 15 */ [["spears", 4], ["pincer", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],
+    /* 16 */ [["snake", 10, 90, 60], ["snake", 10, 270, -60], ["v", 8, 180], ["stalkers", 3, 360], ["wall", 160], ["wall", 320], ["wall", 460]]
+];
+boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
+
+/// Quante Falene, Lance e Inseguitori ci sono nell'ondata "wave" (serve all'anteprima).
 wave_contents = function() {
-    var kind = (wave - 1) mod 7;
-    var extra = reinforcements();
-    var base = wave_base(kind);
-    return [base[0] + extra[0], base[1], base[2] + extra[1]];
-}
-
-/// Dalla 9 ogni ondata porta rinforzi: un serpente in piu' e, dalla 12, altri Inseguitori.
-reinforcements = function() {
-    if (wave < 9) return [0, 0];
-    return [4 + (wave - 9), (wave >= 12) ? 1 + (wave - 12) div 2 : 0];
-}
-
-wave_base = function(kind) {
-    switch (kind) {
-        case 0: return [8 + wave div 2, 0, 0];
-        case 1: return [10 + wave div 2, 2 + wave div 5, 0];
-        case 2: return [8, 0, 1 + wave div 5];
-        case 3: return [10 + wave div 2, 0, 0];
-        case 4: return [2 * (6 + wave div 3), 0, 0];
-        case 5: return [8, 3, 2];
-        case 6: return [7 + wave div 6, 0, 0];
+    var res = [0, 0, 0];
+    var cmds = waves[wave - 1];
+    for (var i = 0; i < array_length(cmds); i++) {
+        var k = cmds[i][0];
+        if (k == "spears") res[1] += cmds[i][1];
+        else if (k == "stalkers") res[2] += cmds[i][1];
+        else if (k != "wall") res[0] += cmds[i][1];
     }
-    return [0, 0, 0];
+    return res;
 }
 
-/// Anteprima: le sagome dell'ondata salgono dal basso sullo sfondo, piccole e scure.
+/// Anteprima: le sagome dell'ondata salgono dal basso sullo sfondo.
 /// In testa le Lance, poi le Falene a file da 6, in coda gli Inseguitori.
 spawn_preview = function() {
     var c = wave_contents();
-    var p = instance_create_layer(random_range(100, room_width - 100), room_height + 30, "Instances", obj_preview);
+    var p = instance_create_layer(room_width / 2, room_height + 30, "Instances", obj_preview);
     p.spd = 3.5;
     var rows = [[spr_enemy_spear, c[1]], [spr_enemy_moth, min(c[0], 24)], [spr_enemy_stalker, c[2]]];
     var ry = 0;
@@ -118,44 +136,21 @@ spawn_preview = function() {
     }
 }
 
-/// Crea l'ondata vera (quella che l'anteprima ha appena mostrato).
+/// Crea l'ondata vera, leggendo la sua riga della tabella.
 spawn_wave = function() {
-    var kind = (wave - 1) mod 7;
-    var w = room_width;
-    var extra = reinforcements();
-    // dall'ondata 3 un muro a meta' ondata, dalla 8 due, dalla 13 tre
-    if (wave >= 3) array_push(walls, 200);
-    if (wave >= 8) array_push(walls, 330);
-    if (wave >= 13) array_push(walls, 120);
-    if (extra[0] > 0) spawn_formation(1, extra[0], (irandom(1) == 0) ? w * 0.2 : w * 0.8, 50);
-    if (extra[1] > 0) spawn_stalkers(extra[1], 360);
-    switch (kind) {
-        case 0: // serpente, da solo
-            spawn_formation(1, 8 + wave div 2, random_range(120, w - 120), 100);
-            break;
-        case 1: // Lance in alto + Falene che attraversano dai lati, piu' in basso
-            spawn_spears(2 + wave div 5);
-            spawn_formation(5, 10 + wave div 2, 0, 0);
-            break;
-        case 2: // anello, poi gli Inseguitori quando l'anello e' sceso
-            spawn_formation(3, 8, w / 2, 0);
-            spawn_stalkers(1 + wave div 5, 300);
-            break;
-        case 3: // tenaglia dai lati, da sola
-            spawn_formation(4, 10 + wave div 2, 0, 0);
-            break;
-        case 4: // due serpenti a specchio, da soli
-            spawn_formation(1, 6 + wave div 3, w * 0.28, 70);
-            spawn_formation(1, 6 + wave div 3, w * 0.72, -70);
-            break;
-        case 5: // Lance in alto + corridoio, poi Inseguitori
-            spawn_spears(3);
-            spawn_formation(5, 8, 0, 0);
-            spawn_stalkers(2, 330);
-            break;
-        case 6: // V che si ferma e picchia, da sola
-            spawn_formation(2, 7 + wave div 6, w / 2, 0);
-            break;
+    var cmds = waves[wave - 1];
+    for (var i = 0; i < array_length(cmds); i++) {
+        var c = cmds[i];
+        switch (c[0]) {
+            case "snake":    spawn_formation(1, c[1], c[2], c[3]); break;
+            case "v":        spawn_formation(2, c[1], c[2], 0); break;
+            case "ring":     spawn_formation(3, c[1], c[2], 0); break;
+            case "pincer":   spawn_formation(4, c[1], 0, 0); break;
+            case "corridor": spawn_formation(5, c[1], 0, 0); break;
+            case "spears":   spawn_spears(c[1]); break;
+            case "stalkers": spawn_stalkers(c[1], c[2]); break;
+            case "wall":     array_push(walls, c[1]); break;
+        }
     }
 }
 
