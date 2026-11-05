@@ -19,6 +19,7 @@
   },
   "name":"shift-jam",
   "resources":[
+    {"id":{"name":"fnt_main","path":"fonts/fnt_main/fnt_main.yy",},},
     {"id":{"name":"obj_boss","path":"objects/obj_boss/obj_boss.yy",},},
     {"id":{"name":"obj_ebullet","path":"objects/obj_ebullet/obj_ebullet.yy",},},
     {"id":{"name":"obj_enemy","path":"objects/obj_enemy/obj_enemy.yy",},},
