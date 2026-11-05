@@ -23,19 +23,19 @@ if (cloud_a > 0) {
     }
 }
 
-// 3. LA TERRA (ondate 4-10): il pianeta che brucia sotto di noi. Sale dal fondo, poi rimpicciolisce:
-//    ce ne stiamo andando
-if (alt > 3 && alt < 11) {
-    var rise = clamp((alt - 3) / 2, 0, 1);
-    var away = clamp((alt - 5) / 5, 0, 1);
-    var sc = lerp(3, 0.6, away);                              // da grande a piccolo
-    var ex = w / 2 + 40 * away;
-    var ey = lerp(h + 100 * sc, h - 150, rise) + 40 * away;
-    var ea = 1 - clamp((alt - 10), 0, 1);                     // svanisce alla fine
+// 3. LA TERRA (dal decollo all'ondata 10): all'inizio e' enorme e se ne vede solo la calotta
+//    in fondo allo schermo; poi rimpicciolisce sempre di piu', finche' resta un punto e svanisce
+if (alt < 11) {
+    var away = clamp(alt / 10, 0, 1);
+    var sc = 6 * power(0.5 / 6, away);        // da 6 volte a mezza grandezza, sempre piu' piccola
+    var r = 30 * sc;                          // raggio del pianeta disegnato (circa 30 px nello sprite)
+    var ex = w / 2 + 30 * away;
+    var ey = h - 120 + r;                     // il bordo in alto del pianeta resta a 120 px dal fondo
+    var ea = 1 - clamp(alt - 10, 0, 1);       // svanisce alla fine
     // alone: l'atmosfera in fiamme
     draw_set_alpha(earth_glow * ea);
     draw_set_colour(make_colour_rgb(255, 110, 50));
-    draw_circle(ex, ey, 36 * sc, false);
+    draw_circle(ex, ey, r + 6 + 2 * sc, false);
     // lo sprite (96 x 96, origine in alto a sinistra) ruota piano
     var fr = (current_time div 110) mod 77;
     draw_sprite_ext(spr_bg_earth, fr, ex - 48 * sc, ey - 48 * sc, sc, sc, 0, c_white, ea);
