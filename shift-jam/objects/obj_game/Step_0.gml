@@ -6,6 +6,12 @@ if (game_over) {
     exit;
 }
 
+// i muri programmati arrivano anche mentre sale l'anteprima successiva
+for (var wi = array_length(walls) - 1; wi >= 0; wi--) {
+    walls[@ wi] -= 1;
+    if (walls[wi] <= 0) { spawn_wall(); array_delete(walls, wi, 1); }
+}
+
 if (boss_spawned) exit;
 
 // --- l'anteprima di un'ondata sta salendo sullo sfondo: quando e' uscita in alto, arrivano i nemici veri ---
