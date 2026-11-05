@@ -1,4 +1,5 @@
 /// Prologo a terra: il mecha resiste finche' gli alieni non lo sommergono.
+audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
 state = 0;          // 0 = combatte, 1 = sommerso (aspetta SHIFT), 2 = esplosione, 3 = la navicella vola via
 bar = 0;            // accerchiamento: da 0 (libero) a 1 (sommerso)
 t = 0;              // frame passati nello stato attuale

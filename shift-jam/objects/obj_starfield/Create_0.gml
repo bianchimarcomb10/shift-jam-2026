@@ -4,5 +4,5 @@ speed_mult = 1;   // 1 = velocita' normale; nel finale scende a 0 e le stelle si
 depth = 90;   // sopra il cielo e il terreno, sotto navicella e nemici
 stars = [];
 for (var i = 0; i < 90; i++) {
-    stars[i] = [random(room_width), random(room_height), random_range(0.4, 3)];   // x, y, velocita'
+    stars[i] = [random(room_width), random(room_height), random_range(0.6, 1.2)];   // x, y, velocita': poco piu' dello sfondo (0,5)
 }
