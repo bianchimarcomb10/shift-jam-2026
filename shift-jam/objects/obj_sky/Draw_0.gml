@@ -14,35 +14,31 @@ if (air > 0) {
 }
 
 // 2. NUVOLE (ondate 1-5): sempre meno, sempre piu' trasparenti
-var cloud_a = clamp(1 - (alt - 2) / 3, 0, 1) * 0.55;
+var cloud_a = clamp(1 - (alt - 2) / 3, 0, 1) * 0.85;
 if (cloud_a > 0) {
     for (var i = 0; i < array_length(clouds); i++) {
         var cl = clouds[i];
-        var r = cl[2];
-        draw_set_alpha(cloud_a);
-        draw_set_colour(make_colour_rgb(230, 170, 150));
-        draw_ellipse(cl[0] - r, cl[1] - r * 0.3, cl[0] + r, cl[1] + r * 0.3, false);
-        draw_set_colour(make_colour_rgb(250, 210, 190));
-        draw_ellipse(cl[0] - r * 0.6, cl[1] - r * 0.45, cl[0] + r * 0.4, cl[1] + r * 0.1, false);
+        // lo sprite ha l'origine in alto a sinistra (80 x 48): lo centro sul punto della nuvola
+        draw_sprite_ext(spr_bg_clouds, cl[2], cl[0] - 40, cl[1] - 24, 1, 1, 0, c_white, cloud_a);
     }
 }
 
-// 3. LA TERRA (ondate 4-9): la curva del pianeta sotto di noi, che brucia e sprofonda
-if (alt > 3 && alt < 10) {
-    var R = 900;
-    var rise = clamp((alt - 3) / 2, 0, 1);                 // compare da sotto
-    var sink = clamp((alt - 6) / 4, 0, 1);                 // poi si allontana
-    var top_y = h - 140 * rise + 260 * sink;               // dove sta il bordo del pianeta
-    draw_set_alpha(clamp(rise - sink * 0.5, 0, 1));
-    draw_set_colour(make_colour_rgb(255, 110, 60));        // bagliore: l'atmosfera in fiamme
-    draw_circle(w / 2, top_y + R - 6, R + 6, false);
-    draw_set_colour(make_colour_rgb(30, 40, 70));          // il lato in ombra
-    draw_circle(w / 2, top_y + R, R, false);
-    draw_set_colour(make_colour_rgb(255, 150, 70));        // incendi sulla superficie
-    for (var f = 0; f < 7; f++) {
-        var fx = w * (f + 0.5) / 7 + dsin(f * 71) * 20;
-        draw_circle(fx, top_y + 14 + (f mod 3) * 10, 2, false);
-    }
+// 3. LA TERRA (ondate 4-10): il pianeta che brucia sotto di noi. Sale dal fondo, poi rimpicciolisce:
+//    ce ne stiamo andando
+if (alt > 3 && alt < 11) {
+    var rise = clamp((alt - 3) / 2, 0, 1);
+    var away = clamp((alt - 5) / 5, 0, 1);
+    var sc = lerp(3, 0.6, away);                              // da grande a piccolo
+    var ex = w / 2 + 40 * away;
+    var ey = lerp(h + 100 * sc, h - 150, rise) + 40 * away;
+    var ea = 1 - clamp((alt - 10), 0, 1);                     // svanisce alla fine
+    // alone: l'atmosfera in fiamme
+    draw_set_alpha(earth_glow * ea);
+    draw_set_colour(make_colour_rgb(255, 110, 50));
+    draw_circle(ex, ey, 36 * sc, false);
+    // lo sprite (96 x 96, origine in alto a sinistra) ruota piano
+    var fr = (current_time div 110) mod 77;
+    draw_sprite_ext(spr_bg_earth, fr, ex - 48 * sc, ey - 48 * sc, sc, sc, 0, c_white, ea);
 }
 
 // 4. IL VUOTO (dall'ondata 12 al boss): lo spazio si spegne verso il Silenzio
