@@ -23,26 +23,8 @@ if (cloud_a > 0) {
     }
 }
 
-// 3. LA TERRA (dal decollo all'ondata 7): all'inizio la sua calotta copre tutto il fondo dello schermo;
-//    mentre sali sprofonda verso il basso e un po' rimpicciolisce, finche' esce dallo schermo.
-//    Deve sembrare un pianeta che ti lasci alle spalle, non uno che sale.
-if (alt < 8) {
-    var away = clamp(alt / 7, 0, 1);
-    var e = away * away * (3 - 2 * away);     // parte piano, accelera, rallenta (curva morbida)
-    var sc = 6 - 2 * e;                       // da 6 volte (largo quanto lo schermo) a 4 volte
-    var r = 30 * sc;                          // raggio del pianeta disegnato (circa 30 px nello sprite)
-    var top = lerp(h - 220, h + 40, e);       // bordo in alto: da 220 px sopra il fondo a sotto lo schermo
-    var ex = w / 2 + 40 * e;                  // scivola appena di lato, come se ci passassi accanto
-    var ey = top + r;
-    // alone: l'atmosfera in fiamme
-    draw_set_alpha(earth_glow);
-    draw_set_colour(make_colour_rgb(255, 110, 50));
-    draw_circle(ex, ey, r + 6 + 2 * sc, false);
-    draw_set_alpha(1);
-    // lo sprite (96 x 96, origine in alto a sinistra) ruota piano
-    var fr = (current_time div 110) mod 77;
-    draw_sprite_ext(spr_bg_earth, fr, ex - 48 * sc, ey - 48 * sc, sc, sc, 0, c_white, 1);
-}
+// 3. LA TERRA: tolta per ora (2026-11-05). In mezzo alle nuvole non avrebbe senso vederla.
+//    Lo sprite spr_bg_earth resta nel progetto, se poi si decide dove metterla.
 
 // 4. IL VUOTO (dall'ondata 12 al boss): lo spazio si spegne verso il Silenzio
 var dark = clamp((alt - 11) / 6, 0, 0.6);

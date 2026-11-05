@@ -159,7 +159,7 @@ spawn_wave = function() {
 /// i colpi scendono tutti insieme. La navicella non puo' schivarlo: bisogna diventare mecha e tagliarlo.
 spawn_wall = function() {
     var gap = 12;
-    var spd_f = 6;
+    var spd_f = 4;   // abbastanza lente da vedere la scia che lasciano
     var left = [], right = [];
     for (var wx = 6; wx < room_width; wx += gap) {
         if (wx < room_width / 2) array_push(left, wx); else array_push(right, wx);

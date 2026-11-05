@@ -2,7 +2,7 @@
 /// Non si puo' colpire e non conta come nemico: passa, posa i colpi e sparisce.
 /// obj_game (spawn_wall) ne manda due insieme, una da sinistra e una da destra.
 side = 1;        // 1 entra da sinistra, -1 da destra
-spd = 6;         // velocissima: si vede appena
+spd = 4;         // veloce, ma si vede la scia di colpi che lascia
 slots = [];      // le x dove posare i colpi (le sceglie obj_game)
 k = 0;           // prossimo colpo da posare
 total = 0;       // fotogrammi dopo cui tutti i colpi partono insieme
