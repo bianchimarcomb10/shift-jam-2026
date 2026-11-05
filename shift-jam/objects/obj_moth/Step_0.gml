@@ -24,8 +24,9 @@ if (form > 0) {
             break;
 
         case 3: // ANELLO: un cerchio che ruota e respira mentre scende
-            var a = idx * 360 / n + tt * 1.2;
-            var r = 52 + 14 * dsin(tt * 2.5);
+            // amp = verso di rotazione (1 o -1); raggio massimo 54 px: due anelli a 180 px di distanza non si toccano
+            var a = idx * 360 / n + tt * 1.2 * sign(amp);
+            var r = 44 + 10 * dsin(tt * 2.5);
             x = cx + lengthdir_x(r, a);
             y = -70 + tt * 0.9 + lengthdir_y(r, a);
             // dall'ondata 6, a meta' discesa l'anello si apre in una raffica a raggiera

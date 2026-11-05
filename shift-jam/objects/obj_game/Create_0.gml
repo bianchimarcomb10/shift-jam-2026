@@ -69,7 +69,7 @@ spawn_stalkers = function(_k, _wait) {
 /// Ogni riga e' un comando:
 ///   ["snake", quante, centro x, ampiezza]   serpente
 ///   ["v", quante, centro x]                 V che si ferma e picchia
-///   ["ring", quante, centro x]              anello che ruota
+///   ["ring", quante, centro x, verso]       anello che ruota (verso 1 o -1: due anelli girano a specchio)
 ///   ["pincer", quante]                      tenaglia dai lati
 ///   ["corridor", quante]                    corridoio laterale
 ///   ["spears", quante]                      Lance in fila in alto
@@ -86,13 +86,13 @@ waves = [
     /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
     /* 9  */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
-    /* 10 */ [["ring", 8, 120], ["ring", 8, 240], ["wall", 200]],
-    /* 11 */ [["pincer", 14], ["snake", 6, 180, 50], ["wall", 180], ["wall", 320]],
+    /* 10 */ [["ring", 8, 90, 1], ["ring", 8, 270, -1], ["wall", 200]],                  // due anelli a specchio, separati
+    /* 11 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
     /* 12 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
     /* 13 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
-    /* 14 */ [["v", 10, 180], ["ring", 8, 180], ["wall", 200], ["wall", 340]],
-    /* 15 */ [["spears", 4], ["pincer", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],
-    /* 16 */ [["snake", 10, 90, 60], ["snake", 10, 270, -60], ["v", 8, 180], ["stalkers", 3, 360], ["wall", 160], ["wall", 320], ["wall", 460]]
+    /* 14 */ [["ring", 8, 90, 1], ["ring", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
+    /* 15 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
+    /* 16 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
 
@@ -144,7 +144,7 @@ spawn_wave = function() {
         switch (c[0]) {
             case "snake":    spawn_formation(1, c[1], c[2], c[3]); break;
             case "v":        spawn_formation(2, c[1], c[2], 0); break;
-            case "ring":     spawn_formation(3, c[1], c[2], 0); break;
+            case "ring":     spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1); break;
             case "pincer":   spawn_formation(4, c[1], 0, 0); break;
             case "corridor": spawn_formation(5, c[1], 0, 0); break;
             case "spears":   spawn_spears(c[1]); break;
@@ -154,14 +154,24 @@ spawn_wave = function() {
     }
 }
 
-/// MURO: una fila di colpi da un bordo all'altro, senza varchi.
-/// La navicella non puo' schivarlo: bisogna diventare mecha e tagliarlo.
+/// MURO: due fregate attraversano la parte alta, una da sinistra e una da destra,
+/// e posano una fila di colpi da un bordo all'altro, senza varchi. Quando sono uscite
+/// i colpi scendono tutti insieme. La navicella non puo' schivarlo: bisogna diventare mecha e tagliarlo.
 spawn_wall = function() {
     var gap = 12;
+    var spd_f = 6;
+    var left = [], right = [];
     for (var wx = 6; wx < room_width; wx += gap) {
-        var b = instance_create_layer(wx, -8, "Instances", obj_ebullet);
-        b.dir = 270;
-        b.spd = 1.5 + min(wave, 16) * 0.03;
+        if (wx < room_width / 2) array_push(left, wx); else array_push(right, wx);
     }
+    // ognuna posa la sua meta' e poi tira dritto; i colpi partono quando sono uscite entrambe
+    var total = ceil((room_width + 120) / spd_f) + 10;
+    var f1 = instance_create_layer(-50, 26, "Instances", obj_frigate);
+    f1.side = 1; f1.spd = spd_f; f1.slots = left; f1.total = total;
+    var f2 = instance_create_layer(room_width + 50, 26, "Instances", obj_frigate);
+    f2.side = -1; f2.spd = spd_f; f2.slots = []; f2.total = total;
+    for (var i = array_length(right) - 1; i >= 0; i--) array_push(f2.slots, right[i]);   // da destra verso il centro
+    f1.bspd = 1.5 + min(wave, 16) * 0.03;
+    f2.bspd = f1.bspd;
     audio_play_sound(snd_menu, 6, false);   // segnale provvisorio: arriva un muro
 }
