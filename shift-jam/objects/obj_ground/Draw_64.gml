@@ -13,7 +13,11 @@ if (state < 2) {   // dopo la trasformazione la barra non serve piu'
 draw_set_halign(fa_center);
 draw_set_valign(fa_middle);
 draw_set_colour(c_white);
-if (state == 0 && t < 240) draw_text(cx, room_height - 30, "WASD: MOVE   Z: SCYTHE");
+if (state == 0 && t < 240) {
+    // su due righe: cosi' non esce dai bordi
+    draw_text(cx, room_height - 44, "WASD: MOVE");
+    draw_text(cx, room_height - 26, "Z: SCYTHE");
+}
 
 if (state == 1) {
     // EMERGENZA: lo schermo pulsa di rosso e la scritta, enorme, trema
@@ -21,13 +25,16 @@ if (state == 1) {
     draw_set_colour(make_colour_rgb(200, 0, 30));
     draw_rectangle(0, 0, room_width, room_height, false);
     draw_set_alpha(1);
-    var sc = 5.2 + 0.25 * dsin(current_time * 0.9);
-    var sx = random_range(-4, 4);
-    var sy = random_range(-4, 4);
+    // la scala si calcola dalla larghezza vera della parola piu' lunga, cosi' resta dentro lo schermo
+    var gw = display_get_gui_width();
+    var sc_max = (gw - 28) / string_width("STRUGGLE");
+    var sc = sc_max * (0.95 + 0.04 * dsin(current_time * 0.9));
+    var sx = random_range(-3, 3);
+    var sy = random_range(-3, 3);
     draw_set_colour(c_black);   // ombra, per leggerla sopra la marea di alieni
-    draw_text_transformed(cx + sx + 3, cy + sy + 3, "SHIFT\nTO\nSTRUGGLE", sc, sc, random_range(-1.5, 1.5));
+    draw_text_transformed(cx + sx + 3, cy + sy + 3, "SHIFT\nTO\nSTRUGGLE", sc, sc, random_range(-1, 1));
     if ((current_time div 150) mod 2 == 0) draw_set_colour(c_white); else draw_set_colour(make_colour_rgb(255, 40, 60));
-    draw_text_transformed(cx + sx, cy + sy, "SHIFT\nTO\nSTRUGGLE", sc, sc, random_range(-1.5, 1.5));
+    draw_text_transformed(cx + sx, cy + sy, "SHIFT\nTO\nSTRUGGLE", sc, sc, random_range(-1, 1));
     draw_set_colour(c_white);
 }
 
