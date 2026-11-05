@@ -44,18 +44,9 @@ case 1:
     if (keyboard_check_pressed(vk_shift)) {
         state = 2;
         t = 0;
-        flash = 0.8;   // lampo breve: deve lasciar vedere gli alieni sbalzati via
+        flash = 0;
         boom_x = obj_mech_ground.x;   // centro dell'esplosione
         boom_y = obj_mech_ground.y;
-        // l'esplosione scaglia via tutti gli alieni, lontano dal mecha
-        with (obj_grunt) {
-            fling = true;
-            var fd = point_direction(other.boom_x, other.boom_y, x, y) + random_range(-15, 15);
-            var fs = random_range(5, 10);
-            fvx = lengthdir_x(fs, fd);
-            fvy = lengthdir_y(fs, fd);
-            spin = random_range(-20, 20);
-        }
         obj_mech_ground.transformed = true;
         audio_play_sound(snd_explosion_big, 10, false);
         audio_play_sound(snd_shift, 9, false);
@@ -63,16 +54,46 @@ case 1:
     break;
 
 case 2:
-    // --- esplosione: lampo che svanisce in mezzo secondo, gli alieni volano via ---
-    flash = max(0, 0.8 - t / 30);
-    if (t >= 70) { flash = 0; state = 3; t = 0; }
+    // --- esplosione a stelle, come all'inizio: ogni alieno scoppia in una stella bianca,
+    //     poi le stelle si accendono dal mecha verso i bordi finche' riempiono lo schermo ---
+    if (t == 1) {
+        with (obj_grunt) {
+            array_push(other.stars, [x, y, 1]);
+            instance_destroy();
+        }
+        var cs = 12;
+        for (var gx = 0; gx < room_width; gx += cs) {
+            for (var gy = 0; gy < room_height; gy += cs) {
+                var px = gx + random(cs);
+                var py = gy + random(cs);
+                array_push(cells, [px, py, point_distance(px, py, boom_x, boom_y) + random(90)]);
+            }
+        }
+        array_sort(cells, function(_a, _b) { return _a[2] - _b[2]; });   // prima le piu' vicine al mecha
+    }
+    repeat (2 + t div 2) {
+        if (next_cell < array_length(cells)) {
+            var c = cells[next_cell];
+            array_push(stars, [c[0], c[1], t]);
+            next_cell += 1;
+        }
+    }
+    // schermo tutto bianco: si toglie il velo e la navicella vola via
+    if (next_cell >= array_length(cells) && t >= stars[array_length(stars) - 1][2] + star_grow + 10) {
+        stars = [];
+        flash = 1;
+        state = 3;
+        t = 0;
+    }
     break;
 
 case 3:
     // --- la navicella vola via da sola; fuori dallo schermo parte lo spazio ---
     // il terreno scende sempre piu' in fretta: si capisce che la navicella sta salendo
+    if (flash > 0) flash = max(0, flash - 1 / 50);   // il bianco svanisce in poco meno di un secondo
     scroll += min(6, 0.5 + scroll * 0.03);
     if (ground_layer != -1) layer_y(ground_layer, scroll);
-    if (obj_mech_ground.y < -40) room_goto(rm_game);
+    // si resta finche' la frase di Dogen non e' svanita (6 secondi)
+    if (t >= 360 && obj_mech_ground.y < -40) room_goto(rm_game);
     break;
 }

@@ -42,6 +42,6 @@ if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || ke
 
 // --- dopo l'esplosione la navicella decolla da sola, sempre piu' veloce ---
 if (st == 3) {
-    vy -= 0.15;
+    vy -= 0.05;   // sale piano: attraversa lo schermo in circa 2,5 secondi
     y += vy;
 }

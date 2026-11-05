@@ -13,6 +13,11 @@ ground_y = room_height - 70;   // dove si disegna il terreno provvisorio
 scroll = 0;         // di quanto scende il terreno mentre la navicella decolla
 boom_x = 0;
 boom_y = 0;
+cells = [];         // esplosione a stelle: i punti dello schermo, dal centro verso fuori
+stars = [];         // [x, y, fotogramma in cui nasce]
+next_cell = 0;
+star_grow = 40;     // fotogrammi per crescere: piu' rapida dell'intro, e' un'esplosione
+star_max_r = 18;
 depth = 100;        // le rovine si disegnano sotto a tutto il resto
 // Se nella room c'e' un livello chiamato "Ground" (tile o asset disegnati a mano),
 // il cielo e le rovine provvisorie non servono piu': questo oggetto disegna solo l'esplosione, sopra a tutto.
