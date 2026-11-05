@@ -14,18 +14,3 @@ if (ground_layer == -1) {
     }
 }
 
-// esplosione della trasformazione: anelli bianchi che si allargano
-if (state >= 2 && t < 100 && state < 4) {
-    var tt = (state == 2) ? t : t + 60;
-    if (tt < 100) {
-        draw_set_colour(c_white);
-        for (var j = 0; j < 6; j++) {
-            var rr = (tt - j * 8) * 4;
-            if (rr > 0) {
-                draw_set_alpha(max(0, 1 - rr / 320));
-                draw_circle(boom_x, boom_y, rr, true);
-            }
-        }
-        draw_set_alpha(1);
-    }
-}
