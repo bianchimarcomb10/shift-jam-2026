@@ -23,22 +23,25 @@ if (cloud_a > 0) {
     }
 }
 
-// 3. LA TERRA (dal decollo all'ondata 10): all'inizio e' enorme e se ne vede solo la calotta
-//    in fondo allo schermo; poi rimpicciolisce sempre di piu', finche' resta un punto e svanisce
-if (alt < 11) {
-    var away = clamp(alt / 10, 0, 1);
-    var sc = 6 * power(0.5 / 6, away);        // da 6 volte a mezza grandezza, sempre piu' piccola
+// 3. LA TERRA (dal decollo all'ondata 7): all'inizio la sua calotta copre tutto il fondo dello schermo;
+//    mentre sali sprofonda verso il basso e un po' rimpicciolisce, finche' esce dallo schermo.
+//    Deve sembrare un pianeta che ti lasci alle spalle, non uno che sale.
+if (alt < 8) {
+    var away = clamp(alt / 7, 0, 1);
+    var e = away * away * (3 - 2 * away);     // parte piano, accelera, rallenta (curva morbida)
+    var sc = 6 - 2 * e;                       // da 6 volte (largo quanto lo schermo) a 4 volte
     var r = 30 * sc;                          // raggio del pianeta disegnato (circa 30 px nello sprite)
-    var ex = w / 2 + 30 * away;
-    var ey = h - 120 + r;                     // il bordo in alto del pianeta resta a 120 px dal fondo
-    var ea = 1 - clamp(alt - 10, 0, 1);       // svanisce alla fine
+    var top = lerp(h - 220, h + 40, e);       // bordo in alto: da 220 px sopra il fondo a sotto lo schermo
+    var ex = w / 2 + 40 * e;                  // scivola appena di lato, come se ci passassi accanto
+    var ey = top + r;
     // alone: l'atmosfera in fiamme
-    draw_set_alpha(earth_glow * ea);
+    draw_set_alpha(earth_glow);
     draw_set_colour(make_colour_rgb(255, 110, 50));
     draw_circle(ex, ey, r + 6 + 2 * sc, false);
+    draw_set_alpha(1);
     // lo sprite (96 x 96, origine in alto a sinistra) ruota piano
     var fr = (current_time div 110) mod 77;
-    draw_sprite_ext(spr_bg_earth, fr, ex - 48 * sc, ey - 48 * sc, sc, sc, 0, c_white, ea);
+    draw_sprite_ext(spr_bg_earth, fr, ex - 48 * sc, ey - 48 * sc, sc, sc, 0, c_white, 1);
 }
 
 // 4. IL VUOTO (dall'ondata 12 al boss): lo spazio si spegne verso il Silenzio
