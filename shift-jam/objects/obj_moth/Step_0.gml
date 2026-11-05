@@ -29,7 +29,7 @@ if (form > 0) {
             x = cx + lengthdir_x(r, a);
             y = -70 + tt * 0.9 + lengthdir_y(r, a);
             // dall'ondata 6, a meta' discesa l'anello si apre in una raffica a raggiera
-            if (tt == 260 && instance_exists(obj_game) && obj_game.wave >= 6) {
+            if (instance_exists(obj_game) && ((tt == 260 && obj_game.wave >= 4) || (tt == 340 && obj_game.wave >= 10))) {
                 var rb = instance_create_layer(x, y, "Instances", obj_ebullet);
                 rb.dir = a;
                 rb.spd = 1.8;
@@ -56,9 +56,9 @@ if (form > 0) {
         if (fire_timer <= 0) {
             var b = instance_create_layer(x, y, "Instances", obj_ebullet);
             b.dir = point_direction(x, y, obj_player.x, obj_player.y);
-            b.spd = 2.2;
+            b.spd = 2.2 + obj_game.wave * 0.05;
             shots -= 1;
-            fire_timer = 50;
+            fire_timer = max(28, 50 - obj_game.wave * 2);
             if (shots <= 0) can_shoot = false;
         }
     }

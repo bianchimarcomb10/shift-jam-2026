@@ -38,8 +38,8 @@ spawn_formation = function(_form, _n, _cx, _amp) {
             m.base_y = (m.side == 1) ? 250 : 340;
         }
         // dall'ondata 2 una falena su due spara; dall'ondata 8 spara due colpi
-        m.can_shoot = (wave >= 2 && irandom(1) == 0);
-        m.shots = (wave >= 8) ? 2 : 1;
+        m.can_shoot = (wave >= 2 && (wave >= 10 || irandom(1) == 0));   // dalla 10 sparano tutte
+        m.shots = 1 + wave div 5;   // 1, poi 2 dalla 5, 3 dalla 10, 4 dalla 15
     }
 }
 
@@ -66,6 +66,18 @@ spawn_stalkers = function(_k, _wait) {
 /// Serve all'anteprima, che deve mostrare la stessa ondata che poi arriva.
 wave_contents = function() {
     var kind = (wave - 1) mod 7;
+    var extra = reinforcements();
+    var base = wave_base(kind);
+    return [base[0] + extra[0], base[1], base[2] + extra[1]];
+}
+
+/// Dalla 9 ogni ondata porta rinforzi: un serpente in piu' e, dalla 12, altri Inseguitori.
+reinforcements = function() {
+    if (wave < 9) return [0, 0];
+    return [4 + (wave - 9), (wave >= 12) ? 1 + (wave - 12) div 2 : 0];
+}
+
+wave_base = function(kind) {
     switch (kind) {
         case 0: return [8 + wave div 2, 0, 0];
         case 1: return [10 + wave div 2, 2 + wave div 5, 0];
@@ -83,7 +95,8 @@ wave_contents = function() {
 spawn_preview = function() {
     var c = wave_contents();
     var p = instance_create_layer(random_range(100, room_width - 100), room_height + 30, "Instances", obj_preview);
-    var rows = [[spr_enemy_spear, c[1]], [spr_enemy_moth, min(c[0], 12)], [spr_enemy_stalker, c[2]]];
+    p.spd = 3.5;
+    var rows = [[spr_enemy_spear, c[1]], [spr_enemy_moth, min(c[0], 24)], [spr_enemy_stalker, c[2]]];
     var ry = 0;
     for (var r = 0; r < 3; r++) {
         var spr = rows[r][0];
@@ -91,9 +104,16 @@ spawn_preview = function() {
         for (var i = 0; i < cnt; i++) {
             var line = i div 6;
             var in_row = min(6, cnt - line * 6);
-            array_push(p.items, [spr, ((i mod 6) - (in_row - 1) / 2) * 16, ry + line * 14, 0.45]);
+            array_push(p.items, [spr, ((i mod 6) - (in_row - 1) / 2) * 22, ry + line * 20, 0.6, 1]);
         }
-        if (cnt > 0) ry += ceil(cnt / 6) * 14 + 6;
+        if (cnt > 0) ry += ceil(cnt / 6) * 20 + 8;
+    }
+    // dietro l'ondata, l'orda: tantissime sagome piu' piccole e lontane, che cresce a ogni ondata.
+    // Non arrivano tutte: dicono soltanto che non finiranno mai.
+    var horde = 20 + wave * 4;
+    var sprs = [spr_enemy_moth, spr_enemy_moth, spr_enemy_moth, spr_enemy_stalker, spr_enemy_spear];
+    for (var h = 0; h < horde; h++) {
+        array_push(p.items, [sprs[irandom(4)], random_range(-p.x + 10, room_width - p.x - 10), random_range(-40, ry + 120 + wave * 6), random_range(0.25, 0.4), 0]);
     }
 }
 
@@ -101,6 +121,9 @@ spawn_preview = function() {
 spawn_wave = function() {
     var kind = (wave - 1) mod 7;
     var w = room_width;
+    var extra = reinforcements();
+    if (extra[0] > 0) spawn_formation(1, extra[0], (irandom(1) == 0) ? w * 0.2 : w * 0.8, 50);
+    if (extra[1] > 0) spawn_stalkers(extra[1], 360);
     switch (kind) {
         case 0: // serpente, da solo
             spawn_formation(1, 8 + wave div 2, random_range(120, w - 120), 100);

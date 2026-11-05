@@ -25,7 +25,7 @@ if (wave >= boss_wave) {
         if (!boss_preview) {
             boss_preview = true;
             var bp = instance_create_layer(room_width / 2, room_height + 120, "Instances", obj_preview);
-            bp.items = [[spr_boss_mothership, 0, 0, 0.8]];
+            bp.items = [[spr_boss_mothership, 0, 0, 0.9, 1]];
             bp.spd = 2.5;
             boss_timer = 330;
         } else {
@@ -46,5 +46,5 @@ spawn_timer -= 1;
 if (spawn_timer <= 0) {
     wave += 1;
     spawn_preview();
-    preview_timer = 170;   // il tempo che le sagome impiegano ad attraversare lo schermo
+    preview_timer = 210;   // il tempo che le sagome impiegano ad attraversare lo schermo
 }

@@ -1,2 +1,3 @@
 y -= spd;
-if (y < -220) instance_destroy();
+t += 1;
+if (y < -500) instance_destroy();
