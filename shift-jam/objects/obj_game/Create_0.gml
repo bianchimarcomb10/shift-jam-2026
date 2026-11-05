@@ -12,6 +12,7 @@ finale = false;         // true durante il finale "Silenzio"
 preview_timer = 0;      // > 0 mentre le sagome dell'ondata salgono sullo sfondo
 boss_preview = false;   // la sagoma della nave madre e' gia' passata?
 boss_timer = 0;
+walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 draw_set_font(fnt_main);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
 if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - 80, "Instances", obj_player);
@@ -122,6 +123,10 @@ spawn_wave = function() {
     var kind = (wave - 1) mod 7;
     var w = room_width;
     var extra = reinforcements();
+    // dall'ondata 3 un muro a meta' ondata, dalla 8 due, dalla 13 tre
+    if (wave >= 3) array_push(walls, 200);
+    if (wave >= 8) array_push(walls, 330);
+    if (wave >= 13) array_push(walls, 120);
     if (extra[0] > 0) spawn_formation(1, extra[0], (irandom(1) == 0) ? w * 0.2 : w * 0.8, 50);
     if (extra[1] > 0) spawn_stalkers(extra[1], 360);
     switch (kind) {
@@ -152,4 +157,16 @@ spawn_wave = function() {
             spawn_formation(2, 7 + wave div 6, w / 2, 0);
             break;
     }
+}
+
+/// MURO: una fila di colpi da un bordo all'altro, senza varchi.
+/// La navicella non puo' schivarlo: bisogna diventare mecha e tagliarlo.
+spawn_wall = function() {
+    var gap = 12;
+    for (var wx = 6; wx < room_width; wx += gap) {
+        var b = instance_create_layer(wx, -8, "Instances", obj_ebullet);
+        b.dir = 270;
+        b.spd = 1.5 + min(wave, 16) * 0.03;
+    }
+    audio_play_sound(snd_menu, 6, false);   // segnale provvisorio: arriva un muro
 }

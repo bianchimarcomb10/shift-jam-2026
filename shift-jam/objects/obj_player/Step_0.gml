@@ -20,9 +20,9 @@ if (transform_timer > 0) {
     transform_timer -= 1;
     if (transform_timer == 0) form = 1 - form;
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
-    transform_timer = 15;   // 15 frame = 0,25 s
+    transform_timer = 6;    // 6 frame = 0,1 s: cambiare forma deve essere un riflesso, non una scelta lenta
     audio_play_sound(snd_shift, 5, false);
-    switch_cooldown = 24;   // 24 frame = 0,4 s
+    switch_cooldown = 12;   // 12 frame = 0,2 s
 }
 
 // --- Attacco (Z o J, tenendo premuto) ---
@@ -48,10 +48,16 @@ if (attack && transform_timer == 0) {
         }
         if (killed) audio_play_sound(snd_enemy_die, 3, false);
         // PARATA: la falciata annulla tutti i proiettili nemici nel suo raggio, con una scintilla
+        // e i colpi parati tornano indietro contro i nemici (al massimo 12 per falciata)
         var parried = 0;
         with (obj_ebullet) {
             if (point_distance(x, y, other.x, other.y) <= other.parry_radius) {
                 array_push(other.sparks, [x, y, 12]);
+                if (parried < 12) {
+                    var r = instance_create_layer(x, y, "Instances", obj_shot);
+                    var tgt = instance_nearest(x, y, obj_enemy);
+                    r.vx = (tgt != noone) ? clamp((tgt.x - x) / 25, -5, 5) : 0;
+                }
                 parried += 1;
                 instance_destroy();
             }
