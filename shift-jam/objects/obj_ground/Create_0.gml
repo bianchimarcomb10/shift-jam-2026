@@ -24,6 +24,21 @@ depth = 100;        // le rovine si disegnano sotto a tutto il resto
 // il cielo e le rovine provvisorie non servono piu': questo oggetto disegna solo l'esplosione, sopra a tutto.
 ground_layer = layer_get_id("Ground");
 if (ground_layer != -1) depth = -10;
+// Il terreno puo' essere piu' alto dello schermo: si vede la parte in fondo, e al decollo
+// scendendo mostra quella sopra, senza mai finire. Se il livello e' un Background con uno sprite,
+// lo allineo da solo in modo che il bordo inferiore dello sprite coincida col fondo della room.
+ground_base = 0;
+if (ground_layer != -1) {
+    ground_base = layer_get_y(ground_layer);
+    var bg = layer_background_get_id(ground_layer);
+    if (bg != -1) {
+        var bspr = layer_background_get_sprite(bg);
+        if (bspr != -1) {
+            ground_base = room_height - sprite_get_height(bspr);
+            layer_y(ground_layer, ground_base);
+        }
+    }
+}
 
 // rovine provvisorie: rettangoli scuri in posizioni casuali
 ruins = [];
