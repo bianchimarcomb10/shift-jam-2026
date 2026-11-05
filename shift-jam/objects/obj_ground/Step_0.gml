@@ -92,7 +92,7 @@ case 3:
     // il terreno scende sempre piu' in fretta: si capisce che la navicella sta salendo
     if (flash > 0) flash = max(0, flash - 1 / 50);   // il bianco svanisce in poco meno di un secondo
     scroll += min(6, 0.5 + scroll * 0.03);
-    if (ground_layer != -1) layer_y(ground_layer, scroll);
+    if (ground_layer != -1) layer_y(ground_layer, ground_base + scroll);
     // si resta finche' la frase di Dogen non e' svanita (6 secondi)
     if (t >= 360 && obj_mech_ground.y < -40) room_goto(rm_game);
     break;
