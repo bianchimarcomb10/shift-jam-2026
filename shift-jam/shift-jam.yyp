@@ -46,6 +46,7 @@
     {"id":{"name":"snd_scythe","path":"sounds/snd_scythe/snd_scythe.yy",},},
     {"id":{"name":"snd_shift","path":"sounds/snd_shift/snd_shift.yy",},},
     {"id":{"name":"snd_shot","path":"sounds/snd_shot/snd_shot.yy",},},
+    {"id":{"name":"spr_bg_space","path":"sprites/spr_bg_space/spr_bg_space.yy",},},
     {"id":{"name":"spr_boss_mothership","path":"sprites/spr_boss_mothership/spr_boss_mothership.yy",},},
     {"id":{"name":"spr_enemy_grunt","path":"sprites/spr_enemy_grunt/spr_enemy_grunt.yy",},},
     {"id":{"name":"spr_enemy_moth","path":"sprites/spr_enemy_moth/spr_enemy_moth.yy",},},
