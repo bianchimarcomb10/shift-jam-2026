@@ -8,6 +8,7 @@ if (fling) {
     if (x < -30 || x > room_width + 30 || y < -30 || y > room_height + 30) instance_destroy();
     exit;
 }
+anim += 6 + spd * 4;   // ritmo delle chele
 if (obj_ground.state > 1) exit;
 
 var m = obj_mech_ground;
