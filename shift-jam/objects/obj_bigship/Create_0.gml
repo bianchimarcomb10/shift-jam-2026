@@ -1,7 +1,7 @@
 /// NAVE ENORME (interludio tra l'ondata 8 e la 9): una corazzata Kla'ed attraversa lo schermo
 /// dall'alto in basso, lenta. Si possono spegnere le sue torrette, e si puo' anche ABBATTERE
 /// colpendo lo scafo al centro, ma e' tostissima. Se non ce la fai, passa comunque e se ne va.
-/// Superata la nave (torrette spente o nave abbattuta) c'e' il CHECKPOINT: se muori riparti da qui.
+/// Superata la nave (abbattuta, o uscita del tutto dallo schermo) c'e' il CHECKPOINT: se muori riparti da qui.
 /// Grafica: scafo = Battlecruiser, sbarre e rastrelliere = Torpedo Ship (pacchetto Kla'ed, CC0),
 /// tutto a grandezza vera e girato di 180 gradi: la prua guarda verso di te.
 depth = 50;        // sopra stelle e cielo, sotto nemici, colpi e navicella

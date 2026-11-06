@@ -47,7 +47,6 @@ if (hull_hp <= 0) {
 // passata meta' schermo, le torrette rimaste si spengono e la nave ti passa sopra, accelerando piano
 if (!retired && y > room_height * 0.45) {
     retired = true;
-    save_checkpoint();
     with (obj_turret) {
         if (ship == other.id) {
             array_push(other.inert, [bx, oy, rack]);
@@ -58,4 +57,8 @@ if (!retired && y > room_height * 0.45) {
 }
 if (retired) spd = min(spd + 0.01, 1.6);
 
-if (y > room_height + 140) instance_destroy();
+// CHECKPOINT: solo se la abbatti (sopra) o quando esce del tutto dallo schermo
+if (y > room_height + 140) {
+    save_checkpoint();
+    instance_destroy();
+}
