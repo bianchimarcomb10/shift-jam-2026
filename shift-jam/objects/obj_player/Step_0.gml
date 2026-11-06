@@ -41,6 +41,7 @@ if (attack && transform_timer == 0) {
         audio_play_sound(snd_scythe, 4, false, 0.5);
         var killed = false;
         with (obj_enemy) {
+            if (object_index == obj_turret && armored) continue;   // la corazza non si taglia: va colpita coi colpi parati
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
                 hp -= 3;
                 if (hp <= 0) { killed = true; instance_destroy(); }

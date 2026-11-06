@@ -165,6 +165,7 @@ spawn_stalkers = function(_k, _wait) {
 ///   ["spears", quante]                      Lance in fila in alto
 ///   ["stalkers", quante, attesa]            Inseguitori dai lati dopo "attesa" fotogrammi
 ///   ["wall", attesa]                        muro di colpi dopo "attesa" fotogrammi
+///   ["bigship"]                             la nave enorme con le torrette (un'ondata da sola)
 /// Per cambiare il gioco basta cambiare questa tabella.
 waves = [
     /* 1  */ [["snake", 8, 180, 100]],
@@ -175,14 +176,15 @@ waves = [
     /* 6  */ [["square", 8, 180], ["stalkers", 1, 300], ["wall", 240]],
     /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
-    /* 9  */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
-    /* 10 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["wall", 200]],                  // due quadrati a specchio, separati
-    /* 11 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
-    /* 12 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
-    /* 13 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
-    /* 14 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
-    /* 15 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
-    /* 16 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
+    /* 9  */ [["bigship"]],   // INTERLUDIO: la nave enorme passa; si spengono le torrette (obj_bigship)
+    /* 10 */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
+    /* 11 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["wall", 200]],                  // due quadrati a specchio, separati
+    /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
+    /* 13 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
+    /* 14 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
+    /* 15 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
+    /* 16 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
+    /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
 
@@ -194,7 +196,7 @@ wave_contents = function() {
         var k = cmds[i][0];
         if (k == "spears") res[1] += cmds[i][1];
         else if (k == "stalkers") res[2] += cmds[i][1];
-        else if (k != "wall") res[0] += cmds[i][1];
+        else if (k != "wall" && k != "bigship") res[0] += cmds[i][1];
     }
     return res;
 }
@@ -216,6 +218,11 @@ spawn_preview = function() {
             array_push(p.items, [spr, ((i mod 6) - (in_row - 1) / 2) * 22, ry + line * 20, 0.6, 1]);
         }
         if (cnt > 0) ry += ceil(cnt / 6) * 20 + 8;
+    }
+    // l'interludio: davanti a tutto sale la sagoma dello scafo della nave enorme
+    var cmds_p = waves[wave - 1];
+    for (var ci = 0; ci < array_length(cmds_p); ci++) {
+        if (cmds_p[ci][0] == "bigship") { array_push(p.items, [spr_bigship_hull, 0, -60, 1, 1]); ry = max(ry, 40); }
     }
     // dietro l'ondata, l'orda: tantissime sagome piu' piccole e lontane, che cresce a ogni ondata.
     // Non arrivano tutte: dicono soltanto che non finiranno mai.
@@ -241,6 +248,7 @@ spawn_wave = function() {
             case "spears":   spawn_spears(c[1]); break;
             case "stalkers": spawn_stalkers(c[1], c[2]); break;
             case "wall":     array_push(walls, c[1]); break;
+            case "bigship":  instance_create_layer(room_width / 2, -90, "Instances", obj_bigship); break;
         }
     }
 }

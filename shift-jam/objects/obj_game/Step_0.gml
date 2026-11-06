@@ -49,6 +49,8 @@ if (wave >= boss_wave) {
 // la nuova ondata parte solo quando la precedente e' quasi finita (al massimo 2 nemici rimasti),
 // e mai finche' ci sono Lance in alto: altrimenti la formazione dopo ci passerebbe in mezzo
 if (instance_number(obj_enemy) > 2 || instance_exists(obj_spear)) spawn_timer = max(spawn_timer, 45);
+// e mai finche' la nave enorme non ha spento le sue torrette (poi l'ondata dopo le arriva sopra mentre se ne va)
+with (obj_bigship) if (!retired) other.spawn_timer = max(other.spawn_timer, 45);
 spawn_timer -= 1;
 if (spawn_timer <= 0) {
     wave += 1;
