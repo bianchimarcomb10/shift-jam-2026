@@ -71,6 +71,38 @@ global.draw_parts = function(spr, parts, px, py, rot, sc) {
     }
 }
 
+/// Disegna il fotogramma k di una striscia (fotogrammi quadrati, larghi quanto la striscia e' alta),
+/// centrato in (px, py), girato di rot e ingrandito di sc.
+global.draw_frame = function(spr, k, px, py, rot, sc) {
+    var fw = sprite_get_height(spr);
+    var hw = fw / 2 * sc;
+    // draw_sprite_general ruota attorno all'angolo in alto a sinistra: lo ricavo dal centro
+    var dd = point_direction(0, 0, -hw, -hw) + rot;
+    var dl = point_distance(0, 0, hw, hw);
+    draw_sprite_general(spr, 0, k * fw, 0, fw, fw,
+        px + lengthdir_x(dl, dd), py + lengthdir_y(dl, dd), sc, sc, rot,
+        c_white, c_white, c_white, c_white, draw_get_alpha());
+}
+
+/// Esplosione di una navetta nemica: la sua animazione "Destruction" del pacchetto Kla'ed (ricolorata
+/// verde acido), girata e grande come la navetta, cosi' le crepe si aprono proprio sopra lo scafo.
+/// Si chiama SOLO quando un nemico viene ucciso (non quando esce dallo schermo).
+global.enemy_boom = function(e) {
+    var s = -1, first = 0, r = 0;
+    switch (e.object_index) {
+        case obj_moth:    s = spr_boom_fighter; first = 1; r = e.dir - 90;  break;   // Falena = Fighter
+        case obj_spear:   s = spr_boom_frigate; first = 2; r = 180;         break;   // Lancia = Frigate
+        case obj_stalker: s = spr_boom_support; first = 2; r = e.face - 90; break;   // Inseguitore = Support ship
+    }
+    if (s == -1) return;   // torrette e Custode hanno gia' la loro fine
+    var b = instance_create_layer(e.x, e.y, "Instances", obj_boom);
+    b.spr = s;
+    b.f = first;           // si parte dalle prime crepe, non dalla nave intera
+    b.last = sprite_get_width(s) / sprite_get_height(s);
+    b.sc = 1;
+    b.rot = r;
+}
+
 /// SUTRA DEL CONTINUE: a ogni ripartenza dopo un game over compare a schermo uno di questi testi.
 /// Sono 8 (circa 5 game over di un giocatore medio + 3 di scorta). Escono in ordine casuale
 /// ma senza ripetersi finche' non sono usciti tutti. Traduzioni nostre, brevi, dall'originale.

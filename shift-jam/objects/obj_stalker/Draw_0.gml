@@ -1,5 +1,5 @@
 // guarda sempre verso il giocatore
-var face = 270;
+face = 270;   // variabile dell'istanza: serve anche all'esplosione
 if (leaving) face = ldir;
 else if (instance_exists(obj_player)) face = point_direction(x, y, obj_player.x, obj_player.y);
 // Inseguitore a pezzi: corpo, due bracci a tenaglia e due piedi.
