@@ -8,6 +8,8 @@ sweep_anim = 0;         // per quanti frame si disegna la falciata
 invuln = 0;             // invulnerabilita' dopo un colpo
 parry_radius = 72;      // la falciata annulla i proiettili un po' oltre la lama
 sparks = [];            // scintille dei proiettili annullati: [x, y, vita]
+tilt = 0;               // inclinazione della navicella in virata
+trail = [];             // scintille della scia del motore: [x, y, vita]
 
 // Valori del GDD (sezione 4), da tarare provando
 ship_speed = 4;         // px per frame

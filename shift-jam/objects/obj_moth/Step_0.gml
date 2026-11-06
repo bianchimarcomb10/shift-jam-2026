@@ -23,16 +23,28 @@ if (form > 0) {
             }
             break;
 
-        case 3: // ANELLO: un cerchio che ruota e respira mentre scende
-            // amp = verso di rotazione (1 o -1); raggio massimo 54 px: due anelli a 180 px di distanza non si toccano
-            var a = idx * 360 / n + tt * 1.2 * sign(amp);
-            var r = 44 + 10 * dsin(tt * 2.5);
-            x = cx + lengthdir_x(r, a);
-            y = -70 + tt * 0.9 + lengthdir_y(r, a);
-            // dall'ondata 6, a meta' discesa l'anello si apre in una raffica a raggiera
+        case 3: // QUADRATO: un blocco rigido di falene (3x3 senza il centro) che scende dritto, lento
+            // amp = verso (1 o -1): il blocco scivola appena di lato, due quadrati scivolano a specchio
+            var gx, gy;
+            if (n == 8) {
+                // le 8 caselle del bordo di un quadrato 3x3, in giro
+                var cells = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
+                gx = cells[idx][0];
+                gy = cells[idx][1];
+            } else {
+                // altri numeri: griglia piena, riga per riga
+                var cols = ceil(sqrt(n));
+                gx = (idx mod cols) - (cols - 1) / 2;
+                gy = (idx div cols) - (ceil(n / cols) - 1) / 2;
+            }
+            var bx = cx + sign(amp) * 12 * dsin(tt * 0.8);   // il centro del blocco
+            var by = -70 + tt * 0.9;
+            x = bx + gx * 26;
+            y = by + gy * 26;
+            // dall'ondata 4, a meta' discesa il quadrato si apre in una raffica: ogni falena spara verso l'esterno
             if (instance_exists(obj_game) && ((tt == 260 && obj_game.wave >= 4) || (tt == 340 && obj_game.wave >= 10))) {
                 var rb = instance_create_layer(x, y, "Instances", obj_ebullet);
-                rb.dir = a;
+                rb.dir = point_direction(bx, by, x, y);
                 rb.spd = 1.8;
             }
             break;
@@ -49,7 +61,8 @@ if (form > 0) {
             y = base_y + 26 * dsin(tt * 3);
             break;
     }
-    if (x != px || y != py) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
+    if (form == 3) dir = 270;   // nel quadrato guardano tutte in basso, come soldati in fila
+    else if (x != px || y != py) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
 
     // colpo mirato (solo per alcune, e solo quando sono ben dentro lo schermo)
     if (can_shoot && y > 20 && y < room_height * 0.55 && instance_exists(obj_player)) {

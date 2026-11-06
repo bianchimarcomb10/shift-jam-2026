@@ -20,13 +20,22 @@ var parts = [
 // m = 1 mecha; dopo SHIFT scende a 0 mentre si apre in navicella
 var m = 1 - unfold;
 
+// vita: il mantello ondeggia e si apre nella falciata, le gambe fanno il passo, la testa respira
+var moving = (abs(x - xprevious) + abs(y - yprevious) > 0.1);
+var walk = moving ? dsin(current_time * 0.9) : 0;
+var bob = dsin(current_time * 0.25);
+var flare = (sweep_anim > 0) ? sweep_anim * 3 : 0;
+var sway = 4 * dsin(current_time * 0.2);
+var ex_ang = [sway - flare, flare - sway, 0, 0, 0, 0];
+var ex_dy = [bob * 0.5, bob * 0.5, walk * 1.5, -walk * 1.5, bob * 0.5, bob];
+
 if (unfold < 1) {
     for (var i = 0; i < array_length(parts); i++) {
         var p = parts[i];
         var hw = p[2] / 2, hh = p[3] / 2;
         var pcx = (x + ox) + p[0] + hw - 24 + p[4] * m;   // centro del pezzo
-        var pcy = (y + oy) + p[1] + hh - 24 + p[5] * m;
-        var ang = p[6] * m;
+        var pcy = (y + oy) + p[1] + hh - 24 + (p[5] + ex_dy[i]) * m;
+        var ang = (p[6] + ex_ang[i]) * m;
         // draw_sprite_general ruota attorno all'angolo in alto a sinistra: lo calcoliamo dal centro
         var dd = point_direction(0, 0, -hw, -hh) + ang;
         var dl = point_distance(0, 0, hw, hh);
@@ -39,7 +48,7 @@ if (unfold < 1) {
 if (!transformed) {
     // la falce, tenuta a destra (solo da fermo: durante la falciata c'e' la lama che ruota)
     if (sweep_anim == 0) {
-        var sx = (x + ox) + 13;
+        var sx = (x + ox) + 13 + walk;   // la falce dondola col passo
         draw_set_colour(c_black);
         draw_line_width(sx, (y + oy) + 10, sx, (y + oy) - 16, 3);
         draw_set_colour(c_ltgray);
