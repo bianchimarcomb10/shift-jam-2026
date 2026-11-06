@@ -16,6 +16,8 @@ Game by Marco Bianchi (Chelios).
 
 The ground of the opening scene (`spr_bg_ground`) is drawn by `tools/mkground.py` (Python + Pillow + NumPy), with no third-party assets.
 
+The player's ship and mecha (the "pilgrim") are drawn at runtime by `scripts/scr_pilgrim` (GML polygons and lines), with no third-party assets. The Void - Main Ship sprites stay in the project but are no longer drawn.
+
 ## Quotes
 
 - "Your drill is the drill that will pierce the Heavens!" and "Who the hell do you think I am?!": homage to *Tengen Toppa Gurren Lagann* (Gainax, 2007).

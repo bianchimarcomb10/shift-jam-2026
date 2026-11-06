@@ -9,6 +9,6 @@ draw_rectangle(20, 44, 20 + w * clamp(hp_frac, 0, 1), 48, false);
 if (hint > 0 && transition == 0) {
     draw_set_halign(fa_center);
     draw_set_colour(make_colour_rgb(220, 180, 80));
-    draw_text(room_width / 2, room_height - 60, "GOLDEN PALMS: DEFLECT THEM WITH Z");
+    draw_text(room_width / 2, room_height - 60, "GOLDEN BEADS: DEFLECT THEM WITH Z");
     draw_set_halign(fa_left);
 }

@@ -8,6 +8,8 @@ if (phase == 1 && hp <= hp_p2) {
     audio_play_sound(snd_explosion_big, 10, false);   // il guscio salta via
     hp = hp_p2;
     radius = 28;
+    hp_prev = hp;
+    koi_reset();   // le carpe appaiono gia' intere attorno alla perla
     transition = 120;
     attack = 0;
     attack_timer = 120;
@@ -66,41 +68,108 @@ if (phase == 1) {
         attack_timer = 80;
     }
 } else {
-    // ===== FASE 2: IL CUSTODE =====
-    bead_angle += 0.6;
+    // ===== FASE 2: I KOI DELL'ENSŌ =====
+    bead_angle += 0.4;
+    enso_rot += 1.2;                          // l'ensō gira
     x = room_width / 2 + sin(t / 80) * 70;
-    var angry = (hp < hp_p2 / 2);   // sotto meta' vita attacca piu' spesso e piu' forte
-    // le mani si aprono e si chiudono mentre caricano
-    hands_gap = (attack == 1 || attack == 3) ? clamp(attack_timer / 3, 0, 14) : 14;
+    var angry = (hp < hp_p2 / 2);             // sotto meta' vita: piu' veloce e piu' fitto
+    if (hp < hp_prev) pearl_flash = 4;        // colpito: la perla lampeggia
+    hp_prev = hp;
+    if (pearl_flash > 0) pearl_flash -= 1;
+    for (var j = 0; j < 108; j++) if (bead_gone[j] > 0) bead_gone[j] -= 1;   // i grani lanciati ricrescono
+
+    // dove mira l'affondo: il giocatore (o il fondo dello schermo se non c'e')
+    var ptx = room_width / 2, pty = room_height - 80;
+    if (instance_exists(obj_player)) { ptx = obj_player.x; pty = obj_player.y; }
+
+    // --- le carpe nuotano in cerchio; la carpa d'oro (la seconda) a volte si lancia ---
+    if (lunge_t > 0) lunge_t += 1;
+    for (var k = 0; k < 2; k++) {
+        koi_ang[k] += angry ? 1.9 : 1.4;
+        var hx = x + lengthdir_x(koi_orb, koi_ang[k]);
+        var hy = y + lengthdir_y(koi_orb * 0.92, koi_ang[k]);
+        if (k == 1 && lunge_t > 0) {
+            if (lunge_t == 30) {
+                // fine dell'avviso: prende la mira su dove sei adesso
+                l_x0 = hx; l_y0 = hy;
+                l_tx = ptx; l_ty = min(pty, room_height - 40);
+            }
+            if (lunge_t > 30 && lunge_t <= 70) {
+                // andata: scende verso il punto mirato
+                var u = (lunge_t - 30) / 40; u = u * u * (3 - 2 * u);
+                var cx = l_x0, cy = l_y0 + 100;
+                hx = sqr(1 - u) * l_x0 + 2 * (1 - u) * u * cx + u * u * l_tx;
+                hy = sqr(1 - u) * l_y0 + 2 * (1 - u) * u * cy + u * u * l_ty;
+            } else if (lunge_t > 70) {
+                // ritorno: curva larga e rientra nel giro
+                var u2 = (lunge_t - 70) / 50; u2 = u2 * u2 * (3 - 2 * u2);
+                var cx2 = lerp(l_tx, hx, 0.5) + ((l_tx < x) ? -60 : 60), cy2 = l_ty - 40;
+                hx = sqr(1 - u2) * l_tx + 2 * (1 - u2) * u2 * cx2 + u2 * u2 * hx;
+                hy = sqr(1 - u2) * l_ty + 2 * (1 - u2) * u2 * cy2 + u2 * u2 * hy;
+            }
+        }
+        array_push(koi_hx[k], hx);
+        array_push(koi_hy[k], hy);
+        if (array_length(koi_hx[k]) > 100) { array_delete(koi_hx[k], 0, 1); array_delete(koi_hy[k], 0, 1); }
+        koi_sample(k);
+    }
+    if (lunge_t >= 120) lunge_t = 0;
+
+    // --- SPIRALE: le carpe perdono squame (colpi magenta normali, si parano) ---
+    if (spiral_t > 0) {
+        spiral_t -= 1;
+        if (spiral_t mod (angry ? 4 : 6) == 0) {
+            for (var k2 = 0; k2 < 2; k2++) {
+                var sx = koi_bx[k2][6], sy = koi_by[k2][6];
+                var b = instance_create_layer(sx, sy, "Instances", obj_ebullet);
+                b.dir = point_direction(x, y, sx, sy) - 25;   // verso fuori, un po' di traverso: si avvolge
+                b.spd = 1.8;
+            }
+        }
+    }
+
+    // --- GRANI DELLA MALA: brillano d'oro, poi partono verso di te. Si parano e tornano contro il boss ---
+    if (bead_t > 0) {
+        bead_t -= 1;
+        if (bead_t == 0) {
+            for (var q = 0; q < array_length(bead_sel); q++) {
+                var bj = bead_sel[q];
+                var ba = bead_angle + bj * (360 / 108);
+                var p = instance_create_layer(x + lengthdir_x(70, ba), y + lengthdir_y(70, ba), "Instances", obj_palm);
+                p.bead = true;
+                p.radius = 6;
+                p.spd = 1.9;
+                p.turn = 1.0;
+                p.dmg = 5;       // respinto toglie meno di un palmo...
+                p.stn = 12;      // ...e stordisce poco, ma ne arrivano tanti
+                p.dir = ba;      // parte verso fuori, poi ti insegue piano
+                bead_gone[bj] = 300;
+            }
+            audio_play_sound(snd_shift, 6, false, 0.4);
+        }
+    }
 
     attack_timer -= 1;
     if (attack_timer <= 0) {
+        var next_timer = angry ? 70 : 100;
         if (attack == 0) {
-            // MALA: anello di proiettili che partono dai grani
-            var n = angry ? 27 : 18;
-            for (var i3 = 0; i3 < n; i3++) {
-                var a = bead_angle + i3 * (360 / n);
-                var b3 = instance_create_layer(x + lengthdir_x(70, a), y + lengthdir_y(70, a), "Instances", obj_ebullet);
-                b3.dir = a;
-                b3.spd = 1.6;
-            }
+            spiral_t = 72;
         } else if (attack == 2) {
-            // ventaglio mirato
-            if (instance_exists(obj_player)) {
-                var base2 = point_direction(x, y + 42, obj_player.x, obj_player.y);
-                var m = angry ? 3 : 2;
-                for (var k3 = -m; k3 <= m; k3++) {
-                    var b4 = instance_create_layer(x, y + 42, "Instances", obj_ebullet);
-                    b4.dir = base2 + k3 * 12;
-                    b4.spd = 3;
-                }
-            }
+            lunge_t = 1;          // 30 fotogrammi di avviso d'oro, poi l'affondo
+            next_timer = 135;     // aspetta che la carpa sia tornata
         } else {
-            // MANI: palmi d'oro. Non si distruggono: si respingono con la falciata del mecha
-            instance_create_layer(x - 14, y + 44, "Instances", obj_palm);
-            if (angry) instance_create_layer(x + 14, y + 44, "Instances", obj_palm);
+            // sceglie i grani dalla parte del giocatore, uno ogni tre
+            var n = angry ? 7 : 5;
+            var bstep = 360 / 108;
+            var j0 = round(angle_difference(point_direction(x, y, ptx, pty), bead_angle) / bstep);
+            bead_sel = [];
+            for (var q2 = 0; q2 < n; q2++) {
+                var jj = ((j0 + (q2 - (n - 1) / 2) * 3) mod 108 + 108) mod 108;
+                if (bead_gone[jj] == 0) array_push(bead_sel, jj);
+            }
+            bead_t = 30;
         }
         attack = (attack + 1) mod 4;
-        attack_timer = angry ? 60 : 85;
+        attack_timer = next_timer;
     }
 }

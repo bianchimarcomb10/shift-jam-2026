@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_pilgrim",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_pilgrim",
+  "parent":{
+    "name":"shift-jam",
+    "path":"shift-jam.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

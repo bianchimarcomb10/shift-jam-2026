@@ -14,6 +14,7 @@ if (fire_cooldown > 0) fire_cooldown -= 1;
 if (sweep_cooldown > 0) sweep_cooldown -= 1;
 if (sweep_anim > 0) sweep_anim -= 1;
 if (invuln > 0) invuln -= 1;
+if (shift_flash > 0) shift_flash -= 1;
 
 // --- Trasformazione: 0,25 s in cui non si attacca ma si puo' essere colpiti ---
 if (transform_timer > 0) {
@@ -25,6 +26,7 @@ if (transform_timer > 0) {
         instance_create_layer(x + 10 * mech_scale, y - 2 * mech_scale, "Instances", obj_drill_shot);
         drill_charge = 0;
     }
+    shift_flash = 12;       // l'ensō azzurro del cambio (lo disegna draw_pilgrim)
     transform_timer = 6;    // 6 frame = 0,1 s: cambiare forma deve essere un riflesso, non una scelta lenta
     audio_play_sound(snd_shift, 5, false, 0.5);
     switch_cooldown = 12;   // 12 frame = 0,2 s
@@ -113,6 +115,10 @@ if (invuln == 0) {
     with (obj_bigship) {
         // la NAVE ENORME e' fisica: scafo e torrette spente fanno male se ci vai addosso (le ali no)
         if (touches(other.x, other.y, hr)) hit = true;
+    }
+    with (obj_boss) {
+        // i KOI sono fisici: fanno male se ci vai addosso, e soprattutto nell'affondo della carpa d'oro
+        if (koi_touch(other.x, other.y, hr)) hit = true;
     }
     with (obj_enemy) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
