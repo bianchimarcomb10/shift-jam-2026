@@ -13,9 +13,7 @@ if (t < 100) {
 
 // la navicella rimpicciolisce finche' resta un punto di luce
 if (scale > 0.1) {
-    draw_sprite_ext(spr_player_flame, (current_time div 80) mod 4, ship_x, ship_y, scale, scale, 0, c_white, 1);
-    draw_sprite_ext(spr_player_engine, 0, ship_x, ship_y, scale, scale, 0, c_white, 1);
-    draw_sprite_ext(spr_player_ship, 0, ship_x, ship_y, scale, scale, 0, c_white, 1);
+    draw_pilgrim(ship_x, ship_y, 0, 0, 0, 56, 0, 1.2, true, 1, scale);   // il pellegrino (scr_pilgrim)
 } else {
     draw_set_colour(c_white);
     draw_point(ship_x, ship_y);

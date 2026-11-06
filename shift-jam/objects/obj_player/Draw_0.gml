@@ -1,4 +1,5 @@
-/// Navicella e mecha: il mecha e' la stessa navicella ripiegata.
+/// Navicella e mecha: il PELLEGRINO (scr_pilgrim). Stessi pezzi nelle due forme:
+/// cappello -> muso, mantello -> ali, gambe -> motori, lama della falce -> mezzaluna dietro i motori.
 // scintille delle parate: una crocetta bianca che si allarga e svanisce
 draw_set_colour(c_white);
 for (var k = 0; k < array_length(sparks); k++) {
@@ -11,18 +12,6 @@ for (var k = 0; k < array_length(sparks); k++) {
 draw_set_alpha(1);
 
 if (invuln > 0 && (invuln div 4) mod 2 == 0) exit;   // lampeggia dopo un colpo
-
-// --- Il mecha e' la navicella ripiegata: gli stessi pezzi, rimontati ---
-// ogni pezzo: [sinistra, alto, larghezza, altezza dentro lo sprite, spostamento x, spostamento y, rotazione]
-// m = 0 navicella, m = 1 mecha: i valori intermedi sono la trasformazione
-var parts = [
-    [9, 19, 11, 18,   2, 0,  60],   // ala sinistra -> braccio/mantello
-    [29, 19, 11, 18, -2, 0, -60],   // ala destra -> braccio/mantello
-    [19, 31, 5, 8,   -2, 1,   0],   // coda sinistra -> gamba
-    [24, 31, 5, 8,    2, 1,   0],   // coda destra -> gamba
-    [19, 19, 10, 12,  0, 0,   0],   // scafo -> busto
-    [19, 10, 10, 9,   0, 3,   0]    // abitacolo -> testa
-];
 
 var m = form;
 if (transform_timer > 0) {
@@ -58,41 +47,16 @@ for (var q = array_length(trail) - 1; q >= 0; q--) {
 gpu_set_blendmode(bm_normal);
 draw_set_alpha(1);
 
+var flash = shift_flash / 12;   // l'ensō azzurro del cambio
 if (form == 0 && transform_timer == 0) {
     // navicella viva: si inclina, galleggia, la fiamma si allunga quando sale
-    var fl = 1 + clamp(-mvy, -3, 4) * 0.12 + 0.08 * dsin(current_time * 2);
+    var fl = 1 + clamp(-mvy, -3, 4) * 0.12;
     var by = bob * 0.6;
-    var bx0 = x + by * rs, by0 = y + by * rc;   // centro della nave, spostato dal respiro lungo il suo asse
-    // la fiamma si allunga partendo dall'ugello (7 px sotto il centro), cosi' resta attaccata al motore
-    var fy = 7 * (1 - fl);
-    draw_sprite_ext(spr_player_flame, (current_time div 80) mod 4, bx0 + fy * rs, by0 + fy * rc, sq, fl, -tilt, c_white, 1);
-    draw_sprite_ext(spr_player_engine, 0, bx0, by0, sq, 1, -tilt, c_white, 1);
-    draw_sprite_ext(spr_player_ship, 0, bx0, by0, sq, 1, -tilt, c_white, 1);
+    draw_pilgrim(x + by * rs, y + by * rc, 0, tilt, 0, sweep_radius, flash, mech_scale, true, fl);
 } else {
-    // mecha vivo: il mantello ondeggia e si apre nella falciata, tutto il corpo respira,
-    // e in virata si piega come la navicella
-    var flare = (sweep_anim > 0) ? sweep_anim * 3 : 0;
-    var sway = 4 * dsin(current_time * 0.2);
-    var ex_ang = [sway - flare, flare - sway, 0, 0, 0, 0];
-    var ex_dy = [bob * 0.5, bob * 0.5, bob * 0.5, bob * 0.5, bob * 0.5, bob];
-    var ms = 1 + (mech_scale - 1) * m;   // cresce mentre si ripiega: il mecha e' un po' piu' grosso
-    for (var i = 0; i < array_length(parts); i++) {
-        var p = parts[i];
-        var hw = p[2] / 2, hh = p[3] / 2;
-        // centro del pezzo, prima senza inclinazione...
-        var lx = (p[0] + hw - 24 + p[4] * m) * sq * ms;
-        var ly = (p[1] + hh - 24 + (p[5] + ex_dy[i]) * m) * ms;
-        // ...poi ruotato attorno al centro del mecha
-        var pcx = x + lx * rc + ly * rs;
-        var pcy = y - lx * rs + ly * rc;
-        var ang = (p[6] + ex_ang[i]) * m - tilt;
-        // draw_sprite_general ruota attorno all'angolo in alto a sinistra: lo calcoliamo dal centro
-        var dd = point_direction(0, 0, -hw * sq * ms, -hh * ms) + ang;
-        var dl = point_distance(0, 0, hw * sq * ms, hh * ms);
-        draw_sprite_general(spr_player_ship, 0, p[0], p[1], p[2], p[3],
-            pcx + lengthdir_x(dl, dd), pcy + lengthdir_y(dl, dd), sq * ms, ms, ang,
-            c_white, c_white, c_white, c_white, 1);
-    }
+    // mecha (o trasformazione in corso): il mantello ondeggia e si apre nella falciata,
+    // la falce gira attorno nella falciata; con la trivella in mano la falce non c'e'
+    draw_pilgrim(x, y, m, tilt, sweep_anim, sweep_radius, flash, mech_scale, !global.has_drill, 1);
 }
 
 // TRIVELLA: tre tacche sotto il giocatore = colpi rimandati di fila (la carica)
@@ -131,61 +95,5 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
         }
         draw_set_alpha(1);
         draw_set_colour(c_white);
-    }
-} else if (form == 1 && transform_timer == 0) {
-    // la falce, tenuta a destra (solo da fermo: durante la falciata c'e' la lama che ruota).
-    // Anche lei si inclina col mecha: ogni punto e' ruotato attorno al centro
-    if (sweep_anim == 0) {
-        var ms = mech_scale;
-        var fx = 13 * sq * ms;         // posizione dell'asta rispetto al centro
-        var fb = bob * 0.5;
-        var x1 = x + fx * rc + (10 + fb) * ms * rs,  y1 = y - fx * rs + (10 + fb) * ms * rc;    // fondo dell'asta
-        var x2 = x + fx * rc + (-16 + fb) * ms * rs, y2 = y - fx * rs + (-16 + fb) * ms * rc;   // cima dell'asta
-        draw_set_colour(c_black);
-        draw_line_width(x1, y1, x2, y2, 3);
-        draw_set_colour(make_colour_rgb(150, 170, 200));
-        draw_line(x1, y1, x2, y2);
-        // lama: mezzaluna AZZURRA piena e chiusa (azzurro = roba tua, come i colpi parati e la scia del motore).
-        // Bordo esterno ad arco; quello interno si avvicina e torna a toccarlo alle due punte.
-        var oxs = [], oys = [], ixs = [], iys = [];
-        var bcy = (-11 + fb) * ms;   // centro della curva della lama
-        for (var ba = 90; ba >= -30; ba -= 10) {
-            var ax = fx + lengthdir_x(11 * ms, ba), ay = bcy + lengthdir_y(6 * ms, ba);
-            var th = 1 - 0.5 * dsin((90 - ba) * 1.5);   // spessore: zero alle punte, massimo a meta'
-            var bx2 = fx + (ax - fx) * th, by2 = bcy + (ay - bcy) * th;
-            array_push(oxs, x + ax * rc + ay * rs);   array_push(oys, y - ax * rs + ay * rc);
-            array_push(ixs, x + bx2 * rc + by2 * rs); array_push(iys, y - bx2 * rs + by2 * rc);
-        }
-        var nb = array_length(oxs);
-        // alone che pulsa
-        gpu_set_blendmode(bm_add);
-        draw_set_alpha(0.4 + 0.15 * dsin(current_time * 0.3));
-        draw_set_colour(make_colour_rgb(40, 140, 255));
-        for (var k = 0; k < nb - 1; k++) draw_line_width(oxs[k], oys[k], oxs[k + 1], oys[k + 1], 6);
-        gpu_set_blendmode(bm_normal);
-        draw_set_alpha(1);
-        // corpo pieno
-        draw_set_colour(make_colour_rgb(70, 190, 255));
-        draw_primitive_begin(pr_trianglestrip);
-        for (var k = 0; k < nb; k++) {
-            draw_vertex(oxs[k], oys[k]);
-            draw_vertex(ixs[k], iys[k]);
-        }
-        draw_primitive_end();
-        // contorno chiaro, chiuso: arco esterno e arco interno si uniscono alle punte
-        draw_set_colour(make_colour_rgb(215, 250, 255));
-        for (var k = 0; k < nb - 1; k++) {
-            draw_line_width(oxs[k], oys[k], oxs[k + 1], oys[k + 1], 1.5);
-            draw_line_width(ixs[k], iys[k], ixs[k + 1], iys[k + 1], 1.5);
-        }
-    }
-    if (sweep_anim > 0) {
-        // la falciata: un cerchio che svanisce e una lama che ruota
-        draw_set_colour(make_colour_rgb(120, 235, 255));   // dello stesso azzurro della lama
-        draw_set_alpha(sweep_anim / 10);
-        draw_circle(x, y, sweep_radius, true);
-        var a = (10 - sweep_anim) * 36;
-        draw_line_width(x, y, x + lengthdir_x(sweep_radius, a), y + lengthdir_y(sweep_radius, a), 3);
-        draw_set_alpha(1);
     }
 }

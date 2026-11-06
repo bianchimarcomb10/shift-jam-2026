@@ -13,6 +13,7 @@ if (!variable_global_exists("has_drill")) global.has_drill = false;   // la impo
 drill_charge = 0;       // TRIVELLA: colpi rimandati di fila (3 = carica piena, si lancia passando a navicella)
 mech_scale = 1.2;       // il mecha e' un po' piu' grosso della navicella (la hitbox resta quella)
 trail = [];             // scintille della scia del motore: [x, y, vita]
+shift_flash = 0;        // > 0 dopo SHIFT: l'ensō azzurro del cambio
 
 // Valori del GDD (sezione 4), da tarare provando
 ship_speed = 4;         // px per frame
