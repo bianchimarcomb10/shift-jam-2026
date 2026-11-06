@@ -16,10 +16,77 @@ preview_timer = 0;      // > 0 mentre le sagome dell'ondata salgono sullo sfondo
 boss_preview = false;   // la sagoma della nave madre e' gia' passata?
 boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
+// TRIVELLA: poco prima del boss scende dal cielo; il mecha la prende e diventa la sua arma
+global.has_drill = false;   // si riprende ogni volta (anche ripartendo dal checkpoint del boss)
+drill_state = 0;        // 0 = non ancora scesa, 1 = sta scendendo / aspetta di essere presa, 2 = presa
+drill_phrase = 0;       // > 0 mentre si vede la frase della trivella
+boss_phrase = 0;        // > 0 mentre si vede la frase all'arrivo del boss
 // avviso "SHIFT + Z TO PARRY": compare ai muri finche' il giocatore non para almeno un colpo di un muro.
 // E' globale, cosi' resta anche dopo un game over
 if (!variable_global_exists("parry_learned")) global.parry_learned = false;
 draw_set_font(fnt_main);
+
+/// TRIVELLA disegnata dal codice: un cono che punta in alto, con la spirale che gira.
+/// (px, py) = centro della base; sc = grandezza di un "pixel" della trivella; ph = rotazione della spirale;
+/// glow = 0..1 alone azzurro (carica piena). E' azzurra come tutto cio' che e' tuo.
+global.draw_drill = function(px, py, sc, ph, glow) {
+    var st = max(1, sc);
+    var W = 7 * st, H = 20 * st;
+    if (glow > 0) {
+        gpu_set_blendmode(bm_add);
+        draw_set_alpha(glow * (0.35 + 0.15 * dsin(current_time * 0.6)));
+        draw_set_colour(make_colour_rgb(40, 140, 255));
+        draw_circle(px, py - H * 0.45, W * 1.7 + 2, false);
+        gpu_set_blendmode(bm_normal);
+        draw_set_alpha(1);
+    }
+    // contorno scuro sotto
+    draw_set_colour(make_colour_rgb(10, 16, 30));
+    draw_triangle(px, py - H - st, px - W - st, py + st, px + W + st, py + st, false);
+    // spirale: 20 righe dalla punta alla base, ogni riga a quadretti di due colori che girano
+    var cA0 = make_colour_rgb(30, 90, 150),  cA1 = make_colour_rgb(120, 220, 255);
+    var cB0 = make_colour_rgb(60, 70, 100),  cB1 = make_colour_rgb(225, 245, 255);
+    for (var j = 0; j < 20; j++) {
+        var f = (j + 0.5) / 20;                 // 0 = punta, 1 = base
+        var yy = py - H + j * st;
+        var hwp = max(1, round(7 * f));         // mezza larghezza della riga, in "pixel"
+        for (var i = -hwp; i < hwp; i++) {
+            var u = (i + 0.5) / hwp;
+            var band = floor((darcsin(u) + ph + f * 160 + 3600) / 30);   // la banda si attorciglia scendendo
+            var sh = sqrt(max(0, 1 - u * u));   // il centro e' piu' chiaro dei bordi: e' rotonda
+            draw_set_colour((band mod 2 == 0) ? merge_colour(cA0, cA1, sh) : merge_colour(cB0, cB1, sh));
+            draw_rectangle(px + i * st, yy, px + (i + 1) * st, yy + st, false);   // senza -1: celle sovrapposte, nessun buco quando st non e' intero
+        }
+    }
+    // collare d'acciaio alla base
+    draw_set_colour(make_colour_rgb(60, 70, 95));
+    draw_rectangle(px - W - st, py, px + W + st, py + 2 * st, false);
+    draw_set_colour(make_colour_rgb(170, 190, 220));
+    draw_rectangle(px - W - st, py, px + W + st, py + max(1, st / 2), false);
+    draw_set_colour(c_white);
+}
+
+/// Frase ENORME come "SHIFT TO STRUGGLE": entra crescendo, trema, poi sfuma.
+/// La grandezza si calcola dalla riga piu' lunga e dall'altezza totale, cosi' non esce mai dallo schermo.
+/// txt = testo con \n; tm = frame rimasti; total = durata; c2 = colore che lampeggia col bianco
+global.big_phrase = function(txt, tm, total, c2) {
+    var gw = display_get_gui_width(), gh = display_get_gui_height();
+    var el = total - tm;
+    var sc = min((gw - 28) / string_width(txt), (gh * 0.6) / string_height(txt));
+    sc *= (el < 12) ? lerp(0.6, 0.97, el / 12) : (0.95 + 0.02 * dsin(current_time * 0.9));
+    var sx = random_range(-2, 2), sy = random_range(-2, 2);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_alpha(clamp(tm / 40, 0, 1));
+    draw_set_colour(c_black);   // ombra, per leggerla sopra a tutto
+    draw_text_transformed(gw / 2 + sx + 3, gh * 0.42 + sy + 3, txt, sc, sc, 0);
+    draw_set_colour(((current_time div 150) mod 2 == 0) ? c_white : c2);
+    draw_text_transformed(gw / 2 + sx, gh * 0.42 + sy, txt, sc, sc, 0);
+    draw_set_alpha(1);
+    draw_set_colour(c_white);
+    draw_set_valign(fa_top);
+    draw_set_halign(fa_left);
+}
 
 /// COLPO NEMICO: una piccola sfera di energia magenta, con alone, scia e nucleo che pulsa.
 /// La usa obj_ebullet (i colpi parati hanno il loro disegno: global.draw_pshot).

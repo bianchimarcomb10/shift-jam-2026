@@ -15,3 +15,7 @@ Game by Marco Bianchi (Chelios).
 ## Generated graphics
 
 The ground of the opening scene (`spr_bg_ground`) is drawn by `tools/mkground.py` (Python + Pillow + NumPy), with no third-party assets.
+
+## Quotes
+
+- "Your drill is the drill that will pierce the Heavens!" and "Who the hell do you think I am?!": homage to *Tengen Toppa Gurren Lagann* (Gainax, 2007).
