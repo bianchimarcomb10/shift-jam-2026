@@ -17,9 +17,37 @@ if (!retired && y > 20) {
     }
 }
 
+// --- lo scafo colpito: lampo, poi fumo sempre piu' fitto, poi ESPLODE ---
+if (hull_flash > 0) hull_flash -= 1;
+if (!smoke1 && hull_hp < hull_max * 2 / 3) { smoke1 = true; array_push(wrecks, [-12, 14]); }
+if (!smoke2 && hull_hp < hull_max / 3)     { smoke2 = true; array_push(wrecks, [10, -16]); array_push(wrecks, [2, 30]); }
+if (hull_hp <= 0) {
+    // ABBATTUTA: lo scafo si spacca (animazione Destruction della Battlecruiser) e le sbarre saltano a catena dal centro
+    var b = instance_create_layer(x, y, "Instances", obj_boom);
+    b.spr = spr_boom_battlecruiser;
+    b.f = 4;
+    b.last = 14;
+    b.sc = 1;
+    b.rot = 180;
+    b.spd = 0.2;   // piu' lenta: e' grande
+    for (var r = 0; r < array_length(rows); r++) {
+        for (var c = 0; c < array_length(cols); c++) {
+            var bb = instance_create_layer(x + cols[c], y + rows[r], "Instances", obj_boom);
+            bb.delay = 6 + abs(cols[c]) div 9 + r * 4;   // prima le sbarre vicine allo scafo, poi le lontane
+            bb.sc = 0.9;
+        }
+    }
+    with (obj_turret) if (ship == other.id) { silent = true; instance_destroy(); }   // saltano con le sbarre
+    audio_play_sound(snd_enemy_die, 3, false, 1);
+    save_checkpoint();
+    instance_destroy();
+    exit;
+}
+
 // passata meta' schermo, le torrette rimaste si spengono e la nave ti passa sopra, accelerando piano
 if (!retired && y > room_height * 0.45) {
     retired = true;
+    save_checkpoint();
     with (obj_turret) {
         if (ship == other.id) {
             array_push(other.inert, [bx, oy, rack]);

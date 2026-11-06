@@ -18,6 +18,11 @@ if (parried) {
     if (y < -10) { instance_destroy(); exit; }
 }
 
+// il raggio della nave laser brucia i colpi che ci passano dentro: la nave si colpisce solo dai lati
+var burnt = false;
+with (obj_laser) if (beam_w > 3 && other.y > y + 20 && abs(other.x - x) < beam_w) burnt = true;
+if (burnt) { instance_destroy(); exit; }
+
 var e = instance_nearest(x, y, obj_enemy);
 if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + 3) {
     // torretta corazzata: lo sparo normale rimbalza (lampo bianco) senza danno; solo i colpi parati la feriscono
@@ -33,4 +38,16 @@ if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + 3) {
         audio_play_sound(snd_enemy_die, 3, false, 0.6);
     }
     instance_destroy();
+    exit;
+}
+
+// lo SCAFO della nave enorme: tostissimo, ma si puo' abbattere (i colpi parati fanno piu' male)
+if (instance_exists(obj_bigship)) {
+    var bs = instance_nearest(x, y, obj_bigship);
+    if (abs(x - bs.x) < 30 && y > bs.y - 36 && y < bs.y + 50) {
+        bs.hull_hp -= parried ? 3 : 1;
+        bs.hull_flash = 3;
+        instance_destroy();
+        exit;
+    }
 }
