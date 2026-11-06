@@ -159,7 +159,7 @@ spawn_stalkers = function(_k, _wait) {
 /// Ogni riga e' un comando:
 ///   ["snake", quante, centro x, ampiezza]   serpente
 ///   ["v", quante, centro x]                 V che si ferma e picchia
-///   ["ring", quante, centro x, verso]       anello che ruota (verso 1 o -1: due anelli girano a specchio)
+///   ["square", quante, centro x, verso]     quadrato rigido che scende dritto (verso 1 o -1: due quadrati scivolano a specchio)
 ///   ["pincer", quante]                      tenaglia dai lati
 ///   ["corridor", quante]                    corridoio laterale
 ///   ["spears", quante]                      Lance in fila in alto
@@ -172,15 +172,15 @@ waves = [
     /* 3  */ [["snake", 6, 110, 50], ["wall", 220]],                        // primo muro: da solo, per impararlo
     /* 4  */ [["pincer", 10]],
     /* 5  */ [["spears", 2], ["corridor", 10]],
-    /* 6  */ [["ring", 8, 180], ["stalkers", 1, 300], ["wall", 240]],
+    /* 6  */ [["square", 8, 180], ["stalkers", 1, 300], ["wall", 240]],
     /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
     /* 9  */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
-    /* 10 */ [["ring", 8, 90, 1], ["ring", 8, 270, -1], ["wall", 200]],                  // due anelli a specchio, separati
+    /* 10 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["wall", 200]],                  // due quadrati a specchio, separati
     /* 11 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
     /* 12 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
     /* 13 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
-    /* 14 */ [["ring", 8, 90, 1], ["ring", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
+    /* 14 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
     /* 15 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
     /* 16 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
 ];
@@ -234,6 +234,7 @@ spawn_wave = function() {
         switch (c[0]) {
             case "snake":    spawn_formation(1, c[1], c[2], c[3]); break;
             case "v":        spawn_formation(2, c[1], c[2], 0); break;
+            case "square":
             case "ring":     spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1); break;
             case "pincer":   spawn_formation(4, c[1], 0, 0); break;
             case "corridor": spawn_formation(5, c[1], 0, 0); break;
@@ -244,9 +245,10 @@ spawn_wave = function() {
     }
 }
 
-/// MURO: due fregate attraversano la parte alta, una da sinistra e una da destra,
-/// e posano una fila di colpi da un bordo all'altro, senza varchi. Quando sono uscite
-/// i colpi scendono tutti insieme. La navicella non puo' schivarlo: bisogna diventare mecha e tagliarlo.
+/// MURO: due fregate scendono insieme al centro, si separano (una a sinistra, una a destra)
+/// e posano una fila di colpi dal centro fino ai bordi, senza varchi. Poi cabrano ed escono in alto.
+/// Quando sono andate via i colpi scendono tutti insieme. La navicella non puo' schivarlo:
+/// bisogna diventare mecha e tagliarlo.
 spawn_wall = function() {
     var gap = 12;
     var spd_f = 4;   // abbastanza lente da vedere la scia che lasciano
@@ -254,13 +256,13 @@ spawn_wall = function() {
     for (var wx = 6; wx < room_width; wx += gap) {
         if (wx < room_width / 2) array_push(left, wx); else array_push(right, wx);
     }
-    // ognuna posa la sua meta' e poi tira dritto; i colpi partono quando sono uscite entrambe
-    var total = ceil((room_width + 120) / spd_f) + 10;
-    var f1 = instance_create_layer(-50, 26, "Instances", obj_frigate);
-    f1.side = 1; f1.spd = spd_f; f1.slots = left; f1.total = total;
-    var f2 = instance_create_layer(room_width + 50, 26, "Instances", obj_frigate);
-    f2.side = -1; f2.spd = spd_f; f2.slots = []; f2.total = total;
-    for (var i = array_length(right) - 1; i >= 0; i--) array_push(f2.slots, right[i]);   // da destra verso il centro
+    // tempo: picchiata (circa 70 px) + corsa fino al bordo + un po' di margine per la cabrata
+    var total = ceil((70 + room_width / 2 + 20) / spd_f) + 30;
+    var f1 = instance_create_layer(room_width / 2 - 10, -40, "Instances", obj_frigate);
+    f1.side = -1; f1.spd = spd_f; f1.total = total; f1.slots = [];
+    for (var i = array_length(left) - 1; i >= 0; i--) array_push(f1.slots, left[i]);   // dal centro verso sinistra
+    var f2 = instance_create_layer(room_width / 2 + 10, -40, "Instances", obj_frigate);
+    f2.side = 1; f2.spd = spd_f; f2.total = total; f2.slots = right;                      // dal centro verso destra
     f1.bspd = 1.5 + min(wave, 16) * 0.03;
     f2.bspd = f1.bspd;
     audio_play_sound(snd_menu, 6, false);   // segnale provvisorio: arriva un muro
