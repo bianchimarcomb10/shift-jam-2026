@@ -1,6 +1,12 @@
 if (!instance_exists(ship)) exit;
 // la rastrelliera carica, girata come la nave
 var l = (rack == 0) ? 9 : 38;
+// ombra sulla sbarra in ombra: la torretta sporge, e' solida (e fa male se ci vai addosso)
+gpu_set_fog(true, c_black, 0, 0);
+draw_set_alpha(0.5);
+global.draw_parts(spr_torpedo_racks, [[l, 25, 17, 15, 32, 32, 0, 0, 0]], ship.x + bx + 3, ship.y + oy + 4, 180, 1);
+draw_set_alpha(1);
+gpu_set_fog(false, c_black, 0, 0);
 global.draw_parts(spr_torpedo_racks, [[l, 25, 17, 15, 32, 32, 0, 0, 0]], ship.x + bx, ship.y + oy, 180, 1);
 
 // corazzata: una cornice d'acciaio con quattro ribattini

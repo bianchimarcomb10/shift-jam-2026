@@ -27,6 +27,30 @@ save_checkpoint = function() {
     if (instance_exists(obj_game)) obj_game.cp_timer = 150;   // scritta "CHECKPOINT"
 }
 
+// La nave e' FISICA: se ci vai addosso, lo scafo e le torrette ti fanno danno da contatto.
+// Le ali (le sbarre) no: sono piu' in basso, in ombra, e ci passi sopra.
+// Sagoma dello scafo misurata sullo sprite girato: mezza larghezza ogni 4 px, dalla coda (-37) alla prua (+50)
+hull_top = -37;
+hull_hw = [27, 36, 36, 36, 36, 35, 35, 35, 35, 34, 34, 33, 13, 11, 22, 22, 22, 22, 22, 18, 9, 9];
+
+/// touches(px, py, r): true se un cerchio di raggio r (il giocatore) tocca lo scafo o una torretta spenta.
+/// Le torrette ancora accese sono nemici veri (obj_turret) e fanno gia' danno da sole.
+touches = function(px, py, r) {
+    var rr = max(r - 3, 1);   // 3 px di tolleranza: sfiorare il bordo non fa male
+    var dx = abs(px - x);
+    var k0 = max(0, floor((py - rr - y - hull_top) / 4));
+    var k1 = min(array_length(hull_hw) - 1, floor((py + rr - y - hull_top) / 4));
+    for (var k = k0; k <= k1; k++) {
+        if (dx < hull_hw[k] + rr) return true;
+    }
+    for (var q = 0; q < array_length(inert); q++) {
+        var it = inert[q];
+        var tx = x + it[0] + ((it[2] == 0) ? 14.5 : -14.5);
+        if (point_distance(px, py, tx, y + it[1] - 0.5) < r + 8) return true;
+    }
+    return false;
+}
+
 // due file di sbarre ai lati dello scafo (le sbarre di +-162 escono dallo schermo: la nave e' piu' grande di cio' che vedi)
 rows = [32, -10];                         // altezza delle file rispetto al centro dello scafo
 cols = [-162, -110, -58, 58, 110, 162];   // posizione delle sbarre

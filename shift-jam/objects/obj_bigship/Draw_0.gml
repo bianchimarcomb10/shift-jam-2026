@@ -1,10 +1,16 @@
-// sbarre vuote in due file (le rastrelliere cariche le disegnano le torrette, sopra)
+// ALI: sbarre vuote in due file, scurite. Sono piu' in basso dello scafo e non fanno male:
+// il colore spento dice "ci puoi passare sopra" (le rastrelliere cariche le disegnano le torrette, accese)
+var wing = make_colour_rgb(88, 84, 116);
 for (var r = 0; r < array_length(rows); r++) {
     for (var c = 0; c < array_length(cols); c++) {
-        draw_sprite_ext(spr_torpedo_bar, 0, x + cols[c], y + rows[r], 1, 1, 180, c_white, 1);
+        draw_sprite_ext(spr_torpedo_bar, 0, x + cols[c], y + rows[r], 1, 1, 180, wing, 1);
     }
 }
-// lo scafo al centro, sopra le sbarre
+// ombra dello scafo sulle ali: lo scafo sta sopra, e' solido
+gpu_set_fog(true, c_black, 0, 0);
+draw_sprite_ext(spr_bigship_hull, 0, x + 5, y + 7, 1, 1, 180, c_white, 0.5);
+gpu_set_fog(false, c_black, 0, 0);
+// lo scafo al centro, a piena luce: questo fa male se ci vai addosso
 draw_sprite_ext(spr_bigship_hull, 0, x, y, 1, 1, 180, c_white, 1);
 if (hull_flash > 0) {   // colpita: lo scafo lampeggia di bianco
     gpu_set_fog(true, c_white, 0, 0);
@@ -16,6 +22,11 @@ if (hull_flash > 0) {   // colpita: lo scafo lampeggia di bianco
 for (var k = 0; k < array_length(inert); k++) {
     var it = inert[k];
     var l = (it[2] == 0) ? 9 : 38;
+    gpu_set_fog(true, c_black, 0, 0);   // ombra: anche spente sono solide
+    draw_set_alpha(0.5);
+    global.draw_parts(spr_torpedo_racks, [[l, 25, 17, 15, 32, 32, 0, 0, 0]], x + it[0] + 3, y + it[1] + 4, 180, 1);
+    draw_set_alpha(1);
+    gpu_set_fog(false, c_black, 0, 0);
     global.draw_parts(spr_torpedo_racks, [[l, 25, 17, 15, 32, 32, 0, 0, 0]], x + it[0], y + it[1], 180, 1);
 }
 

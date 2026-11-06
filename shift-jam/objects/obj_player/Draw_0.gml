@@ -75,21 +75,22 @@ if (form == 0 && transform_timer == 0) {
     var sway = 4 * dsin(current_time * 0.2);
     var ex_ang = [sway - flare, flare - sway, 0, 0, 0, 0];
     var ex_dy = [bob * 0.5, bob * 0.5, bob * 0.5, bob * 0.5, bob * 0.5, bob];
+    var ms = 1 + (mech_scale - 1) * m;   // cresce mentre si ripiega: il mecha e' un po' piu' grosso
     for (var i = 0; i < array_length(parts); i++) {
         var p = parts[i];
         var hw = p[2] / 2, hh = p[3] / 2;
         // centro del pezzo, prima senza inclinazione...
-        var lx = (p[0] + hw - 24 + p[4] * m) * sq;
-        var ly = p[1] + hh - 24 + (p[5] + ex_dy[i]) * m;
+        var lx = (p[0] + hw - 24 + p[4] * m) * sq * ms;
+        var ly = (p[1] + hh - 24 + (p[5] + ex_dy[i]) * m) * ms;
         // ...poi ruotato attorno al centro del mecha
         var pcx = x + lx * rc + ly * rs;
         var pcy = y - lx * rs + ly * rc;
         var ang = (p[6] + ex_ang[i]) * m - tilt;
         // draw_sprite_general ruota attorno all'angolo in alto a sinistra: lo calcoliamo dal centro
-        var dd = point_direction(0, 0, -hw * sq, -hh) + ang;
-        var dl = point_distance(0, 0, hw * sq, hh);
+        var dd = point_direction(0, 0, -hw * sq * ms, -hh * ms) + ang;
+        var dl = point_distance(0, 0, hw * sq * ms, hh * ms);
         draw_sprite_general(spr_player_ship, 0, p[0], p[1], p[2], p[3],
-            pcx + lengthdir_x(dl, dd), pcy + lengthdir_y(dl, dd), sq, 1, ang,
+            pcx + lengthdir_x(dl, dd), pcy + lengthdir_y(dl, dd), sq * ms, ms, ang,
             c_white, c_white, c_white, c_white, 1);
     }
 }
@@ -98,30 +99,41 @@ if (form == 1 && transform_timer == 0) {
     // la falce, tenuta a destra (solo da fermo: durante la falciata c'e' la lama che ruota).
     // Anche lei si inclina col mecha: ogni punto e' ruotato attorno al centro
     if (sweep_anim == 0) {
-        var fx = 13 * sq;              // posizione dell'asta rispetto al centro
+        var ms = mech_scale;
+        var fx = 13 * sq * ms;         // posizione dell'asta rispetto al centro
         var fb = bob * 0.5;
-        var x1 = x + fx * rc + (10 + fb) * rs,  y1 = y - fx * rs + (10 + fb) * rc;    // fondo dell'asta
-        var x2 = x + fx * rc + (-16 + fb) * rs, y2 = y - fx * rs + (-16 + fb) * rc;   // cima dell'asta
+        var x1 = x + fx * rc + (10 + fb) * ms * rs,  y1 = y - fx * rs + (10 + fb) * ms * rc;    // fondo dell'asta
+        var x2 = x + fx * rc + (-16 + fb) * ms * rs, y2 = y - fx * rs + (-16 + fb) * ms * rc;   // cima dell'asta
         draw_set_colour(c_black);
         draw_line_width(x1, y1, x2, y2, 3);
-        draw_set_colour(c_ltgray);
+        draw_set_colour(make_colour_rgb(150, 170, 200));
         draw_line(x1, y1, x2, y2);
-        // lama: mezzaluna che parte dalla cima e ricade verso l'esterno
-        for (var pass = 0; pass < 2; pass++) {
-            draw_set_colour(pass == 0 ? c_black : c_white);
-            var lw = (pass == 0) ? 3 : 1;
+        // lama: mezzaluna AZZURRA che parte dalla cima e ricade verso l'esterno (azzurro = roba tua,
+        // come i colpi parati e la scia del motore). Tre passate: alone che pulsa, contorno nero, filo acceso
+        var bcol = [make_colour_rgb(40, 140, 255), c_black, make_colour_rgb(120, 235, 255)];
+        var bwid = [7, 4, 2];
+        for (var pass = 0; pass < 3; pass++) {
+            if (pass == 0) {
+                gpu_set_blendmode(bm_add);
+                draw_set_alpha(0.4 + 0.15 * dsin(current_time * 0.3));
+            }
+            draw_set_colour(bcol[pass]);
             for (var ba = 90; ba > -20; ba -= 15) {
                 var bb = max(ba - 15, -20);
-                var ax = fx + lengthdir_x(10, ba), ay = -11 + fb + lengthdir_y(5, ba);
-                var cx2 = fx + lengthdir_x(10, bb), cy2 = -11 + fb + lengthdir_y(5, bb);
+                var ax = fx + lengthdir_x(11 * ms, ba), ay = (-11 + fb) * ms + lengthdir_y(5 * ms, ba);
+                var cx2 = fx + lengthdir_x(11 * ms, bb), cy2 = (-11 + fb) * ms + lengthdir_y(5 * ms, bb);
                 draw_line_width(x + ax * rc + ay * rs, y - ax * rs + ay * rc,
-                                x + cx2 * rc + cy2 * rs, y - cx2 * rs + cy2 * rc, lw);
+                                x + cx2 * rc + cy2 * rs, y - cx2 * rs + cy2 * rc, bwid[pass]);
+            }
+            if (pass == 0) {
+                gpu_set_blendmode(bm_normal);
+                draw_set_alpha(1);
             }
         }
     }
     if (sweep_anim > 0) {
         // la falciata: un cerchio che svanisce e una lama che ruota
-        draw_set_colour(c_white);
+        draw_set_colour(make_colour_rgb(120, 235, 255));   // dello stesso azzurro della lama
         draw_set_alpha(sweep_anim / 10);
         draw_circle(x, y, sweep_radius, true);
         var a = (10 - sweep_anim) * 36;
