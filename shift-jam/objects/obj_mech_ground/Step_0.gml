@@ -1,5 +1,6 @@
 if (sweep_cooldown > 0) sweep_cooldown -= 1;
 if (sweep_anim > 0) sweep_anim -= 1;
+if (transformed && unfold < 1) unfold = min(1, unfold + 1 / 12);   // 12 frame per riaprirsi
 
 var st = obj_ground.state;
 var g = obj_ground;
