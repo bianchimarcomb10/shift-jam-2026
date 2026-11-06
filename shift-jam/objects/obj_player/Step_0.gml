@@ -55,10 +55,13 @@ if (attack && transform_timer == 0) {
             if (point_distance(x, y, other.x, other.y) <= other.parry_radius) {
                 array_push(other.sparks, [x, y, 12]);
                 if (parried < 12) {
+                    // il colpo torna indietro: parte spinto via dal mecha (a ventaglio), poi curva verso un nemico
                     var r = instance_create_layer(x, y, "Instances", obj_shot);
-                    var tgt = instance_nearest(x, y, obj_enemy);
-                    r.vx = (tgt != noone) ? clamp((tgt.x - x) / 25, -5, 5) : 0;
+                    r.parried = true;
+                    r.hd = point_direction(other.x, other.y, x, y) + random_range(-25, 25);
+                    r.v = random_range(2, 3.5);
                 }
+                if (wall) global.parry_learned = true;   // ha parato un muro: l'avviso non serve piu'
                 parried += 1;
                 instance_destroy();
             }

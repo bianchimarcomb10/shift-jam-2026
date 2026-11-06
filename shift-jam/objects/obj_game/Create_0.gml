@@ -12,10 +12,13 @@ preview_timer = 0;      // > 0 mentre le sagome dell'ondata salgono sullo sfondo
 boss_preview = false;   // la sagoma della nave madre e' gia' passata?
 boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
+// avviso "SHIFT + Z TO PARRY": compare ai muri finche' il giocatore non para almeno un colpo di un muro.
+// E' globale, cosi' resta anche dopo un game over
+if (!variable_global_exists("parry_learned")) global.parry_learned = false;
 draw_set_font(fnt_main);
 
 /// COLPO NEMICO: una piccola sfera di energia magenta, con alone, scia e nucleo che pulsa.
-/// La usano obj_ebullet e i colpi rimandati dalla parata (obj_shot), che sono gli stessi colpi che tornano indietro.
+/// La usa obj_ebullet (i colpi parati hanno il loro disegno: global.draw_pshot).
 /// bx, by = posizione; bdir = direzione in cui vola; bspd = velocita' (lunghezza della scia); ph = fase della pulsazione
 global.draw_ebullet = function(bx, by, bdir, bspd, ph) {
     var pulse = 0.5 + 0.5 * dsin(ph);
@@ -39,6 +42,37 @@ global.draw_ebullet = function(bx, by, bdir, bspd, ph) {
     draw_set_colour(make_colour_rgb(255, 110, 215));
     draw_circle(bx, by, 2.5, false);
     draw_set_colour(merge_colour(make_colour_rgb(255, 200, 240), c_white, pulse));
+    draw_circle(bx, by, 1.2, false);
+}
+
+/// COLPO PARATO: luce azzurra con una scia che segue la curva. Appena parato fa un lampo bianco:
+/// il colpo nemico si e' "purificato" ed e' diventato tuo.
+/// bx, by = posizione; tr = ultime posizioni; life = fotogrammi di vita; ph = fase della pulsazione
+global.draw_pshot = function(bx, by, tr, life, ph) {
+    var pulse = 0.5 + 0.5 * dsin(ph);
+    gpu_set_blendmode(bm_add);
+    var n = array_length(tr);
+    for (var i = 0; i < n; i++) {
+        var u = (i + 1) / n;   // 0 = la posizione piu' vecchia, 1 = la piu' recente
+        draw_set_alpha(0.35 * u);
+        draw_set_colour(make_colour_rgb(60, 140, 255));
+        draw_circle(tr[i][0], tr[i][1], 0.8 + 2.2 * u, false);
+    }
+    draw_set_alpha(0.2 + 0.12 * pulse);
+    draw_set_colour(make_colour_rgb(110, 190, 255));
+    draw_circle(bx, by, 6 + pulse, false);
+    if (life < 8) {   // il lampo della parata
+        draw_set_alpha(1 - life / 8);
+        draw_set_colour(c_white);
+        draw_circle(bx, by, 9 - life, false);
+    }
+    gpu_set_blendmode(bm_normal);
+    draw_set_alpha(1);
+    draw_set_colour(make_colour_rgb(70, 150, 255));
+    draw_circle(bx, by, 3.5, false);
+    draw_set_colour(make_colour_rgb(180, 230, 255));
+    draw_circle(bx, by, 2.5, false);
+    draw_set_colour(c_white);
     draw_circle(bx, by, 1.2, false);
 }
 

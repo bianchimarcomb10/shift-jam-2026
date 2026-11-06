@@ -25,6 +25,32 @@ draw_text(display_get_gui_width() / 2, room_height - 36, "WASD/ARROWS: MOVE");
 draw_text(display_get_gui_width() / 2, room_height - 20, "Z: ATTACK   SHIFT: FORM");
 draw_set_halign(fa_left);
 
+// AVVISO DELLA PARATA: arriva un muro e sei navicella -> "SHIFT + Z TO PARRY",
+// sempre piu' grande man mano che i colpi si avvicinano. Sparisce appena diventi mecha,
+// e non torna piu' dopo che hai parato un muro almeno una volta (global.parry_learned).
+if (!global.parry_learned && !game_over && instance_exists(obj_player) && obj_player.form == 0) {
+    var py = obj_player.y;
+    var near = -1;   // il colpo del muro piu' in basso, ma ancora sopra di te
+    with (obj_ebullet) if (wall && y < py) near = max(near, y);
+    if (near >= 0) {
+        var gw = display_get_gui_width();
+        var c = clamp((near - 26) / max(1, py - 60), 0, 1);           // 0 = muro appena posato, 1 = addosso
+        var s = lerp(1.5, (gw - 28) / string_width("SHIFT + Z"), c);  // al massimo largo quanto lo schermo
+        var sh = c * 2;                                               // trema quando e' vicino
+        var tx = gw / 2 + random_range(-sh, sh), ty = room_height * 0.55 + random_range(-sh, sh);
+        draw_set_halign(fa_center);
+        draw_set_valign(fa_middle);
+        draw_set_colour(c_black);   // ombra, per leggerlo sopra i colpi
+        draw_text_transformed(tx + s, ty + s, "SHIFT + Z\nTO PARRY", s, s, 0);
+        // bianco e azzurro: lo stesso azzurro dei colpi parati
+        draw_set_colour(((current_time div 250) mod 2 == 0) ? c_white : make_colour_rgb(110, 190, 255));
+        draw_text_transformed(tx, ty, "SHIFT + Z\nTO PARRY", s, s, 0);
+        draw_set_colour(c_white);
+        draw_set_valign(fa_top);
+        draw_set_halign(fa_left);
+    }
+}
+
 if (game_over) {
     // enorme, lampeggiante: l'unica cosa da fare e' rialzarsi
     draw_set_halign(fa_center);
