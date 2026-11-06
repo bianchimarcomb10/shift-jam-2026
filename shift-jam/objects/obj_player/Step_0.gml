@@ -88,6 +88,10 @@ if (invuln == 0) {
     with (obj_palm) {
         if (!reflected && point_distance(x, y, other.x, other.y) < hr + radius) { hit = true; instance_destroy(); }
     }
+    with (obj_laser) {
+        // il RAGGIO della nave laser: non si para, si schiva
+        if (beam_w > 3 && other.y > y + 20 && abs(other.x - x) < beam_w + hr) hit = true;
+    }
     with (obj_enemy) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
             hit = true;

@@ -1,2 +1,3 @@
-f += 0.3;
+if (delay > 0) { delay -= 1; exit; }
+f += spd;
 if (f >= last) instance_destroy();

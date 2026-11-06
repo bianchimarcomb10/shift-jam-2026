@@ -4,7 +4,11 @@ randomize();
 audio_master_gain(0.4);   // volume generale piu' basso
 global.hp = 3;          // il giocatore regge 3 colpi
 spawn_timer = 120;      // 2 secondi prima della prima ondata
-wave = 0;
+// CHECKPOINT: superata la nave enorme, dopo un game over si riparte dall'ondata successiva (lo salva obj_bigship).
+// Lo azzera obj_ground all'inizio di una partita nuova
+if (!variable_global_exists("checkpoint")) global.checkpoint = 0;
+wave = global.checkpoint;
+cp_timer = 0;           // > 0 mentre si vede la scritta "CHECKPOINT"
 game_over = false;
 boss_spawned = false;
 finale = false;         // true durante il finale "Silenzio"
@@ -122,18 +126,19 @@ global.draw_frame = function(spr, k, px, py, rot, sc) {
 /// verde acido), girata e grande come la navetta, cosi' le crepe si aprono proprio sopra lo scafo.
 /// Si chiama SOLO quando un nemico viene ucciso (non quando esce dallo schermo).
 global.enemy_boom = function(e) {
-    var s = -1, first = 0, r = 0;
+    var s = -1, first = 0, r = 0, bsc = 1;
     switch (e.object_index) {
         case obj_moth:    s = spr_boom_fighter; first = 1; r = e.dir - 90;  break;   // Falena = Fighter
         case obj_spear:   s = spr_boom_frigate; first = 2; r = 180;         break;   // Lancia = Frigate
         case obj_stalker: s = spr_boom_support; first = 2; r = e.face - 90; break;   // Inseguitore = Support ship
+        case obj_laser:   s = spr_boom_bomber;  first = 1; r = 180; bsc = 2;   break;   // Nave laser = Bomber, grande il doppio
     }
     if (s == -1) return;   // torrette e Custode hanno gia' la loro fine
     var b = instance_create_layer(e.x, e.y, "Instances", obj_boom);
     b.spr = s;
     b.f = first;           // si parte dalle prime crepe, non dalla nave intera
     b.last = sprite_get_width(s) / sprite_get_height(s);
-    b.sc = 1;
+    b.sc = bsc;
     b.rot = r;
 }
 
@@ -211,6 +216,17 @@ spawn_spears = function(_k) {
     }
 }
 
+/// Navi laser: si fermano in alto, una accanto all'altra, dopo _wait fotogrammi.
+/// Se sono due, mirano una a sinistra e una a destra di te: i due raggi fanno una gabbia.
+spawn_lasers = function(_k, _wait) {
+    for (var i = 0; i < _k; i++) {
+        var lz = instance_create_layer(room_width * (i + 1) / (_k + 1), -70, "Instances", obj_laser);
+        lz.wait = _wait + i * 40;
+        lz.offs = (_k == 1) ? 0 : ((i == 0) ? -60 : 60);
+        lz.stop_y = 76 + (i mod 2) * 18;
+    }
+}
+
 /// Inseguitori che entrano DAI LATI dopo _wait fotogrammi (quando le Falene sono gia' passate):
 /// cosi' non attraversano la fascia alta dove stanno le Lance.
 spawn_stalkers = function(_k, _wait) {
@@ -234,6 +250,7 @@ spawn_stalkers = function(_k, _wait) {
 ///   ["corridor", quante]                    corridoio laterale
 ///   ["spears", quante]                      Lance in fila in alto
 ///   ["stalkers", quante, attesa]            Inseguitori dai lati dopo "attesa" fotogrammi
+///   ["laser", quante, attesa]               Navi laser (raggio continuo, non si para) dopo "attesa" fotogrammi
 ///   ["wall", attesa]                        muro di colpi dopo "attesa" fotogrammi
 ///   ["bigship"]                             la nave enorme con le torrette (un'ondata da sola)
 /// Per cambiare il gioco basta cambiare questa tabella.
@@ -247,39 +264,40 @@ waves = [
     /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
     /* 9  */ [["bigship"]],   // INTERLUDIO: la nave enorme passa; si spengono le torrette (obj_bigship)
-    /* 10 */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
+    /* 10 */ [["laser", 1, 60], ["corridor", 10], ["stalkers", 2, 330]],                 // prima nave laser, dopo il checkpoint
     /* 11 */ [["echelon", 6, 140, 1], ["echelon", 6, 220, -1], ["wall", 200]],             // due scaglioni: una V grande che si apre e si chiude
-    /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
+    /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320], ["laser", 1, 420]],             // la tenaglia da sola: il serpente in mezzo la tagliava; il laser dopo i muri
     /* 13 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
-    /* 14 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
+    /* 14 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280], ["laser", 2, 360]],   // due laser: la gabbia
     /* 15 */ [["diamond", 9, 90, 1], ["diamond", 9, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],   // due rombi a specchio
     /* 16 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
-    /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
+    /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460], ["laser", 2, 520]]   // due serpenti a specchio
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
 
-/// Quante Falene, Lance e Inseguitori ci sono nell'ondata "wave" (serve all'anteprima).
+/// Quante Falene, Lance, Inseguitori e Navi laser ci sono nell'ondata "wave" (serve all'anteprima).
 wave_contents = function() {
-    var res = [0, 0, 0];
+    var res = [0, 0, 0, 0];
     var cmds = waves[wave - 1];
     for (var i = 0; i < array_length(cmds); i++) {
         var k = cmds[i][0];
         if (k == "spears") res[1] += cmds[i][1];
         else if (k == "stalkers") res[2] += cmds[i][1];
+        else if (k == "laser") res[3] += cmds[i][1];
         else if (k != "wall" && k != "bigship") res[0] += cmds[i][1];
     }
     return res;
 }
 
 /// Anteprima: le sagome dell'ondata salgono dal basso sullo sfondo.
-/// In testa le Lance, poi le Falene a file da 6, in coda gli Inseguitori.
+/// In testa le Navi laser e le Lance, poi le Falene a file da 6, in coda gli Inseguitori.
 spawn_preview = function() {
     var c = wave_contents();
     var p = instance_create_layer(room_width / 2, room_height + 30, "Instances", obj_preview);
     p.spd = 3.5;
-    var rows = [[spr_enemy_spear, c[1]], [spr_enemy_moth, min(c[0], 24)], [spr_enemy_stalker, c[2]]];
+    var rows = [[spr_enemy_laser, c[3]], [spr_enemy_spear, c[1]], [spr_enemy_moth, min(c[0], 24)], [spr_enemy_stalker, c[2]]];
     var ry = 0;
-    for (var r = 0; r < 3; r++) {
+    for (var r = 0; r < array_length(rows); r++) {
         var spr = rows[r][0];
         var cnt = rows[r][1];
         for (var i = 0; i < cnt; i++) {
@@ -320,6 +338,7 @@ spawn_wave = function() {
             case "corridor": spawn_formation(5, c[1], 0, 0); break;
             case "spears":   spawn_spears(c[1]); break;
             case "stalkers": spawn_stalkers(c[1], c[2]); break;
+            case "laser":    spawn_lasers(c[1], c[2]); break;
             case "wall":     array_push(walls, c[1]); break;
             case "bigship":  instance_create_layer(room_width / 2, -90, "Instances", obj_bigship); break;
         }

@@ -2,7 +2,7 @@
 /// poi la curva del pianeta che sprofonda, poi lo spazio, infine un vuoto sempre piu' scuro.
 /// Pianeta: Earth-Like planet di Foozle (CC0), ricolorato. Nuvole: RocketNinjaGames (CC0), ricolorate.
 depth = 96;        // sopra lo sfondo (100), sotto le sagome (95) e le stelle (90)
-alt = 0;           // "altitudine": segue il numero dell'ondata, ma senza scatti
+alt = variable_global_exists("checkpoint") ? global.checkpoint : 0;   // "altitudine": segue il numero dell'ondata, senza scatti (dal checkpoint si riparte gia' in alto)
 clouds = [];       // [x, y, fotogramma, velocita']
 for (var i = 0; i < 9; i++) {
     clouds[i] = [random(room_width), random_range(-room_height, room_height), irandom(5), random_range(2, 4)];

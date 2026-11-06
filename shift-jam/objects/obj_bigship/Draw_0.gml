@@ -6,6 +6,11 @@ for (var r = 0; r < array_length(rows); r++) {
 }
 // lo scafo al centro, sopra le sbarre
 draw_sprite_ext(spr_bigship_hull, 0, x, y, 1, 1, 180, c_white, 1);
+if (hull_flash > 0) {   // colpita: lo scafo lampeggia di bianco
+    gpu_set_fog(true, c_white, 0, 0);
+    draw_sprite_ext(spr_bigship_hull, 0, x, y, 1, 1, 180, c_white, 0.6);
+    gpu_set_fog(false, c_white, 0, 0);
+}
 
 // torrette sopravvissute e spente: restano lì, cariche ma mute
 for (var k = 0; k < array_length(inert); k++) {
