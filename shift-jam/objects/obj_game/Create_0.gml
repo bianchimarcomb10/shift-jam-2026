@@ -14,6 +14,34 @@ boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 draw_set_font(fnt_main);
 
+/// COLPO NEMICO: una piccola sfera di energia magenta, con alone, scia e nucleo che pulsa.
+/// La usano obj_ebullet e i colpi rimandati dalla parata (obj_shot), che sono gli stessi colpi che tornano indietro.
+/// bx, by = posizione; bdir = direzione in cui vola; bspd = velocita' (lunghezza della scia); ph = fase della pulsazione
+global.draw_ebullet = function(bx, by, bdir, bspd, ph) {
+    var pulse = 0.5 + 0.5 * dsin(ph);
+    gpu_set_blendmode(bm_add);   // luce che si somma: l'alone brilla sopra lo sfondo
+    // scia: tre fantasmi sempre piu' piccoli e deboli dietro al colpo
+    for (var k = 3; k >= 1; k--) {
+        var tl = bspd * k * 1.6;
+        draw_set_alpha(0.32 - k * 0.08);
+        draw_set_colour(make_colour_rgb(190, 30, 150));
+        draw_circle(bx - lengthdir_x(tl, bdir), by - lengthdir_y(tl, bdir), 3.2 - k * 0.6, false);
+    }
+    // alone che respira
+    draw_set_alpha(0.18 + 0.12 * pulse);
+    draw_set_colour(make_colour_rgb(255, 40, 190));
+    draw_circle(bx, by, 6 + pulse, false);
+    gpu_set_blendmode(bm_normal);
+    draw_set_alpha(1);
+    // corpo: magenta scuro fuori, rosa dentro, bianco al centro
+    draw_set_colour(make_colour_rgb(200, 20, 150));
+    draw_circle(bx, by, 3.5, false);
+    draw_set_colour(make_colour_rgb(255, 110, 215));
+    draw_circle(bx, by, 2.5, false);
+    draw_set_colour(merge_colour(make_colour_rgb(255, 200, 240), c_white, pulse));
+    draw_circle(bx, by, 1.2, false);
+}
+
 /// DISEGNO A PEZZI: i nemici nello spazio sono sprite tagliate in pezzi che si muovono (come mecha e alieni di terra).
 /// spr = sprite; parts = lista di pezzi; px, py = posizione; rot = rotazione di tutto il nemico; sc = grandezza.
 /// Ogni pezzo: [sinistra, alto, larghezza, altezza, perno x, perno y, rotazione attorno al perno, spostamento x, spostamento y]
