@@ -29,6 +29,8 @@ if (phase == 2) {
         b.dir = 270;
         b.spd = bspd;
         b.hold = max(1, total - t);
+        b.wall = true;
+        b.wph = abs(slots[k] - room_width / 2) * 3;   // 3 gradi di fase per pixel: un'onda ogni 120 px
         k += 1;
     }
 }
