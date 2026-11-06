@@ -32,6 +32,11 @@ if (wave >= boss_wave) {
     if (instance_number(obj_enemy) == 0) {
         if (!boss_preview) {
             boss_preview = true;
+            // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (subito il boss)
+            if (global.checkpoint < boss_wave) {
+                global.checkpoint = boss_wave;
+                cp_timer = 150;   // scritta "CHECKPOINT"
+            }
             var bp = instance_create_layer(room_width / 2, room_height + 120, "Instances", obj_preview);
             bp.items = [[spr_boss_mothership, 0, 0, 0.9, 1]];
             bp.spd = 2.5;
