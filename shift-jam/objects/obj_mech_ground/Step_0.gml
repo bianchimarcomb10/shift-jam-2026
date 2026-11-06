@@ -5,7 +5,7 @@ if (transformed && unfold < 1) unfold = min(1, unfold + 1 / 12);   // 12 frame p
 var st = obj_ground.state;
 var g = obj_ground;
 
-// --- movimento in tutte le direzioni: libero nei primi 10 secondi, poi ogni alieno aggrappato rallenta ---
+// --- movimento in tutte le direzioni: libero nei primi 3 secondi, poi ogni alieno aggrappato rallenta ---
 if (st == 0 && !g.mass) {
     var clinging = 0;
     with (obj_grunt) if (clinging_now) clinging += 1;

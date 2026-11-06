@@ -6,7 +6,7 @@ case 0:
     // --- arrivano alieni da tutti e quattro i bordi, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
-        var n = 1 + t div 360;   // ogni 6 secondi un alieno in piu' per gruppo
+        var n = 1 + t div 180;   // ogni 3 secondi un alieno in piu' per gruppo
         if (mass) n = 6;         // ondata finale: una marea
         repeat (n) {
             var side = irandom(3);
@@ -30,11 +30,11 @@ case 0:
     if (!mass) {
         // la barra sale col tempo e per ogni alieno aggrappato, ma prima dell'ondata si ferma all'85%
         bar = min(0.85, bar + 0.0005 + clinging * 0.0012);
-        // l'ondata finale parte a 15 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 9)
-        if (t >= mass_time || (bar >= 0.85 && t >= 540)) mass = true;
+        // l'ondata finale parte a 8 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 5)
+        if (t >= mass_time || (bar >= 0.85 && t >= 300)) mass = true;
     } else {
-        // durante l'ondata la barra si riempie in circa 2 secondi
-        bar += 0.009;
+        // durante l'ondata la barra si riempie in poco piu' di un secondo
+        bar += 0.012;
         if (bar >= 1) { bar = 1; state = 1; t = 0; }
     }
     break;
@@ -93,7 +93,7 @@ case 3:
     if (flash > 0) flash = max(0, flash - 1 / 50);   // il bianco svanisce in poco meno di un secondo
     scroll += min(6, 0.5 + scroll * 0.03);
     if (ground_layer != -1) layer_y(ground_layer, ground_base + scroll);
-    // si resta finche' la frase di Dogen non e' svanita (6 secondi)
+    // si resta finche' la frase di Dogen non e' svanita (6 secondi: non si accorcia)
     if (t >= 360 && obj_mech_ground.y < -40) room_goto(rm_game);
     break;
 }
