@@ -8,6 +8,8 @@ spd = 0.45;        // lentissima
 retired = false;   // true quando ha passato meta' schermo: le torrette rimaste si spengono
 wrecks = [];       // torrette distrutte: [dx, dy] rispetto al centro, da li' esce fumo
 inert = [];        // torrette sopravvissute e spente: [bx, oy, rack]
+launch_timer = 70; // conto alla rovescia fino al prossimo lancio di Falene dalla prua
+launch_side = 1;   // le Falene escono una volta a destra e una a sinistra della prua
 
 // due file di sbarre ai lati dello scafo (le sbarre di +-162 escono dallo schermo: la nave e' piu' grande di cio' che vedi)
 rows = [32, -10];                         // altezza delle file rispetto al centro dello scafo
