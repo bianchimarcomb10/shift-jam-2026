@@ -175,7 +175,7 @@ if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_hei
 
 /// Crea una formazione di Falene.
 /// _form: 1 serpente, 2 V, 3 anello, 4 tenaglia.  _n: quante.  _cx: centro.  _amp: ampiezza del serpente.
-spawn_formation = function(_form, _n, _cx, _amp) {
+spawn_formation = function(_form, _n, _cx, _amp, _shape) {
     for (var i = 0; i < _n; i++) {
         var m = instance_create_layer(-100, -100, "Instances", obj_moth);
         m.form = _form;
@@ -183,6 +183,7 @@ spawn_formation = function(_form, _n, _cx, _amp) {
         m.n = _n;
         m.cx = _cx;
         m.amp = _amp;
+        m.shape = is_undefined(_shape) ? 0 : _shape;   // solo per le formazioni aeree (form 3)
         if (_form == 1) m.delay = i * 12;          // il serpente entra una falena dopo l'altra
         if (_form == 4) {                          // tenaglia: meta' da sinistra, meta' da destra
             m.side = (i mod 2 == 0) ? 1 : -1;
@@ -225,7 +226,10 @@ spawn_stalkers = function(_k, _wait) {
 /// Ogni riga e' un comando:
 ///   ["snake", quante, centro x, ampiezza]   serpente
 ///   ["v", quante, centro x]                 V che si ferma e picchia
-///   ["square", quante, centro x, verso]     quadrato rigido che scende dritto (verso 1 o -1: due quadrati scivolano a specchio)
+///   ["delta", quante, centro x, verso]      squadriglia a CUNEO (triangolo, max 10) che scende serpeggiando
+///   ["diamond", quante, centro x, verso]    squadriglia a ROMBO (max 9)
+///   ["echelon", quante, centro x, verso]    squadriglia a SCAGLIONE (diagonale, max 8): si apre verso l'esterno
+///                                           (verso 1 o -1: due squadriglie serpeggiano a specchio)
 ///   ["pincer", quante]                      tenaglia dai lati
 ///   ["corridor", quante]                    corridoio laterale
 ///   ["spears", quante]                      Lance in fila in alto
@@ -239,16 +243,16 @@ waves = [
     /* 3  */ [["snake", 6, 110, 50], ["wall", 220]],                        // primo muro: da solo, per impararlo
     /* 4  */ [["pincer", 10]],
     /* 5  */ [["spears", 2], ["corridor", 10]],
-    /* 6  */ [["square", 8, 180], ["stalkers", 1, 300], ["wall", 240]],
+    /* 6  */ [["delta", 10, 180], ["stalkers", 1, 300], ["wall", 240]],                 // primo cuneo
     /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
     /* 9  */ [["bigship"]],   // INTERLUDIO: la nave enorme passa; si spengono le torrette (obj_bigship)
     /* 10 */ [["spears", 3], ["corridor", 10], ["stalkers", 2, 330]],
-    /* 11 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["wall", 200]],                  // due quadrati a specchio, separati
+    /* 11 */ [["echelon", 6, 140, 1], ["echelon", 6, 220, -1], ["wall", 200]],             // due scaglioni: una V grande che si apre e si chiude
     /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320]],                                // la tenaglia da sola: il serpente in mezzo la tagliava
     /* 13 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
     /* 14 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280]],
-    /* 15 */ [["square", 8, 90, 1], ["square", 8, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],
+    /* 15 */ [["diamond", 9, 90, 1], ["diamond", 9, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],   // due rombi a specchio
     /* 16 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
     /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460]]   // due serpenti a specchio
 ];
@@ -307,8 +311,11 @@ spawn_wave = function() {
         switch (c[0]) {
             case "snake":    spawn_formation(1, c[1], c[2], c[3]); break;
             case "v":        spawn_formation(2, c[1], c[2], 0); break;
-            case "square":
-            case "ring":     spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1); break;
+            case "delta":
+            case "square":   // vecchio nome
+            case "ring":     spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1, 0); break;
+            case "diamond":  spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1, 1); break;
+            case "echelon":  spawn_formation(3, c[1], c[2], (array_length(c) > 3) ? c[3] : 1, 2); break;
             case "pincer":   spawn_formation(4, c[1], 0, 0); break;
             case "corridor": spawn_formation(5, c[1], 0, 0); break;
             case "spears":   spawn_spears(c[1]); break;

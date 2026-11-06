@@ -23,28 +23,33 @@ if (form > 0) {
             }
             break;
 
-        case 3: // QUADRATO: un blocco rigido di falene (3x3 senza il centro) che scende dritto, lento
-            // amp = verso (1 o -1): il blocco scivola appena di lato, due quadrati scivolano a specchio
-            var gx, gy;
-            if (n == 8) {
-                // le 8 caselle del bordo di un quadrato 3x3, in giro
-                var cells = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
-                gx = cells[idx][0];
-                gy = cells[idx][1];
-            } else {
-                // altri numeri: griglia piena, riga per riga
-                var cols = ceil(sqrt(n));
-                gx = (idx mod cols) - (cols - 1) / 2;
-                gy = (idx div cols) - (ceil(n / cols) - 1) / 2;
-            }
-            var bx = cx + sign(amp) * 12 * dsin(tt * 0.8);   // il centro del blocco
-            var by = -70 + tt * 0.9;
-            x = bx + gx * 26;
-            y = by + gy * 26;
-            // dall'ondata 4, a meta' discesa il quadrato si apre in una raffica: ogni falena spara verso l'esterno
+        case 3: // FORMAZIONE AEREA: una squadriglia rigida, come le flotte vere.
+                // Il capo vola davanti; gli altri tengono il loro posto dietro di lui.
+                // La squadriglia scende serpeggiando e, quando vira, si piega TUTTA INSIEME attorno al capo.
+                // amp = verso (1 o -1): due squadriglie serpeggiano a specchio
+            var sg = sign(amp);
+            // i posti: [di lato, dietro], in "passi" (22 px di lato, 18 nello scaglione; 20 px dietro)
+            var slots;
+            if (shape == 1)      slots = [[0, 0], [-1, 1], [1, 1], [-2, 2], [0, 2], [2, 2], [-1, 3], [1, 3], [0, 4]];            // ROMBO
+            else if (shape == 2) slots = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7]];                     // SCAGLIONE
+            else                 slots = [[0, 0], [-1, 1], [1, 1], [-2, 2], [0, 2], [2, 2], [-3, 3], [-1, 3], [1, 3], [3, 3]]; // CUNEO
+            var sl = slots[min(idx, array_length(slots) - 1)];
+            var lat = sl[0];
+            if (shape == 2) lat *= sg;   // lo scaglione si apre verso l'esterno: due scaglioni a specchio fanno una V grande
+            var step_x = (shape == 2) ? 18 : 22;
+            // il capo: scende serpeggiando. La direzione della squadriglia e' quella in cui si muove il capo
+            var lx = cx + sg * 32 * dsin(tt * 0.7);
+            var ly = -40 + tt * 1.0;
+            var hd = point_direction(0, 0, sg * 32 * dcos(tt * 0.7) * 0.7 * pi / 180, 1.0);
+            var fh = 270 + angle_difference(hd, 270) * 0.6;   // la squadriglia si piega un po' meno del capo: resta leggibile
+            // ogni falena: dal capo, "lat" passi di lato e "sl[1]" passi dietro, girati con la squadriglia
+            x = lx + lengthdir_x(lat * step_x, fh - 90) + lengthdir_x(sl[1] * 20, fh + 180);
+            y = ly + lengthdir_y(lat * step_x, fh - 90) + lengthdir_y(sl[1] * 20, fh + 180);
+            dir = hd;   // guardano tutte dove va la squadriglia
+            // dall'ondata 4, a meta' discesa la squadriglia fa fuoco tutta insieme, a ventaglio in avanti
             if (instance_exists(obj_game) && ((tt == 260 && obj_game.wave >= 4) || (tt == 340 && obj_game.wave >= 10))) {
                 var rb = instance_create_layer(x, y, "Instances", obj_ebullet);
-                rb.dir = point_direction(bx, by, x, y);
+                rb.dir = hd - lat * 8;
                 rb.spd = 1.8;
             }
             break;
@@ -61,8 +66,7 @@ if (form > 0) {
             y = base_y + 26 * dsin(tt * 3);
             break;
     }
-    if (form == 3) dir = 270;   // nel quadrato guardano tutte in basso, come soldati in fila
-    else if (x != px || y != py) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
+    if (form != 3 && (x != px || y != py)) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
 
     // colpo mirato (solo per alcune, e solo quando sono ben dentro lo schermo)
     if (can_shoot && y > 20 && y < room_height * 0.55 && instance_exists(obj_player)) {

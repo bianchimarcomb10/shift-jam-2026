@@ -10,7 +10,8 @@ home_time = 70;   // per quanti fotogrammi puo' ancora curvare verso il giocator
 shots = 1;        // quanti colpi spara in formazione (se can_shoot)
 
 // dati della formazione (obj_game li sovrascrive subito dopo averla creata)
-form = 0;      // 1 serpente, 2 V, 3 anello, 4 tenaglia, 5 corridoio laterale
+form = 0;      // 1 serpente, 2 V, 3 formazione aerea rigida, 4 tenaglia, 5 corridoio laterale
+shape = 0;     // solo form 3: 0 cuneo (triangolo), 1 rombo, 2 scaglione (diagonale)
 idx = 0;       // posto nella formazione
 n = 1;         // quante falene nella formazione
 cx = room_width / 2;   // centro orizzontale del disegno
