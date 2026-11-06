@@ -9,3 +9,4 @@ stay = 420;       // dopo 7 secondi sullo schermo smette di sparare e se ne va
 leaving = false;
 ldir = 90;        // direzione di fuga
 lspd = 0;
+face = 270;       // dove guarda (la aggiorna il Draw)

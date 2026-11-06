@@ -44,7 +44,7 @@ if (attack && transform_timer == 0) {
             if (object_index == obj_turret && armored) continue;   // la corazza non si taglia: va colpita coi colpi parati
             if (point_distance(x, y, other.x, other.y) <= other.sweep_radius + radius) {
                 hp -= 3;
-                if (hp <= 0) { killed = true; instance_destroy(); }
+                if (hp <= 0) { killed = true; global.enemy_boom(id); instance_destroy(); }
             }
         }
         if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
@@ -88,7 +88,7 @@ if (invuln == 0) {
     with (obj_enemy) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
             hit = true;
-            if (object_index == obj_moth) instance_destroy();
+            if (object_index == obj_moth) { global.enemy_boom(id); instance_destroy(); }
         }
     }
     if (hit) {
