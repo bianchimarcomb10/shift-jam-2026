@@ -2,6 +2,8 @@
 if (finale) exit;   // durante il finale non succede piu' niente
 if (sutra_timer > 0) sutra_timer -= 1;
 if (cp_timer > 0) cp_timer -= 1;
+if (drill_phrase > 0) drill_phrase -= 1;
+if (boss_phrase > 0) boss_phrase -= 1;
 
 if (game_over) {
     if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
@@ -26,17 +28,23 @@ if (preview_timer > 0) {
     exit;
 }
 
-// finite le ondate, quando lo schermo e' libero arriva il Custode:
-// prima la sagoma della nave madre sale sullo sfondo, poi lei scende dall'alto
+// finite le ondate, quando lo schermo e' libero: prima scende la TRIVELLA dal cielo,
+// poi (presa la trivella) la sagoma della nave madre sale sullo sfondo e lei scende dall'alto
 if (wave >= boss_wave) {
     if (instance_number(obj_enemy) == 0) {
-        if (!boss_preview) {
-            boss_preview = true;
-            // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (subito il boss)
+        if (drill_state == 0) {
+            drill_state = 1;   // obj_drill_pickup lo porta a 2 quando la prendi
+            instance_create_layer(room_width / 2, -30, "Instances", obj_drill_pickup);
+            // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (trivella e poi boss)
             if (global.checkpoint < boss_wave) {
                 global.checkpoint = boss_wave;
                 cp_timer = 150;   // scritta "CHECKPOINT"
             }
+            exit;
+        }
+        if (drill_state < 2 || drill_phrase > 60) exit;   // aspetta la trivella e la sua frase
+        if (!boss_preview) {
+            boss_preview = true;
             var bp = instance_create_layer(room_width / 2, room_height + 120, "Instances", obj_preview);
             bp.items = [[spr_boss_mothership, 0, 0, 0.9, 1]];
             bp.spd = 2.5;
@@ -46,6 +54,7 @@ if (wave >= boss_wave) {
             if (boss_timer <= 0) {
                 boss_spawned = true;
                 instance_create_layer(room_width / 2, -90, "Instances", obj_boss);
+                boss_phrase = 240;   // "WHO THE HELL DO YOU THINK I AM?!"
             }
         }
     }

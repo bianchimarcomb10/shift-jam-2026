@@ -61,6 +61,18 @@ if (!global.parry_learned && !game_over && instance_exists(obj_player) && obj_pl
     }
 }
 
+// TRIVELLA: carica piena e sei mecha -> ricorda come lanciarla
+if (!game_over && instance_exists(obj_player) && global.has_drill && obj_player.form == 1 && obj_player.drill_charge >= 3) {
+    draw_set_halign(fa_center);
+    draw_set_colour(((current_time div 250) mod 2 == 0) ? c_white : make_colour_rgb(110, 190, 255));
+    draw_text(display_get_gui_width() / 2, room_height - 76, "SHIFT: LAUNCH THE DRILL");
+    draw_set_colour(c_white);
+    draw_set_halign(fa_left);
+}
+// le due frasi enormi: la trivella presa, l'arrivo del boss
+if (drill_phrase > 0) global.big_phrase("YOUR DRILL\nIS THE DRILL\nTHAT WILL\nPIERCE\nTHE HEAVENS!", drill_phrase, 270, make_colour_rgb(110, 190, 255));
+if (boss_phrase > 0) global.big_phrase("WHO THE HELL\nDO YOU THINK\nI AM?!", boss_phrase, 240, make_colour_rgb(230, 190, 90));
+
 if (game_over) {
     // enorme, lampeggiante: l'unica cosa da fare e' rialzarsi
     draw_set_halign(fa_center);

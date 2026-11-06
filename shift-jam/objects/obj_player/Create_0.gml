@@ -9,6 +9,8 @@ invuln = 0;             // invulnerabilita' dopo un colpo
 parry_radius = 72;      // la falciata annulla i proiettili un po' oltre la lama
 sparks = [];            // scintille dei proiettili annullati: [x, y, vita]
 tilt = 0;               // inclinazione della navicella in virata
+if (!variable_global_exists("has_drill")) global.has_drill = false;   // la imposta obj_game; qui solo per sicurezza
+drill_charge = 0;       // TRIVELLA: colpi rimandati di fila (3 = carica piena, si lancia passando a navicella)
 mech_scale = 1.2;       // il mecha e' un po' piu' grosso della navicella (la hitbox resta quella)
 trail = [];             // scintille della scia del motore: [x, y, vita]
 

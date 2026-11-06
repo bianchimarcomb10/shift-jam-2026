@@ -95,7 +95,44 @@ if (form == 0 && transform_timer == 0) {
     }
 }
 
-if (form == 1 && transform_timer == 0) {
+// TRIVELLA: tre tacche sotto il giocatore = colpi rimandati di fila (la carica)
+if (global.has_drill) {
+    for (var dk = 0; dk < 3; dk++) {
+        var dxk = x - 8 + dk * 8, dyk = y + 26;
+        draw_set_colour(c_black);
+        draw_rectangle(dxk - 3, dyk - 3, dxk + 3, dyk + 3, false);
+        if (dk < drill_charge) draw_set_colour((drill_charge >= 3 && (current_time div 120) mod 2 == 0) ? c_white : make_colour_rgb(110, 210, 255));
+        else draw_set_colour(make_colour_rgb(50, 60, 80));
+        draw_rectangle(dxk - 2, dyk - 2, dxk + 2, dyk + 2, false);
+    }
+    draw_set_colour(c_white);
+}
+
+if (form == 1 && transform_timer == 0 && global.has_drill) {
+    // la TRIVELLA, tenuta a destra e puntata avanti: nell'attacco scatta in avanti e gira veloce
+    var thr = (sweep_anim > 0) ? sweep_anim * 1.6 : 0;
+    var dsp = current_time * ((sweep_anim > 0) ? 1.5 : 0.3);
+    global.draw_drill(x + 10 * mech_scale, y - 2 * mech_scale + bob * 0.5 - thr, 1, dsp, (drill_charge >= 3) ? 1 : 0);
+    if (sweep_anim > 0) {
+        // il colpo: un ventaglio azzurro davanti (non piu' un cerchio intorno)
+        var rr = sweep_radius + 16;
+        gpu_set_blendmode(bm_add);
+        draw_set_alpha(sweep_anim / 10 * 0.35);
+        draw_set_colour(make_colour_rgb(60, 160, 255));
+        draw_primitive_begin(pr_trianglefan);
+        draw_vertex(x, y);
+        for (var fa = 40; fa <= 140; fa += 10) draw_vertex(x + lengthdir_x(rr, fa), y + lengthdir_y(rr, fa));
+        draw_primitive_end();
+        gpu_set_blendmode(bm_normal);
+        draw_set_alpha(sweep_anim / 10);
+        draw_set_colour(make_colour_rgb(120, 235, 255));
+        for (var fa2 = 40; fa2 < 140; fa2 += 10) {
+            draw_line_width(x + lengthdir_x(rr, fa2), y + lengthdir_y(rr, fa2), x + lengthdir_x(rr, fa2 + 10), y + lengthdir_y(rr, fa2 + 10), 2);
+        }
+        draw_set_alpha(1);
+        draw_set_colour(c_white);
+    }
+} else if (form == 1 && transform_timer == 0) {
     // la falce, tenuta a destra (solo da fermo: durante la falciata c'e' la lama che ruota).
     // Anche lei si inclina col mecha: ogni punto e' ruotato attorno al centro
     if (sweep_anim == 0) {

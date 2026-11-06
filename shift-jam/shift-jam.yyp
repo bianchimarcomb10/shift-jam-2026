@@ -23,6 +23,8 @@
     {"id":{"name":"obj_bigship","path":"objects/obj_bigship/obj_bigship.yy",},},
     {"id":{"name":"obj_boom","path":"objects/obj_boom/obj_boom.yy",},},
     {"id":{"name":"obj_boss","path":"objects/obj_boss/obj_boss.yy",},},
+    {"id":{"name":"obj_drill_pickup","path":"objects/obj_drill_pickup/obj_drill_pickup.yy",},},
+    {"id":{"name":"obj_drill_shot","path":"objects/obj_drill_shot/obj_drill_shot.yy",},},
     {"id":{"name":"obj_ebullet","path":"objects/obj_ebullet/obj_ebullet.yy",},},
     {"id":{"name":"obj_enemy","path":"objects/obj_enemy/obj_enemy.yy",},},
     {"id":{"name":"obj_finale","path":"objects/obj_finale/obj_finale.yy",},},
