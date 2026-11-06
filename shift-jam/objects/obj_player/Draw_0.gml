@@ -108,27 +108,38 @@ if (form == 1 && transform_timer == 0) {
         draw_line_width(x1, y1, x2, y2, 3);
         draw_set_colour(make_colour_rgb(150, 170, 200));
         draw_line(x1, y1, x2, y2);
-        // lama: mezzaluna AZZURRA che parte dalla cima e ricade verso l'esterno (azzurro = roba tua,
-        // come i colpi parati e la scia del motore). Tre passate: alone che pulsa, contorno nero, filo acceso
-        var bcol = [make_colour_rgb(40, 140, 255), c_black, make_colour_rgb(120, 235, 255)];
-        var bwid = [7, 4, 2];
-        for (var pass = 0; pass < 3; pass++) {
-            if (pass == 0) {
-                gpu_set_blendmode(bm_add);
-                draw_set_alpha(0.4 + 0.15 * dsin(current_time * 0.3));
-            }
-            draw_set_colour(bcol[pass]);
-            for (var ba = 90; ba > -20; ba -= 15) {
-                var bb = max(ba - 15, -20);
-                var ax = fx + lengthdir_x(11 * ms, ba), ay = (-11 + fb) * ms + lengthdir_y(5 * ms, ba);
-                var cx2 = fx + lengthdir_x(11 * ms, bb), cy2 = (-11 + fb) * ms + lengthdir_y(5 * ms, bb);
-                draw_line_width(x + ax * rc + ay * rs, y - ax * rs + ay * rc,
-                                x + cx2 * rc + cy2 * rs, y - cx2 * rs + cy2 * rc, bwid[pass]);
-            }
-            if (pass == 0) {
-                gpu_set_blendmode(bm_normal);
-                draw_set_alpha(1);
-            }
+        // lama: mezzaluna AZZURRA piena e chiusa (azzurro = roba tua, come i colpi parati e la scia del motore).
+        // Bordo esterno ad arco; quello interno si avvicina e torna a toccarlo alle due punte.
+        var oxs = [], oys = [], ixs = [], iys = [];
+        var bcy = (-11 + fb) * ms;   // centro della curva della lama
+        for (var ba = 90; ba >= -30; ba -= 10) {
+            var ax = fx + lengthdir_x(11 * ms, ba), ay = bcy + lengthdir_y(6 * ms, ba);
+            var th = 1 - 0.5 * dsin((90 - ba) * 1.5);   // spessore: zero alle punte, massimo a meta'
+            var bx2 = fx + (ax - fx) * th, by2 = bcy + (ay - bcy) * th;
+            array_push(oxs, x + ax * rc + ay * rs);   array_push(oys, y - ax * rs + ay * rc);
+            array_push(ixs, x + bx2 * rc + by2 * rs); array_push(iys, y - bx2 * rs + by2 * rc);
+        }
+        var nb = array_length(oxs);
+        // alone che pulsa
+        gpu_set_blendmode(bm_add);
+        draw_set_alpha(0.4 + 0.15 * dsin(current_time * 0.3));
+        draw_set_colour(make_colour_rgb(40, 140, 255));
+        for (var k = 0; k < nb - 1; k++) draw_line_width(oxs[k], oys[k], oxs[k + 1], oys[k + 1], 6);
+        gpu_set_blendmode(bm_normal);
+        draw_set_alpha(1);
+        // corpo pieno
+        draw_set_colour(make_colour_rgb(70, 190, 255));
+        draw_primitive_begin(pr_trianglestrip);
+        for (var k = 0; k < nb; k++) {
+            draw_vertex(oxs[k], oys[k]);
+            draw_vertex(ixs[k], iys[k]);
+        }
+        draw_primitive_end();
+        // contorno chiaro, chiuso: arco esterno e arco interno si uniscono alle punte
+        draw_set_colour(make_colour_rgb(215, 250, 255));
+        for (var k = 0; k < nb - 1; k++) {
+            draw_line_width(oxs[k], oys[k], oxs[k + 1], oys[k + 1], 1.5);
+            draw_line_width(ixs[k], iys[k], ixs[k + 1], iys[k + 1], 1.5);
         }
     }
     if (sweep_anim > 0) {
