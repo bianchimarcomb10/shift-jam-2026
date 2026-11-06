@@ -8,3 +8,4 @@ tilt = 0;              // inclinazione in virata (come la navicella)
 mech_speed = 2.5;      // come il mecha nello spazio
 vy = 0;                // velocita' verticale durante il decollo
 bottom_y = room_height - 40;   // dove finisce schiacciato quando gli alieni lo sommergono
+mech_scale = 1.2;      // come in obj_player: il mecha e' un po' piu' grosso della navicella

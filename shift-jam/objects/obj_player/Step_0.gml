@@ -92,6 +92,10 @@ if (invuln == 0) {
         // il RAGGIO della nave laser: non si para, si schiva
         if (beam_w > 3 && other.y > y + 20 && abs(other.x - x) < beam_w + hr) hit = true;
     }
+    with (obj_bigship) {
+        // la NAVE ENORME e' fisica: scafo e torrette spente fanno male se ci vai addosso (le ali no)
+        if (touches(other.x, other.y, hr)) hit = true;
+    }
     with (obj_enemy) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
             hit = true;
