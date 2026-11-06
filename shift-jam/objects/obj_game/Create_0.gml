@@ -14,6 +14,35 @@ boss_timer = 0;
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 draw_set_font(fnt_main);
 
+/// DISEGNO A PEZZI: i nemici nello spazio sono sprite tagliate in pezzi che si muovono (come mecha e alieni di terra).
+/// spr = sprite; parts = lista di pezzi; px, py = posizione; rot = rotazione di tutto il nemico; sc = grandezza.
+/// Ogni pezzo: [sinistra, alto, larghezza, altezza, perno x, perno y, rotazione attorno al perno, spostamento x, spostamento y]
+/// (tutte le misure sono dentro lo sprite originale, prima di girarlo)
+global.draw_parts = function(spr, parts, px, py, rot, sc) {
+    var ox = sprite_get_xoffset(spr), oy = sprite_get_yoffset(spr);
+    for (var i = 0; i < array_length(parts); i++) {
+        var p = parts[i];
+        var a = p[6];
+        // centro del pezzo rispetto al perno, ruotato del suo angolo
+        var cx = p[0] + p[2] / 2 - p[4];
+        var cy = p[1] + p[3] / 2 - p[5];
+        var cl = point_distance(0, 0, cx, cy), cd = point_direction(0, 0, cx, cy) + a;
+        var vx = (lengthdir_x(cl, cd) + p[4] - ox + p[7]) * sc;
+        var vy = (lengthdir_y(cl, cd) + p[5] - oy + p[8]) * sc;
+        // poi tutto il nemico girato di rot
+        var vl = point_distance(0, 0, vx, vy), vd = point_direction(0, 0, vx, vy) + rot;
+        var wx = px + lengthdir_x(vl, vd);
+        var wy = py + lengthdir_y(vl, vd);
+        // draw_sprite_general ruota attorno all'angolo in alto a sinistra: lo ricavo dal centro
+        var hw = p[2] / 2 * sc, hh = p[3] / 2 * sc;
+        var dd = point_direction(0, 0, -hw, -hh) + rot + a;
+        var dl = point_distance(0, 0, hw, hh);
+        draw_sprite_general(spr, 0, p[0], p[1], p[2], p[3],
+            wx + lengthdir_x(dl, dd), wy + lengthdir_y(dl, dd), sc, sc, rot + a,
+            c_white, c_white, c_white, c_white, draw_get_alpha());
+    }
+}
+
 /// SUTRA DEL CONTINUE: a ogni ripartenza dopo un game over compare a schermo uno di questi testi.
 /// Sono 8 (circa 5 game over di un giocatore medio + 3 di scorta). Escono in ordine casuale
 /// ma senza ripetersi finche' non sono usciti tutti. Traduzioni nostre, brevi, dall'originale.
