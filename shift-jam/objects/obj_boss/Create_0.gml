@@ -1,5 +1,6 @@
 /// Boss in due fasi.
 /// Fase 1: la nave madre da guerra degli alieni. Fase 2: perso il guscio, resta il Custode.
+/// Il Custode e' disegnato dal codice: un ensō (cerchio zen a pennello), la mala e due mani giunte.
 /// E' figlio di obj_enemy: colpi, falciata e contatto funzionano come con gli altri nemici.
 phase = 1;
 hp_p2 = 150;              // vita del Custode
