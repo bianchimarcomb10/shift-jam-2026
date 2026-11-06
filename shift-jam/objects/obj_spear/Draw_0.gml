@@ -3,7 +3,7 @@
 // girata di 180 gradi: guarda verso il basso, verso il giocatore
 var ph = current_time * 0.35 + id * 41;
 var pod = 1 + dsin(ph);
-if (charge > 0) pod = -charge / 30 * 2;   // si stringono mentre carica
+if (charge > 0) pod = -(30 - charge) / 30 * 2;   // si stringono sempre di piu' mentre carica
 global.draw_parts(spr_enemy_spear, [
     [14, 29, 6, 19, 19, 38, 0, -pod, 0],   // motore sinistro
     [44, 29, 6, 19, 44, 38, 0,  pod, 0],   // motore destro
