@@ -166,6 +166,12 @@ function draw_console() {
         msg = ["GOLD", "BEADS:", "PARRY"]; alert = true;
     } else if (pl != noone && global.has_drill && pl.form == 1 && pl.drill_charge >= 3) {
         msg = ["SHIFT", "FIRES", "DRILL"]; alert = true;
+    } else if (pl != noone && pl.special > 0) {
+        // ARMA SPECIALE: quale e quanti secondi restano; da mecha ricorda che serve la navicella
+        var wn = (pl.special == 1) ? "ROCKETS" : ((pl.special == 2) ? "LASER" : "SPREAD");
+        if (pl.form == 1) msg = [wn + ":", "SHIFT TO", "SHIP"];
+        else msg = [wn, string(ceil(pl.special_t / 60)) + " SEC"];
+        alert = true;
     } else if (pl != noone && !global.parry_learned && pl.form == 0) {
         var py = pl.y, near = false;
         with (obj_ebullet) if (wall && y < py) near = true;

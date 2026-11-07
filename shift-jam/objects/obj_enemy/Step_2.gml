@@ -6,6 +6,7 @@ if (object_index == obj_boss) exit;
 if (retreat) exit;                      // chi si ritira passa attraverso gli altri
 if (object_index == obj_turret) exit;   // le torrette sono agganciate alla nave enorme
 if (object_index == obj_laser) exit;    // la nave laser tiene la sua colonna
+if (object_index == obj_carrier) exit;  // la Portatrice segue la sua rotta
 if (object_index == obj_moth && form > 0) exit;
 
 var me = id;

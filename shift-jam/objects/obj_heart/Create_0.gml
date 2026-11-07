@@ -4,6 +4,11 @@
 x0 = x;          // centro del dondolio
 t = 0;
 rot = 0;         // rotazione dello yin-yang (gradi)
+// prima SALTA in su e di lato (verso il centro), poi scende piano: cosi' non cade dritto
+// nella colonna dove stai sparando, e lo vedi bene
+vy = -2.4;
+vx = (x < room_width / 2) ? 0.9 : -0.9;
+life = 600;      // resta 10 secondi, poi svanisce (lampeggia negli ultimi 2)
 
 /// disegna il cuore pixel per pixel, unendo i pixel dello stesso colore in righe (meno chiamate di disegno).
 /// half = mezza larghezza in pixel; mode 0 = tutto del colore col, mode 1 = yin-yang
@@ -36,8 +41,15 @@ draw_heart_px = function(cx, cy, half, mode, col) {
             }
             if (c != run_c) {
                 if (run_c != -1) {
+                    // una striscia alta 1 pixel, da (cx + run_s) a (cx + i): disegnata con due triangoli e
+                    // bordi espliciti, perche' draw_rectangle con y1 == y2 in GameMaker puo' non disegnare niente
                     draw_set_colour(run_c);
-                    draw_rectangle(cx + run_s, cy + j, cx + i - 1, cy + j, false);
+                    draw_primitive_begin(pr_trianglestrip);
+                    draw_vertex(cx + run_s, cy + j);
+                    draw_vertex(cx + i, cy + j);
+                    draw_vertex(cx + run_s, cy + j + 1);
+                    draw_vertex(cx + i, cy + j + 1);
+                    draw_primitive_end();
                 }
                 run_c = c; run_s = i;
             }

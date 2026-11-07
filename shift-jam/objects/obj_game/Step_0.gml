@@ -23,7 +23,8 @@ if (boss_spawned) exit;
 if (lead > 0) {
     // la musica parte 2 s prima della prima ondata: dopo un continue riparte dal punto giusto del brano
     if (lead == 120) {
-        if (wave < boss_wave) music_play("mus_waves", false, 0, music_offset(wave));
+        // dal prologo: mus_intro sfuma dentro mus_waves in 2 s; dopo un continue parte e basta
+        if (wave < boss_wave) music_play("mus_waves", false, (global.music != -1) ? 2000 : 0, music_offset(wave));
     }
     lead -= 1;
     if (lead > 0) exit;

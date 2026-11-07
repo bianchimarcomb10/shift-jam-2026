@@ -206,10 +206,15 @@ global.enemy_boom = function(e) {
         case obj_spear:   s = spr_boom_frigate; first = 2; r = 180;         break;   // Lancia = Frigate
         case obj_stalker: s = spr_boom_support; first = 2; r = e.face - 90; break;   // Inseguitore = Support ship
         case obj_laser:   s = spr_boom_bomber;  first = 1; r = 180; bsc = 2;   break;   // Nave laser = Bomber, grande il doppio
+        case obj_carrier: s = spr_boom_fighter; first = 1; r = 0;           break;   // Portatrice: piccola come una Falena
     }
     if (s == -1) return;   // torrette e Custode hanno gia' la loro fine
     // la Lancia bianca e nera lascia il cuore con lo yin-yang
     if (e.object_index == obj_spear && e.special) instance_create_layer(e.x, e.y, "Instances", obj_heart);
+    if (e.object_index == obj_carrier) {   // la Portatrice lascia cadere la sua arma speciale
+        var pu = instance_create_layer(e.x, e.y, "Instances", obj_powerup);
+        pu.kind = e.kind;
+    }
     var b = instance_create_layer(e.x, e.y, "Instances", obj_boom);
     b.spr = s;
     b.f = first;           // si parte dalle prime crepe, non dalla nave intera
@@ -293,6 +298,15 @@ spawn_spears = function(_k) {
     }
 }
 
+/// PORTATRICE: una piccola nave bianca e nera che attraversa lo schermo in alto e porta un'arma speciale.
+/// _kind: 1 razzi, 2 laser, 3 ventaglio.  _wait: fotogrammi di attesa.  _side: 1 da sinistra, -1 da destra
+spawn_carrier = function(_kind, _wait, _side) {
+    var cr = instance_create_layer(-100, -100, "Instances", obj_carrier);
+    cr.kind = _kind;
+    cr.wait = _wait;
+    cr.side = _side;
+}
+
 /// Navi laser: si fermano in alto, una accanto all'altra, dopo _wait fotogrammi.
 /// Se sono due, mirano una a sinistra e una a destra di te: i due raggi fanno una gabbia.
 spawn_lasers = function(_k, _wait) {
@@ -330,6 +344,7 @@ spawn_stalkers = function(_k, _wait) {
 ///   ["laser", quante, attesa]               Navi laser (raggio continuo, non si para) dopo "attesa" fotogrammi
 ///   ["wall", attesa]                        muro di colpi dopo "attesa" fotogrammi
 ///   ["bigship"]                             la nave enorme con le torrette (un'ondata da sola)
+///   ["carrier", arma, attesa, lato]         PORTATRICE: abbattuta lascia un'arma speciale (1 razzi, 2 laser, 3 ventaglio)
 /// Per cambiare il gioco basta cambiare questa tabella.
 waves = [
     /* 1  */ [["snake", 8, 180, 100]],
@@ -338,16 +353,16 @@ waves = [
     /* 4  */ [["pincer", 10]],
     /* 5  */ [["spears", 2], ["corridor", 10]],
     /* 6  */ [["delta", 10, 180], ["stalkers", 1, 300], ["wall", 240]],                 // primo cuneo
-    /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70]],
+    /* 7  */ [["snake", 7, 100, 70], ["snake", 7, 260, -70], ["carrier", 1, 60, 1]],   // prima Portatrice: i RAZZI
     /* 8  */ [["v", 8, 180], ["wall", 150], ["wall", 300]],
     /* 9  */ [["bigship"]],   // INTERLUDIO: la nave enorme passa; si spengono le torrette (obj_bigship)
     /* 10 */ [["laser", 1, 60], ["corridor", 10], ["stalkers", 2, 330]],                 // prima nave laser, dopo il checkpoint
     /* 11 */ [["echelon", 6, 140, 1], ["echelon", 6, 220, -1], ["wall", 200]],             // due scaglioni: una V grande che si apre e si chiude
-    /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320], ["laser", 1, 420]],             // la tenaglia da sola: il serpente in mezzo la tagliava; il laser dopo i muri
+    /* 12 */ [["pincer", 16], ["wall", 180], ["wall", 320], ["laser", 1, 420], ["carrier", 2, 30, -1]],   // la tenaglia da sola; il laser dopo i muri. Portatrice del LASER: brucia i muri
     /* 13 */ [["spears", 4], ["corridor", 12], ["wall", 250]],
     /* 14 */ [["snake", 9, 100, 70], ["snake", 9, 260, -70], ["stalkers", 2, 300], ["wall", 120], ["wall", 280], ["laser", 2, 360]],   // due laser: la gabbia
     /* 15 */ [["diamond", 9, 90, 1], ["diamond", 9, 270, -1], ["stalkers", 2, 330], ["wall", 200], ["wall", 340]],   // due rombi a specchio
-    /* 16 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420]],   // corridoio sotto le Lance, non in mezzo
+    /* 16 */ [["spears", 4], ["corridor", 14], ["stalkers", 3, 300], ["wall", 150], ["wall", 300], ["wall", 420], ["carrier", 3, 40, 1]],   // corridoio sotto le Lance; Portatrice del VENTAGLIO, che arriva fino all'ultima ondata
     /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460], ["laser", 2, 520]]   // due serpenti a specchio
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
@@ -391,7 +406,7 @@ wave_contents = function() {
         if (k == "spears") res[1] += cmds[i][1];
         else if (k == "stalkers") res[2] += cmds[i][1];
         else if (k == "laser") res[3] += cmds[i][1];
-        else if (k != "wall" && k != "bigship") res[0] += cmds[i][1];
+        else if (k != "wall" && k != "bigship" && k != "carrier") res[0] += cmds[i][1];
     }
     return res;
 }
@@ -448,6 +463,7 @@ spawn_wave = function() {
             case "laser":    spawn_lasers(c[1], c[2]); break;
             case "wall":     array_push(walls, c[1]); break;
             case "bigship":  instance_create_layer(room_width / 2, -90, "Instances", obj_bigship); break;
+            case "carrier":  spawn_carrier(c[1], c[2], c[3]); break;
         }
     }
 }
