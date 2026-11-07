@@ -1,3 +1,4 @@
+if (retreat) exit;   // tempo dell'ondata scaduto: la ritirata la fa obj_enemy (Begin Step)
 if (wait > 0) { wait -= 1; exit; }   // aspetta il suo turno fuori dallo schermo, di lato
 
 // SE NE VA: non spara piu', vira verso il bordo piu' vicino salendo, accelera e sparisce

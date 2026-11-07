@@ -10,3 +10,8 @@ leaving = false;
 ldir = 90;        // direzione di fuga
 lspd = 0;
 face = 270;       // dove guarda (la aggiorna il Draw)
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

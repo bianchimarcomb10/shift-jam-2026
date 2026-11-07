@@ -6,3 +6,8 @@ timer = 0;
 charge = 0;       // > 0 mentre l'occhio si accende (avviso)
 life = 420;       // dopo 7 secondi se ne va
 special = false;  // true = Lancia BIANCA E NERA: abbattuta lascia un cuore (obj_heart). La sceglie obj_game
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

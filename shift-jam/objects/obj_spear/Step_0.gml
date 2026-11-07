@@ -1,3 +1,4 @@
+if (retreat) exit;   // tempo dell'ondata scaduto: la ritirata la fa obj_enemy (Begin Step)
 life -= 1;
 if (life <= 0) {
     y -= 3;

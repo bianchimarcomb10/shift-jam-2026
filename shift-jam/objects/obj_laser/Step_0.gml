@@ -3,6 +3,8 @@ if (hp < last_hp) flash = 4;
 last_hp = hp;
 if (flash > 0) flash -= 1;
 
+if (retreat) exit;   // tempo dell'ondata scaduto: la ritirata la fa obj_enemy (Begin Step)
+
 if (wait > 0) { wait -= 1; y = -70; exit; }   // aspetta fuori schermo
 t += 1;
 var tx = instance_exists(obj_player) ? obj_player.x + offs : x;   // dove vuole mettersi

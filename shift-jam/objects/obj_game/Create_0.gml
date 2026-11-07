@@ -3,7 +3,9 @@
 randomize();
 audio_master_gain(0.4);   // volume generale piu' basso
 global.hp = 3;          // il giocatore regge 3 colpi
-spawn_timer = 120;      // 2 secondi prima della prima ondata
+lead = 120;             // 2 secondi prima della prima ondata (5 dopo un continue, col sutra)
+wave_t = -1;            // fotogrammi da quando e' iniziata l'ondata attuale (-1 = non ancora)
+seq_t = -1;             // fotogrammi da quando e' iniziata la sequenza della trivella (-1 = non ancora)
 // CHECKPOINT: superata la nave enorme, dopo un game over si riparte dall'ondata successiva (lo salva obj_bigship).
 // Lo azzera obj_ground all'inizio di una partita nuova
 if (!variable_global_exists("checkpoint")) global.checkpoint = 0;
@@ -14,13 +16,11 @@ cp_text = "";          // quale frase: la sceglie chi salva il checkpoint
 game_over = false;
 boss_spawned = false;
 finale = false;         // true durante il finale "Silenzio"
-preview_timer = 0;      // > 0 mentre le sagome dell'ondata salgono sullo sfondo
-boss_preview = false;   // la sagoma della nave madre e' gia' passata?
-boss_timer = 0;
+boss_preview = false;   // la sagoma della nave madre e' gia' passata? (la guarda obj_sky)
 walls = [];             // conto alla rovescia dei muri di colpi in arrivo
 // TRIVELLA: poco prima del boss scende dal cielo; il mecha la prende e diventa la sua arma
 global.has_drill = false;   // si riprende ogni volta (anche ripartendo dal checkpoint del boss)
-drill_state = 0;        // 0 = non ancora scesa, 1 = sta scendendo / aspetta di essere presa, 2 = presa
+drill_state = 0;        // 0 = non ancora arrivata, 1 = sta arrivando, 2 = piantata nel mecha
 drill_phrase = 0;       // > 0 mentre si vede la frase della trivella
 boss_phrase = 0;        // > 0 mentre si vede la frase all'arrivo del boss
 // avviso "SHIFT + Z TO PARRY": compare ai muri finche' il giocatore non para almeno un colpo di un muro.
@@ -31,40 +31,45 @@ draw_set_font(fnt_main);
 /// TRIVELLA disegnata dal codice: un cono che punta in alto, con la spirale che gira.
 /// (px, py) = centro della base; sc = grandezza di un "pixel" della trivella; ph = rotazione della spirale;
 /// glow = 0..1 alone azzurro (carica piena). E' azzurra come tutto cio' che e' tuo.
-global.draw_drill = function(px, py, sc, ph, glow) {
+global.draw_drill = function(px, py, sc, ph, glow, dn = 1) {
+    // dn = 1 punta in alto (in mano al mecha), dn = -1 punta in basso (quando piomba sul mecha).
+    // (px, py) e' sempre il centro della base
     var st = max(1, sc);
     var W = 7 * st, H = 20 * st;
     if (glow > 0) {
         gpu_set_blendmode(bm_add);
         draw_set_alpha(glow * (0.35 + 0.15 * dsin(current_time * 0.6)));
         draw_set_colour(make_colour_rgb(40, 140, 255));
-        draw_circle(px, py - H * 0.45, W * 1.7 + 2, false);
+        draw_circle(px, py - H * 0.45 * dn, W * 1.7 + 2, false);
         gpu_set_blendmode(bm_normal);
         draw_set_alpha(1);
     }
     // contorno scuro sotto
     draw_set_colour(make_colour_rgb(10, 16, 30));
-    draw_triangle(px, py - H - st, px - W - st, py + st, px + W + st, py + st, false);
+    draw_triangle(px, py - (H + st) * dn, px - W - st, py + st * dn, px + W + st, py + st * dn, false);
     // spirale: 20 righe dalla punta alla base, ogni riga a quadretti di due colori che girano
     var cA0 = make_colour_rgb(30, 90, 150),  cA1 = make_colour_rgb(120, 220, 255);
     var cB0 = make_colour_rgb(60, 70, 100),  cB1 = make_colour_rgb(225, 245, 255);
     for (var j = 0; j < 20; j++) {
         var f = (j + 0.5) / 20;                 // 0 = punta, 1 = base
-        var yy = py - H + j * st;
+        var ya = py + (j * st - H) * dn;        // i due bordi della riga (scambiati se la punta e' in basso)
+        var yb = py + ((j + 1) * st - H) * dn;
+        var y1 = min(ya, yb), y2 = max(ya, yb);
         var hwp = max(1, round(7 * f));         // mezza larghezza della riga, in "pixel"
         for (var i = -hwp; i < hwp; i++) {
             var u = (i + 0.5) / hwp;
             var band = floor((darcsin(u) + ph + f * 160 + 3600) / 30);   // la banda si attorciglia scendendo
             var sh = sqrt(max(0, 1 - u * u));   // il centro e' piu' chiaro dei bordi: e' rotonda
             draw_set_colour((band mod 2 == 0) ? merge_colour(cA0, cA1, sh) : merge_colour(cB0, cB1, sh));
-            draw_rectangle(px + i * st, yy, px + (i + 1) * st, yy + st, false);   // senza -1: celle sovrapposte, nessun buco quando st non e' intero
+            draw_rectangle(px + i * st, y1, px + (i + 1) * st, y2, false);   // senza -1: celle sovrapposte, nessun buco quando st non e' intero
         }
     }
     // collare d'acciaio alla base
     draw_set_colour(make_colour_rgb(60, 70, 95));
-    draw_rectangle(px - W - st, py, px + W + st, py + 2 * st, false);
+    draw_rectangle(px - W - st, min(py, py + 2 * st * dn), px + W + st, max(py, py + 2 * st * dn), false);
     draw_set_colour(make_colour_rgb(170, 190, 220));
-    draw_rectangle(px - W - st, py, px + W + st, py + max(1, st / 2), false);
+    var yh = py + max(1, st / 2) * dn;   // la riga chiara del collare, attaccata alla trivella
+    draw_rectangle(px - W - st, min(py, yh), px + W + st, max(py, yh), false);
     draw_set_colour(c_white);
 }
 
@@ -243,7 +248,7 @@ if (global.continues > 0) {
     }
     sutra = array_pop(global.sutra_bag);
     sutra_timer = 300;     // 5 secondi a schermo
-    spawn_timer = 300;     // la prima ondata aspetta che il testo sia sparito
+    lead = 300;            // la prima ondata aspetta che il testo sia sparito (la musica parte 2 s prima)
 }
 if (!instance_exists(obj_sky)) instance_create_layer(0, 0, "Instances", obj_sky);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
@@ -346,6 +351,36 @@ waves = [
     /* 17 */ [["snake", 12, 90, 60], ["snake", 12, 270, -60], ["stalkers", 4, 360], ["wall", 160], ["wall", 320], ["wall", 460], ["laser", 2, 520]]   // due serpenti a specchio
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
+
+/// SCALETTA FISSA, come in Ikaruga: ogni ondata dura SEMPRE questi secondi, anche se abbatti tutti prima.
+/// Allo scadere i nemici rimasti si ritirano (retreat_all) e parte l'ondata dopo.
+/// Cosi' la partita ha sempre gli stessi tempi e la musica delle ondate e' un brano unico scritto su questi.
+/// Ogni durata comprende i 3,5 s in cui salgono le sagome, prima dei nemici veri.
+/// Totale: 2 s di attesa + 244 s di ondate = 4:06. Poi 15 s di trivella (seq_t) e il boss a 4:21.
+/// Se cambi un numero qui, cambia anche la musica: avvisa il musicista.
+wave_secs = [11, 11, 12, 9, 11, 14, 11, 12, 24, 16, 13, 18, 12, 18, 16, 16, 20];
+seq_len = 900;    // la sequenza della trivella: 15 secondi esatti
+
+/// Da che secondo deve partire mus_waves per arrivare in tempo all'ondata "w" (+1):
+/// la musica parte 2 s prima dell'ondata, come all'inizio della partita.
+music_offset = function(_w) {
+    var sec = 0;
+    for (var i = 0; i < _w; i++) sec += wave_secs[i];
+    return sec;
+}
+
+/// Tempo scaduto: i nemici rimasti smettono di combattere e se ne vanno, verso il bordo piu' vicino
+/// (su o giu'). Li muove la Begin Step di obj_enemy. Il boss e le torrette della nave enorme restano.
+retreat_all = function() {
+    with (obj_enemy) {
+        if (object_index == obj_boss || object_index == obj_turret || retreat) continue;
+        retreat = true;
+        rspd = 0;
+        rdir = (y > room_height * 0.5) ? 270 : 90;
+        if (object_index == obj_spear) charge = 0;   // l'occhio si spegne
+        if (object_index == obj_laser) { state = 5; t = 0; }   // niente piu' linea d'avviso: se ne va
+    }
+}
 
 /// Quante Falene, Lance, Inseguitori e Navi laser ci sono nell'ondata "wave" (serve all'anteprima).
 wave_contents = function() {

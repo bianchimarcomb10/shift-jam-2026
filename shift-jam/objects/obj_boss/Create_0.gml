@@ -188,3 +188,8 @@ koi_draw = function(k, body, patch, glow, ga) {
         draw_line(qx + fx * 6 + nx * s * 2.5, qy + fy * 6 + ny * s * 2.5, qx + fx * 9 + nx * s * 7, qy + fy * 9 + ny * s * 7);
     }
 }
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

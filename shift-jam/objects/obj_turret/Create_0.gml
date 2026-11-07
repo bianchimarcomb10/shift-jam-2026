@@ -13,3 +13,8 @@ timer = 60;      // conto alla rovescia fino al prossimo colpo (piu' corto quand
 charge = 0;      // > 0 mentre le punte dei tubi si accendono (avviso)
 flash = 0;       // > 0 subito dopo un colpo rimbalzato sulla corazza
 silent = false;  // true se sparisce senza esplodere (nave passata)
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

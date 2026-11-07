@@ -1,3 +1,4 @@
+if (retreat) exit;   // tempo dell'ondata scaduto: la ritirata la fa obj_enemy (Begin Step)
 if (form > 0) {
     // ---- IN FORMAZIONE: la posizione e' calcolata dal disegno, non dalla velocita' ----
     t += 1;

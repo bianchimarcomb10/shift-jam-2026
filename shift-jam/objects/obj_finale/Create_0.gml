@@ -23,4 +23,4 @@ if (instance_exists(obj_player)) {
 start_x = ship_x;
 start_y = ship_y;
 scale = 1;
-// qui, quando ci sara' l'audio, la musica si fermera' di colpo (audio_stop_all)
+music_stop(0);   // la musica si ferma di colpo: il silenzio

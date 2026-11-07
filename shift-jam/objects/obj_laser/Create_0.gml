@@ -16,3 +16,8 @@ beam_w = 0;          // mezza larghezza del raggio (0 = spento)
 flash = 0;           // lampo bianco quando viene colpita
 last_hp = hp;
 lspd = 0;            // velocita' di fuga
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

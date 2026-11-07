@@ -24,3 +24,8 @@ t = 0;
 // alcune falene sparano un colpo mirato mentre sono in formazione
 can_shoot = false;
 fire_timer = irandom_range(60, 200);
+
+// RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
+retreat = false;
+rspd = 0;
+rdir = 90;

@@ -121,6 +121,7 @@ if (invuln == 0) {
         if (koi_touch(other.x, other.y, hr)) hit = true;
     }
     with (obj_enemy) {
+        if (retreat) continue;   // chi si ritira non fa male
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
             hit = true;
             if (object_index == obj_moth) { global.enemy_boom(id); instance_destroy(); }
