@@ -1,5 +1,6 @@
 /// Navicella e mecha: il PELLEGRINO (scr_pilgrim). Stessi pezzi nelle due forme:
 /// cappello -> muso, mantello -> ali, gambe -> motori, lama della falce -> mezzaluna dietro i motori.
+/// Nello spazio il mecha e' SOSPESO; a terra (obj_mech_ground) sta in GUARDIA.
 // scintille delle parate: una crocetta bianca che si allarga e svanisce
 draw_set_colour(c_white);
 for (var k = 0; k < array_length(sparks); k++) {
@@ -32,6 +33,10 @@ var rc = dcos(-tilt), rs = dsin(-tilt);         // per ruotare un punto (lx, ly)
 if (form == 0 && transform_timer == 0) {
     var tlx = random_range(-3, 3) * sq, tly = 14 + bob * 0.6;
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
+} else if (form == 1 && transform_timer == 0) {
+    // anche il mecha SOSPESO vola: la scia esce dalla fiamma sotto il mantello
+    var tlx = random_range(-5, 5) * sq, tly = 17 * mech_scale;
+    array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 }
 gpu_set_blendmode(bm_add);
 for (var q = array_length(trail) - 1; q >= 0; q--) {
@@ -54,9 +59,10 @@ if (form == 0 && transform_timer == 0) {
     var by = bob * 0.6;
     draw_pilgrim(x + by * rs, y + by * rc, 0, tilt, 0, sweep_radius, flash, mech_scale, true, fl);
 } else {
-    // mecha (o trasformazione in corso): il mantello ondeggia e si apre nella falciata,
-    // la falce gira attorno nella falciata; con la trivella in mano la falce non c'e'
-    draw_pilgrim(x, y, m, tilt, sweep_anim, sweep_radius, flash, mech_scale, !global.has_drill, 1);
+    // mecha (o trasformazione in corso): nello spazio e' SOSPESO (pose 1): niente gambe, mantello a strisce,
+    // fiamma del volo, falce dritta a due mani; nella falciata gira con la falce tesa.
+    // Con la trivella in mano la falce non c'e': le due mani tengono la trivella
+    draw_pilgrim(x, y, m, tilt, sweep_anim, sweep_radius, flash, mech_scale, !global.has_drill, 1, 1, 1);
 }
 
 // TRIVELLA: tre tacche sotto il giocatore = colpi rimandati di fila (la carica)
