@@ -5,7 +5,6 @@ case 0:   // titolo: aspetta SHIFT
     if (keyboard_check_pressed(vk_shift)) {
         state = 1; t = 0;
         audio_play_sound(snd_menu, 5, false);
-        music_play("mus_intro", true, 1500);   // il loop del titolo sfuma nel suono della parte iniziale
     }
     break;
 

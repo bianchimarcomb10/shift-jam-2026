@@ -6,7 +6,6 @@ t += 1;
 if (phase == 1 && hp <= hp_p2) {
     phase = 2;
     audio_play_sound(snd_explosion_big, 10, false);   // il guscio salta via
-    music_play("mus_boss2", true, 1500);   // seconda musica per i Koi (se il file c'e')
     hp = hp_p2;
     radius = 28;
     hp_prev = hp;

@@ -273,7 +273,7 @@ if (global.continues > 0) {
     }
     sutra = array_pop(global.sutra_bag);
     sutra_timer = 300;     // 5 secondi a schermo
-    lead = 300;            // la prima ondata aspetta che il testo sia sparito (la musica parte 2 s prima)
+    lead = 300;            // la prima ondata aspetta che il testo sia sparito
 }
 if (!instance_exists(obj_sky)) instance_create_layer(0, 0, "Instances", obj_sky);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
@@ -426,14 +426,6 @@ boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
 /// Se cambi un numero qui, cambia anche la musica: avvisa il musicista.
 wave_secs = [11, 11, 12, 9, 11, 14, 11, 12, 24, 16, 13, 18, 12, 18, 16, 16, 20];
 seq_len = 900;    // la sequenza della trivella: 15 secondi esatti
-
-/// Da che secondo deve partire mus_waves per arrivare in tempo all'ondata "w" (+1):
-/// la musica parte 2 s prima dell'ondata, come all'inizio della partita.
-music_offset = function(_w) {
-    var sec = 0;
-    for (var i = 0; i < _w; i++) sec += wave_secs[i];
-    return sec;
-}
 
 /// Tempo scaduto: i nemici rimasti smettono di combattere e se ne vanno, verso il bordo piu' vicino
 /// (su o giu'). Li muove la Begin Step di obj_enemy. Il boss e le torrette della nave enorme restano.

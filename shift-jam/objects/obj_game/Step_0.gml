@@ -6,7 +6,6 @@ if (drill_phrase > 0) drill_phrase -= 1;
 if (boss_phrase > 0) boss_phrase -= 1;
 
 if (game_over) {
-    if (global.music != -1) music_stop(1500);   // la musica sfuma
     if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
@@ -28,11 +27,6 @@ if (boss_spawned) exit;
 
 // --- attesa iniziale: 2 secondi (5 dopo un continue, mentre si legge il sutra) ---
 if (lead > 0) {
-    // la musica parte 2 s prima della prima ondata: dopo un continue riparte dal punto giusto del brano
-    if (lead == 120) {
-        // dal prologo: mus_intro sfuma dentro mus_waves in 2 s; dopo un continue parte e basta
-        if (wave < boss_wave) music_play("mus_waves", false, (global.music != -1) ? 2000 : 0, music_offset(wave));
-    }
     lead -= 1;
     if (lead > 0) exit;
     if (wave < boss_wave) {
@@ -72,8 +66,6 @@ if (seq_t < 0) {
 //   9,5  s  la sagoma della nave madre sale sullo sfondo
 //   15   s  il boss scende dall'alto: "WHO THE HELL DO YOU THINK I AM?!"
 if (seq_t == 0) {
-    // se il file non c'e' continua mus_waves; dopo un continue dal boss, mus_waves riparte da 4:06
-    if (!music_play("mus_drill", false, 400) && global.music == -1) music_play("mus_waves", false, 0, music_offset(boss_wave) + 2);
     // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (trivella e poi boss)
     if (global.checkpoint < boss_wave) {
         global.checkpoint = boss_wave;
@@ -94,5 +86,4 @@ if (seq_t >= seq_len) {
     boss_spawned = true;
     instance_create_layer(room_width / 2, -90, "Instances", obj_boss);
     boss_phrase = 240;   // "WHO THE HELL DO YOU THINK I AM?!"
-    music_play("mus_boss", true, 300);
 }

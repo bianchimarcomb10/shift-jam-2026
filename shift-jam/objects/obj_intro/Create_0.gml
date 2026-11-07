@@ -7,6 +7,5 @@ cells = [];  // posti dove si accenderanno (una per quadratino di griglia, in or
 next_cell = 0;
 star_grow = 90;   // fotogrammi perche' una stella arrivi alla grandezza piena
 star_max_r = 18;  // raggio pieno: copre tutto il suo quadratino, cosi' alla fine non resta nero
-audio_master_gain(0.4);
-music_play("mus_title", true, 1000);   // musica del menu, in loop (scr_music)
-draw_set_font(fnt_main);   // Press Start 2P per tutte le scritte   // volume generale: i suoni erano troppo alti
+audio_master_gain(0.4);    // volume generale: i suoni erano troppo alti
+draw_set_font(fnt_main);   // Press Start 2P per tutte le scritte
