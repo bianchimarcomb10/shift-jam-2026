@@ -25,7 +25,7 @@ if ((st == 0 && g.mass) || st == 1) {
 }
 
 // --- falciata: impossibile durante l'ondata finale ---
-if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || keyboard_check(ord("J")))) {
+if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || keyboard_check(vk_space) || keyboard_check(ord("J")))) {
     sweep_cooldown = 30;   // una falciata ogni mezzo secondo
     sweep_anim = 10;
     audio_play_sound(snd_scythe, 4, false);

@@ -33,7 +33,7 @@ if (transform_timer > 0) {
 }
 
 // --- Attacco (Z o J, tenendo premuto) ---
-var attack = keyboard_check(ord("Z")) || keyboard_check(ord("J"));
+var attack = keyboard_check(ord("Z")) || keyboard_check(vk_space) || keyboard_check(ord("J"));   // Z (con le frecce) o SPAZIO (con WASD)
 if (attack && transform_timer == 0) {
     if (form == 0 && fire_cooldown == 0) {
         // Navicella: sparo in avanti, 10 colpi al secondo

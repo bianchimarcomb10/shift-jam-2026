@@ -159,7 +159,7 @@ function draw_console() {
     draw_set_colour(make_colour_rgb(8, 26, 34));
     draw_rectangle(sx1, sy1, sx2, sy2, false);
     // di base i comandi, uno alla volta (le lettere sono larghe 11 px: poche per riga)
-    var cmds = [["WASD", "MOVE"], ["Z", "ATTACK"], ["SHIFT", "SHIP", "MECHA"]];
+    var cmds = [["WASD", "ARROWS", "MOVE"], ["Z/SPACE", "ATTACK"], ["SHIFT", "SHIP", "MECHA"]];   // due schemi: WASD+SPAZIO o frecce+Z
     var msg = cmds[(current_time div 2200) mod 3];
     var alert = false;
     if (instance_exists(obj_boss) && obj_boss.hint > 0 && obj_boss.transition == 0) {
@@ -169,7 +169,7 @@ function draw_console() {
     } else if (pl != noone && !global.parry_learned && pl.form == 0) {
         var py = pl.y, near = false;
         with (obj_ebullet) if (wall && y < py) near = true;
-        if (near) { msg = ["SHIFT", "+ Z TO", "PARRY"]; alert = true; }
+        if (near) { msg = ["PARRY:", "SHIFT +", "Z/SPACE"]; alert = true; }
     }
     if (game_over) { msg = ["HULL", "BREACH"]; alert = true; }
     var tc = make_colour_rgb(120, 235, 220);

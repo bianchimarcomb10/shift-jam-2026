@@ -15,8 +15,8 @@ draw_set_valign(fa_middle);
 draw_set_colour(c_white);
 if (state == 0 && t < 240) {
     // su due righe: cosi' non esce dai bordi
-    draw_text(cx, room_height - 44, "WASD: MOVE");
-    draw_text(cx, room_height - 26, "Z: SCYTHE");
+    draw_text(cx, room_height - 44, "WASD/ARROWS: MOVE");
+    draw_text(cx, room_height - 26, "Z/SPACE: SCYTHE");
 }
 
 if (state == 1) {
