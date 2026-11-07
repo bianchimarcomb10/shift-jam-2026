@@ -6,7 +6,7 @@ var my = (keyboard_check(vk_down) || keyboard_check(ord("S"))) - (keyboard_check
 if (mx != 0 && my != 0) { mx *= 0.7071; my *= 0.7071; }   // in diagonale non va piu' veloce
 var spd = (form == 0) ? ship_speed : mech_speed;
 x = clamp(x + mx * spd, 12, room_width - 12);
-y = clamp(y + my * spd, 12, room_height - 12);
+y = clamp(y + my * spd, 12, room_height - HUD_H - 16);   // sotto c'e' il cruscotto
 
 // --- Timer ---
 if (switch_cooldown > 0) switch_cooldown -= 1;

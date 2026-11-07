@@ -243,7 +243,7 @@ if (global.continues > 0) {
 }
 if (!instance_exists(obj_sky)) instance_create_layer(0, 0, "Instances", obj_sky);
 if (!instance_exists(obj_starfield)) instance_create_layer(0, 0, "Instances", obj_starfield);
-if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - 80, "Instances", obj_player);
+if (!instance_exists(obj_player)) instance_create_layer(room_width / 2, room_height - HUD_H - 50, "Instances", obj_player);
 
 /// Crea una formazione di Falene.
 /// _form: 1 serpente, 2 V, 3 anello, 4 tenaglia.  _n: quante.  _cx: centro.  _amp: ampiezza del serpente.
