@@ -15,10 +15,6 @@ if (sweep_cooldown > 0) sweep_cooldown -= 1;
 if (sweep_anim > 0) sweep_anim -= 1;
 if (invuln > 0) invuln -= 1;
 if (shift_flash > 0) shift_flash -= 1;
-if (special_t > 0) { special_t -= 1; if (special_t == 0) special = 0; }   // l'arma speciale dura 10 s
-if (special_cd > 0) special_cd -= 1;
-if (heal_t > 0) heal_t -= 1;
-beam_on = false;
 
 // --- Trasformazione: 0,25 s in cui non si attacca ma si puo' essere colpiti ---
 if (transform_timer > 0) {
@@ -39,20 +35,11 @@ if (transform_timer > 0) {
 // --- Attacco (Z o J, tenendo premuto) ---
 var attack = keyboard_check(ord("Z")) || keyboard_check(vk_space) || keyboard_check(ord("J"));   // Z (con le frecce) o SPAZIO (con WASD)
 if (attack && transform_timer == 0) {
-    if (form == 0) {
-        // ARMI SPECIALI (10 s): laser e ventaglio prendono il posto dello sparo, i razzi si aggiungono
-        if (special == 2) {
-            beam_on = true;
-            special_beam();
-        } else if (special == 3) {
-            if (special_cd == 0) { special_fan(); special_cd = 12; }
-        } else if (fire_cooldown == 0) {
-            // Navicella: sparo in avanti, 10 colpi al secondo
-            instance_create_layer(x, y - 12, "Instances", obj_shot);
-            audio_play_sound(snd_shot, 1, false, 0.15);   // lo sparo e' continuo: molto basso
-            fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
-        }
-        if (special == 1 && special_cd == 0) { special_rockets(); special_cd = 30; }   // 4 razzi ogni mezzo secondo
+    if (form == 0 && fire_cooldown == 0) {
+        // Navicella: sparo in avanti, 10 colpi al secondo
+        instance_create_layer(x, y - 12, "Instances", obj_shot);
+        audio_play_sound(snd_shot, 1, false, 0.15);   // lo sparo e' continuo: molto basso
+        fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
     }
     if (form == 1 && sweep_cooldown == 0) {
         // Mecha: falciata a 360 gradi, ogni 0,5 s.

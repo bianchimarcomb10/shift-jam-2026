@@ -2,22 +2,21 @@
 /// e continua la musica di prima: il gioco funziona anche senza musiche.
 /// Per aggiungere un brano: importa in GameMaker un suono (OGG) con uno di questi nomi, e basta.
 ///
-///   mus_title   la schermata del titolo, in loop
-///   mus_intro   la parte iniziale, in loop: premuto SHIFT sul titolo il loop sfuma qui dentro, e continua
-///               sotto la frase di Linji, le stelle, il prologo a terra e il decollo con la frase di Dogen
-///   mus_waves   le 17 ondate: un brano unico a tempo fisso (4:06, i tempi sono in obj_game).
-///               All'arrivo nello spazio mus_intro ci sfuma dentro in 2 secondi
+///   mus_title   menu e frase di Linji, in loop. Continua nel prologo a terra
+///   mus_ground  prologo a terra, in loop (FACOLTATIVO: se manca continua mus_title)
+///               quando il mecha e' sommerso la musica sfuma: si sente solo il silenzio
+///   mus_waves   le 17 ondate: un brano unico a tempo fisso (4:06, i tempi sono in obj_game)
 ///   mus_drill   arrivo della trivella, 15 secondi (FACOLTATIVO: se manca continua mus_waves)
 ///   mus_boss    il boss, in loop
 ///   mus_boss2   seconda fase, i Koi, in loop (FACOLTATIVO: se manca continua mus_boss)
 ///
-/// Al game over la musica sfuma; nel finale si ferma di colpo.
+/// Al game over e nel finale la musica sfuma.
 
 /// PUNTI DI LOOP: se un file ha un'intro e poi la parte che si ripete,
 /// scrivi qui i secondi [inizio, fine] del pezzo da ripetere. [0, 0] = si ripete tutto il file.
 global.music_loops = {
     mus_title:  [0, 0],
-    mus_intro:  [0, 0],
+    mus_ground: [0, 0],
     mus_boss:   [0, 0],
     mus_boss2:  [0, 0]
 };
