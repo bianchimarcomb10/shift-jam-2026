@@ -203,6 +203,8 @@ global.enemy_boom = function(e) {
         case obj_laser:   s = spr_boom_bomber;  first = 1; r = 180; bsc = 2;   break;   // Nave laser = Bomber, grande il doppio
     }
     if (s == -1) return;   // torrette e Custode hanno gia' la loro fine
+    // la Lancia bianca e nera lascia il cuore con lo yin-yang
+    if (e.object_index == obj_spear && e.special) instance_create_layer(e.x, e.y, "Instances", obj_heart);
     var b = instance_create_layer(e.x, e.y, "Instances", obj_boom);
     b.spr = s;
     b.f = first;           // si parte dalle prime crepe, non dalla nave intera
@@ -282,6 +284,7 @@ spawn_spears = function(_k) {
     for (var i = 0; i < _k; i++) {
         var sp = instance_create_layer(room_width * (i + 1) / (_k + 1), -30, "Instances", obj_spear);
         sp.stop_y = 50 + (i mod 2) * 40;   // a zig-zag, sempre uguale
+        sp.special = (i == _k div 2);      // una per fila e' BIANCA E NERA: lascia un cuore (+1 vita)
     }
 }
 

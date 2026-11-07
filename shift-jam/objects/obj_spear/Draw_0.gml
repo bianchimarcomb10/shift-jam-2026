@@ -4,7 +4,8 @@
 var ph = current_time * 0.35 + id * 41;
 var pod = 1 + dsin(ph);
 if (charge > 0) pod = -(30 - charge) / 30 * 2;   // si stringono sempre di piu' mentre carica
-global.draw_parts(spr_enemy_spear, [
+// la Lancia speciale e' bianca e nera (spr_enemy_spear_mono): annuncia lo yin-yang del cuore che lascia
+global.draw_parts(special ? spr_enemy_spear_mono : spr_enemy_spear, [
     [14, 29, 6, 19, 19, 38, 0, -pod, 0],   // motore sinistro
     [44, 29, 6, 19, 44, 38, 0,  pod, 0],   // motore destro
     [20, 11, 24, 39, 32, 32, 0, 0, 0]      // scafo
