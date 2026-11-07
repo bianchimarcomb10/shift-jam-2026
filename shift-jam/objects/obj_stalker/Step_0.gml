@@ -25,8 +25,14 @@ if (y < 20) y += 1;   // entra nello schermo prima di inseguire
 
 fire_timer -= 1;
 if (fire_timer <= 0 && instance_exists(obj_player) && x > 0 && x < room_width) {   // spara solo quando e' sullo schermo
-    var b = instance_create_layer(x, y, "Instances", obj_ebullet);
-    b.dir = point_direction(x, y, obj_player.x, obj_player.y);
-    b.spd = 2.4 + obj_game.wave * 0.04;
-    fire_timer = max(55, 100 - obj_game.wave * 3);   // un colpo ogni 1,7 secondi
+    if (pat == 1) {
+        // CORDA: 4 colpi nella stessa direzione, uno dietro l'altro. Si evita spostandosi di lato
+        global.shoot_rope(x, y, point_direction(x, y, obj_player.x, obj_player.y), 4, 2.2 + obj_game.wave * 0.03);
+        fire_timer = 110;   // piu' lento: ogni corda vale quattro colpi
+    } else {
+        var b = instance_create_layer(x, y, "Instances", obj_ebullet);
+        b.dir = point_direction(x, y, obj_player.x, obj_player.y);
+        b.spd = 2.4 + obj_game.wave * 0.04;
+        fire_timer = max(55, 100 - obj_game.wave * 3);   // un colpo ogni 1,7 secondi
+    }
 }

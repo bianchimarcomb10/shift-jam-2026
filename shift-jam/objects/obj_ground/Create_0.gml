@@ -48,4 +48,3 @@ for (var i = 0; i < 10; i++) {
 }
 
 instance_create_layer(room_width / 2, room_height * 0.6, "Instances", obj_mech_ground);
-music_play("mus_ground", true, 1500);   // musica del prologo (se manca, continua quella del titolo)

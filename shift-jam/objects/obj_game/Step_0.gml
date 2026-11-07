@@ -13,8 +13,15 @@ if (game_over) {
 
 // i muri programmati arrivano anche mentre sale l'anteprima successiva
 for (var wi = array_length(walls) - 1; wi >= 0; wi--) {
-    walls[@ wi] -= 1;
-    if (walls[wi] <= 0) { spawn_wall(); array_delete(walls, wi, 1); }
+    var wl = walls[wi];   // [conto alla rovescia, tipo, x della porta]
+    wl[@ 0] -= 1;
+    if (wl[0] <= 0) { array_delete(walls, wi, 1); spawn_wall(wl[1], wl[2]); }
+}
+// i comandi "at" dell'ondata: partono quando il loro conto alla rovescia arriva a zero
+for (var qi = array_length(pending) - 1; qi >= 0; qi--) {
+    var pc = pending[qi];   // [conto alla rovescia, comando]
+    pc[@ 0] -= 1;
+    if (pc[0] <= 0) { array_delete(pending, qi, 1); spawn_cmd(pc[1]); }
 }
 
 if (boss_spawned) exit;
@@ -23,7 +30,8 @@ if (boss_spawned) exit;
 if (lead > 0) {
     // la musica parte 2 s prima della prima ondata: dopo un continue riparte dal punto giusto del brano
     if (lead == 120) {
-        if (wave < boss_wave) music_play("mus_waves", false, 0, music_offset(wave));
+        // dal prologo: mus_intro sfuma dentro mus_waves in 2 s; dopo un continue parte e basta
+        if (wave < boss_wave) music_play("mus_waves", false, (global.music != -1) ? 2000 : 0, music_offset(wave));
     }
     lead -= 1;
     if (lead > 0) exit;
@@ -45,6 +53,7 @@ if (seq_t < 0) {
     if (wave_t == 210) spawn_wave();   // 210 fotogrammi: il tempo che le sagome impiegano ad attraversare lo schermo
     if (wave_t >= wave_secs[wave - 1] * 60) {
         retreat_all();
+        pending = [];   // quello che non e' ancora partito non parte piu': la scaletta resta fissa
         if (wave < boss_wave) {
             wave += 1;
             wave_t = 0;

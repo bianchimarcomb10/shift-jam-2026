@@ -1,6 +1,6 @@
-// dove piantarsi: la testa del mecha (il cappello)
-var tx = instance_exists(obj_player) ? obj_player.x : room_width / 2;
-var ty = instance_exists(obj_player) ? obj_player.y - 8 : room_height * 0.7;
+// dove piantarsi: la mano del mecha, nel punto esatto dove la terra' (obj_player Draw)
+var tx = instance_exists(obj_player) ? obj_player.x + 10 * obj_player.mech_scale : room_width / 2;
+var ty = instance_exists(obj_player) ? obj_player.y - 2 * obj_player.mech_scale : room_height * 0.7;
 
 if (planted) {
     boom += 1;
@@ -10,10 +10,10 @@ if (planted) {
 
 t += 1;
 if (t <= hover) {
-    // 1) compare dall'alto ENORME e scende piano, girando, scivolando sopra di te
+    // 1) compare dall'alto ENORME, prima il manico, e scende piano girando, scivolando sopra di te
     ph += 4;
     var kh = t / hover;
-    y = lerp(-40, 210, 1 - (1 - kh) * (1 - kh));   // rallenta arrivando: alla fine si vede tutta, enorme
+    y = lerp(-20, 230, 1 - (1 - kh) * (1 - kh));   // rallenta arrivando: alla fine si vede tutta, enorme
     x = lerp(x, tx, 0.03);
     hx = x;
     hy = y;

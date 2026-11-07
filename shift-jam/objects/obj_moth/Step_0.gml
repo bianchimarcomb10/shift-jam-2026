@@ -66,6 +66,46 @@ if (form > 0) {
             x = (side == 1) ? (-20 + tt * 1.8) : (room_width + 20 - tt * 1.8);
             y = base_y + 26 * dsin(tt * 3);
             break;
+
+        case 6: // CROCE: due file entrano dagli angoli in alto, si incrociano a X al centro
+                // ed escono dai lati opposti, sempre sopra di te
+            x = (side == 1) ? (-20 + tt * 1.6) : (room_width + 20 - tt * 1.6);
+            y = -20 + tt * 1.25;
+            break;
+
+        case 7: // RUOTA: le falene in cerchio scendono, si fermano e girano (amp = verso).
+                // Ogni secondo sparano tutte insieme verso l'esterno: un anello che nasce gia' girato,
+                // cosi' i varchi si spostano a ogni anello. Ogni falena abbattuta e' un varco in piu'.
+                // Dopo 4 anelli il cerchio si apre come un fiore e le falene volano via
+            var arrive = 140, hold = 240;
+            var rr = 44;
+            if (tt > arrive + hold) rr += (tt - arrive - hold) * 2.5;
+            var a = idx * 360 / n + tt * 1.2 * sign(amp);
+            x = cx + lengthdir_x(rr, a);
+            y = min(-50 + tt * 1.5, 160) + lengthdir_y(rr, a);
+            if (tt > arrive && tt <= arrive + hold && (tt - arrive) mod 60 == 0) global.shoot(x, y, a, 1.6);
+            break;
+
+        case 8: // RISALITA: entra DA SOTTO, lungo il bordo (side 1 sinistra, -1 destra), sale,
+                // in alto curva verso il centro e attraversa lo schermo di lato.
+                // Ti chiude il bordo: devi stare verso il centro. Prima che esca, una freccia verde (Draw)
+            var ex = (side == 1) ? 24 : room_width - 24;
+            var ty = (side == 1) ? 200 : 260;                 // dove inizia la curva: le due file non si incrociano
+            var dist = tt * 2.2;                               // strada fatta
+            var climb = (room_height - HUD_H + 20) - ty;       // la salita lungo il bordo
+            var arc = 60 * pi / 2;                             // un quarto di cerchio di raggio 60
+            if (dist < climb) {
+                x = ex;
+                y = room_height - HUD_H + 20 - dist;
+            } else if (dist < climb + arc) {
+                var ang = 180 - (dist - climb) / arc * 90;     // da 180 a 90 gradi: dal bordo verso l'alto
+                x = ex + side * (60 + lengthdir_x(60, ang));
+                y = ty + lengthdir_y(60, ang);
+            } else {
+                x = ex + side * (60 + (dist - climb - arc));
+                y = ty - 60;
+            }
+            break;
     }
     if (form != 3 && (x != px || y != py)) dir = point_direction(px, py, x, y);   // la sprite guarda dove va
 
@@ -92,6 +132,6 @@ if (form > 0) {
     x += lengthdir_x(spd, dir);
     y += lengthdir_y(spd, dir);
 }
-if (y > room_height + 30 || x < -40 || x > room_width + 40) {
+if (y > room_height + 30 || x < -40 || x > room_width + 40 || (form == 7 && t - delay > 380 && y < -40)) {   // la ruota aperta esce anche in alto
     if (!(form > 0 && t - delay < 0)) instance_destroy();   // chi aspetta fuori non va distrutto
 }

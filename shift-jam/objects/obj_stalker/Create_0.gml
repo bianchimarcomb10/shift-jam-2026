@@ -10,6 +10,7 @@ leaving = false;
 ldir = 90;        // direzione di fuga
 lspd = 0;
 face = 270;       // dove guarda (la aggiorna il Draw)
+pat = 0;          // 0 un colpo mirato; 1 CORDA: 4 colpi in fila verso di te (lo sceglie obj_game)
 
 // RITIRATA: quando il tempo dell'ondata scade se ne va (la muove la Begin Step di obj_enemy)
 retreat = false;

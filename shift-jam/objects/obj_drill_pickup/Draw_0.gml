@@ -1,5 +1,5 @@
 var st = max(1, sc);
-var H = 20 * st;   // altezza della trivella: la base e' H sopra la punta
+var H = 20 * st;   // altezza della trivella: la punta e' H sopra la base
 
 if (planted) {
     // l'impatto: lampo bianco su tutto lo schermo e un anello azzurro che si allarga dal mecha
@@ -25,9 +25,9 @@ if (t <= hover) {
     // mentre scende piano: una colonna di luce dal cielo
     draw_set_alpha(0.10 + 0.05 * dsin(current_time * 0.4));
     draw_set_colour(make_colour_rgb(60, 150, 255));
-    draw_rectangle(x - 14, 0, x + 14, y, false);
+    draw_rectangle(x - 14, 0, x + 14, y - H, false);
     draw_set_alpha(0.12);
-    draw_rectangle(x - 5, 0, x + 5, y, false);
+    draw_rectangle(x - 5, 0, x + 5, y - H, false);
 } else {
     // mentre piomba: scie dietro la trivella, sempre piu' lunghe
     var k = (t - hover) / (dur - hover);
@@ -42,5 +42,5 @@ if (t <= hover) {
 gpu_set_blendmode(bm_normal);
 draw_set_alpha(1);
 draw_set_colour(c_white);
-// la trivella, punta in basso: (x, y) e' la punta, la base sta H sopra
-global.draw_drill(x, y - H, sc, ph, min(1, 2 / sc), -1);   // enorme, l'alone e' piu' tenue
+// la trivella, punta in alto e manico in basso: (x, y) e' la base
+global.draw_drill(x, y, sc, ph, min(1, 2 / sc), 1);   // enorme, l'alone e' piu' tenue

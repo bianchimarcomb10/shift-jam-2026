@@ -35,7 +35,7 @@ case 0:
     } else {
         // durante l'ondata la barra si riempie in poco piu' di un secondo
         bar += 0.012;
-        if (bar >= 1) { bar = 1; state = 1; t = 0; music_stop(2000); }   // sommerso: la musica sfuma, resta il silenzio
+        if (bar >= 1) { bar = 1; state = 1; t = 0; }
     }
     break;
 

@@ -31,6 +31,18 @@ if (phase == 2) {
         b.hold = max(1, total - t);
         b.wall = true;
         b.wph = abs(slots[k] - room_width / 2) * 3;   // 3 gradi di fase per pixel: un'onda ogni 120 px
+        // A FRECCIA: il centro cade piu' in fretta dei bordi, il muro si piega a punta verso di te
+        if (wtype == 2) b.spd = bspd * (1.35 - 0.7 * abs(slots[k] - room_width / 2) / (room_width / 2));
+        // DOPPIO: sotto ogni colpo ce n'e' un secondo, che parte 40 fotogrammi dopo.
+        // Finche' sono fermi in fila si sovrappongono e il muro brilla il doppio: e' l'avviso
+        if (wtype == 3) {
+            var b2 = instance_create_layer(slots[k], row_y, "Instances", obj_ebullet);
+            b2.dir = 270;
+            b2.spd = bspd;
+            b2.hold = b.hold + 40;
+            b2.wall = true;
+            b2.wph = b.wph;
+        }
         k += 1;
     }
 }

@@ -5,6 +5,7 @@
 /// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
+#macro BUILD "7-NOV-C"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
 
 global.console_k = 0;   // posizione della leva (0 = SHIP, 1 = MECHA), si muove morbida
 
@@ -93,6 +94,7 @@ function draw_console() {
         var lx = 16 + i * 28;
         var on = (global.hp > i);
         var lc = (danger && on && blink) ? c_white : cyan;
+        if (pl != noone && pl.heal_t > 0 && i == global.hp - 1 && blink) lc = c_white;   // la spia appena riparata lampeggia
         console_lamp(lx, y0 + 31, lx + 21, y0 + 40, on, lc);
     }
     if (global.has_drill) {
@@ -175,8 +177,9 @@ function draw_console() {
     } else if (pl != noone && !global.parry_learned && pl.form == 0) {
         var py = pl.y, near = false;
         with (obj_ebullet) if (wall && y < py) near = true;
-        if (near) { msg = ["PARRY:", "SHIFT +", "Z/SPACE"]; alert = true; }
+        if (near) { msg = ["PARRY:", "SHIFT", "THEN", "Z/SPACE"]; alert = true; }   // prima SHIFT, poi l'attacco
     }
+    if (pl != noone && pl.heal_t > 0) { msg = ["HULL", "REPAIRED"]; alert = true; }   // cuore preso: lo scafo e' riparato
     if (game_over) { msg = ["HULL", "BREACH"]; alert = true; }
     var tc = make_colour_rgb(120, 235, 220);
     if (alert) tc = blink ? cyan_l : cyan;
@@ -184,7 +187,8 @@ function draw_console() {
     draw_set_valign(fa_middle);
     var n = array_length(msg);
     var mcx = (sx1 + sx2) / 2, mcy = (sy1 + sy2) / 2;
-    for (var i = 0; i < n; i++) draw_text(mcx, mcy + (i - (n - 1) / 2) * 15, msg[i]);
+    var lh = (n > 3) ? 12 : 15;   // 4 righe: un po' piu' strette, per stare nello schermo
+    for (var i = 0; i < n; i++) draw_text(mcx, mcy + (i - (n - 1) / 2) * lh, msg[i]);
     // righe dello schermo e riflesso del vetro
     draw_set_alpha(0.22);
     draw_set_colour(c_black);

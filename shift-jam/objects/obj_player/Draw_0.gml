@@ -85,16 +85,26 @@ if (form == 0 && transform_timer == 0) {
     draw_pilgrim(x, y, m, tilt, sweep_anim, sweep_radius, flash, mech_scale, !global.has_drill, 1, 1, 1);
 }
 
-// CUORE preso: "+1" azzurro che sale e svanisce
+// CUORE preso: la nave SI RIPARA. Tre anelli azzurri si stringono su di lei (il cuore entra nello scafo),
+// poi la nave brilla sempre meno per 2 secondi. Sul cruscotto la spia ritrovata lampeggia e c'e' scritto HULL REPAIRED
 if (heal_t > 0) {
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_bottom);
-    draw_set_alpha(min(1, heal_t / 20));
-    draw_set_colour(make_colour_rgb(110, 210, 255));
-    draw_text(x, y - 22 - (50 - heal_t) * 0.5, "+1");
+    gpu_set_blendmode(bm_add);
+    if (heal_t > 70) {
+        var rk = (120 - heal_t) / 50;   // 0 -> 1 nei primi 50 fotogrammi
+        draw_set_colour(make_colour_rgb(110, 210, 255));
+        for (var q = 0; q < 3; q++) {
+            var rr = (1 - rk) * 64 - q * 14;
+            if (rr <= 2) continue;
+            draw_set_alpha(0.3 + 0.5 * rk);
+            draw_circle(x, y, rr, true);
+            draw_circle(x, y, rr + 1, true);
+        }
+    }
+    draw_set_alpha(0.55 * heal_t / 120 * (0.6 + 0.4 * dsin(current_time * 1.2)));
+    draw_set_colour(make_colour_rgb(70, 190, 255));
+    draw_circle(x, y, 18, false);
+    gpu_set_blendmode(bm_normal);
     draw_set_alpha(1);
-    draw_set_halign(fa_left);
-    draw_set_valign(fa_top);
     draw_set_colour(c_white);
 }
 

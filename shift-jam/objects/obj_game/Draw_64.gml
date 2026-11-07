@@ -36,7 +36,7 @@ if (cp_timer > 0 && cp_text != "" && !game_over) {
     draw_set_halign(fa_left);
 }
 
-// AVVISO DELLA PARATA: arriva un muro e sei navicella -> "SHIFT + Z/SPACE TO PARRY",
+// AVVISO DELLA PARATA: arriva un muro e sei navicella -> "SHIFT THEN Z/SPACE TO PARRY" (prima SHIFT, poi l'attacco),
 // sempre piu' grande man mano che i colpi si avvicinano. Sparisce appena diventi mecha,
 // e non torna piu' dopo che hai parato un muro almeno una volta (global.parry_learned).
 if (!global.parry_learned && !game_over && instance_exists(obj_player) && obj_player.form == 0) {
@@ -46,16 +46,17 @@ if (!global.parry_learned && !game_over && instance_exists(obj_player) && obj_pl
     if (near >= 0) {
         var gw = display_get_gui_width();
         var c = clamp((near - 26) / max(1, py - 60), 0, 1);           // 0 = muro appena posato, 1 = addosso
-        var s = lerp(1.5, (gw - 28) / string_width("TO PARRY"), c);  // al massimo largo quanto lo schermo
+        var ptxt = "SHIFT\nTHEN\nZ/SPACE\nTO PARRY";   // una riga per passo: prima SHIFT, poi Z/SPACE
+        var s = lerp(1.5, (gw - 28) / string_width(ptxt), c);   // al massimo largo quanto lo schermo (la riga piu' lunga)
         var sh = c * 2;                                               // trema quando e' vicino
         var tx = gw / 2 + random_range(-sh, sh), ty = (room_height - HUD_H) * 0.55 + random_range(-sh, sh);
         draw_set_halign(fa_center);
         draw_set_valign(fa_middle);
         draw_set_colour(c_black);   // ombra, per leggerlo sopra i colpi
-        draw_text_transformed(tx + s, ty + s, "SHIFT +\nZ/SPACE\nTO PARRY", s, s, 0);
+        draw_text_transformed(tx + s, ty + s, ptxt, s, s, 0);
         // bianco e azzurro: lo stesso azzurro dei colpi parati
         draw_set_colour(((current_time div 250) mod 2 == 0) ? c_white : make_colour_rgb(110, 190, 255));
-        draw_text_transformed(tx, ty, "SHIFT +\nZ/SPACE\nTO PARRY", s, s, 0);
+        draw_text_transformed(tx, ty, ptxt, s, s, 0);
         draw_set_colour(c_white);
         draw_set_valign(fa_top);
         draw_set_halign(fa_left);
