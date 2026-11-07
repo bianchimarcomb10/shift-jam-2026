@@ -40,9 +40,12 @@ if (state == 1) {
 
 if (state == 2) {
     // le stelle nascono come punti e crescono, finche' il bianco e' fatto solo di stelle
+    // ...e non si fermano mai: arrivate alla grandezza piena continuano a gonfiarsi alla stessa velocita',
+    // cosi' l'esplosione corre fino al bianco senza stelle immobili
     for (var i = 0; i < array_length(stars); i++) {
-        var k = clamp((t - stars[i][2]) / star_grow, 0, 1);
-        draw_circle(stars[i][0], stars[i][1], max(0.6, star_max_r * k * k), false);
+        var k = max(0, (t - stars[i][2]) / star_grow);
+        var r = (k < 1) ? star_max_r * k * k : star_max_r * (1 + (k - 1) * 2);
+        draw_circle(stars[i][0], stars[i][1], max(0.6, min(r, 90)), false);
     }
 }
 
