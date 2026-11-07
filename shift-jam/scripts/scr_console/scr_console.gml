@@ -2,7 +2,7 @@
 ///   a sinistra  HULL: le spie della vita (e della trivella, quando ce l'hai)
 ///   al centro   la LEVA dello SHIFT, una cloche che scatta tra SHIP e MECHA
 ///   a destra    uno schermo che mostra i comandi, o l'avviso del momento
-/// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (cp_timer, game_over).
+/// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
 
@@ -162,9 +162,7 @@ function draw_console() {
     var cmds = [["WASD", "MOVE"], ["Z", "ATTACK"], ["SHIFT", "SHIP", "MECHA"]];
     var msg = cmds[(current_time div 2200) mod 3];
     var alert = false;
-    if (cp_timer > 0) {
-        msg = ["CHECK", "POINT"]; alert = true;
-    } else if (instance_exists(obj_boss) && obj_boss.hint > 0 && obj_boss.transition == 0) {
+    if (instance_exists(obj_boss) && obj_boss.hint > 0 && obj_boss.transition == 0) {
         msg = ["GOLD", "BEADS:", "PARRY"]; alert = true;
     } else if (pl != noone && global.has_drill && pl.form == 1 && pl.drill_charge >= 3) {
         msg = ["SHIFT", "FIRES", "DRILL"]; alert = true;

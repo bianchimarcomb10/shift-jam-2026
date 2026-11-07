@@ -33,13 +33,15 @@ if (preview_timer > 0) {
 if (wave >= boss_wave) {
     if (instance_number(obj_enemy) == 0) {
         if (drill_state == 0) {
-            drill_state = 1;   // obj_drill_pickup lo porta a 2 quando la prendi
-            instance_create_layer(room_width / 2, -30, "Instances", obj_drill_pickup);
             // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (trivella e poi boss)
             if (global.checkpoint < boss_wave) {
                 global.checkpoint = boss_wave;
-                cp_timer = 150;   // scritta "CHECKPOINT"
+                cp_timer = cp_total;
+                cp_text = "Silence is near.";
             }
+            if (cp_timer > 60) exit;   // prima la frase nel cielo vuoto; la trivella scende mentre svanisce
+            drill_state = 1;   // obj_drill_pickup lo porta a 2 quando la prendi
+            instance_create_layer(room_width / 2, -30, "Instances", obj_drill_pickup);
             exit;
         }
         if (drill_state < 2 || drill_phrase > 60) exit;   // aspetta la trivella e la sua frase
@@ -64,8 +66,9 @@ if (wave >= boss_wave) {
 // la nuova ondata parte solo quando la precedente e' quasi finita (al massimo 2 nemici rimasti),
 // e mai finche' ci sono Lance in alto: altrimenti la formazione dopo ci passerebbe in mezzo
 if (instance_number(obj_enemy) > 2 || instance_exists(obj_spear)) spawn_timer = max(spawn_timer, 45);
-// e mai finche' la nave enorme non ha spento le sue torrette (poi l'ondata dopo le arriva sopra mentre se ne va)
-with (obj_bigship) if (!retired) other.spawn_timer = max(other.spawn_timer, 45);
+// e mai finche' la nave enorme e' sullo schermo: quando esce compare la frase del checkpoint,
+// e le sagome dell'ondata dopo salgono mentre la frase e' ancora li'
+with (obj_bigship) other.spawn_timer = max(other.spawn_timer, 45);
 spawn_timer -= 1;
 if (spawn_timer <= 0) {
     wave += 1;

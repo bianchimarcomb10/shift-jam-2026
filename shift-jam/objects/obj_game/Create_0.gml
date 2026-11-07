@@ -8,7 +8,9 @@ spawn_timer = 120;      // 2 secondi prima della prima ondata
 // Lo azzera obj_ground all'inizio di una partita nuova
 if (!variable_global_exists("checkpoint")) global.checkpoint = 0;
 wave = global.checkpoint;
-cp_timer = 0;           // > 0 mentre si vede la scritta "CHECKPOINT"
+cp_timer = 0;           // > 0 mentre si vede la frase del checkpoint (niente parola "CHECKPOINT": una frase sul silenzio)
+cp_total = 240;        // la frase dura 4 secondi: 1 per comparire, 2 ferma, 1 per svanire
+cp_text = "";          // quale frase: la sceglie chi salva il checkpoint
 game_over = false;
 boss_spawned = false;
 finale = false;         // true durante il finale "Silenzio"

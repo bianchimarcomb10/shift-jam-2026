@@ -16,8 +16,25 @@ if (sutra_timer > 0 && sutra >= 0) {
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
 }
-// il cruscotto: vita, leva dello SHIFT, schermo con i comandi (e CHECKPOINT, avviso della trivella, ecc.)
+// il cruscotto: vita, leva dello SHIFT, schermo con i comandi (e gli avvisi: trivella, grani d'oro, ecc.)
 draw_console();
+
+// CHECKPOINT: niente parola "CHECKPOINT", solo una frase che entra e svanisce piano, come quella di Dogen
+if (cp_timer > 0 && cp_text != "" && !game_over) {
+    var ca = clamp(min((cp_total - cp_timer) / 60, cp_timer / 60), 0, 1);
+    var cgw = display_get_gui_width(), ccy = (room_height - HUD_H) * 0.4;
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_alpha(ca * 0.7);
+    draw_set_colour(c_black);   // ombra leggera, per leggerla sopra le sagome e le stelle
+    draw_text(cgw / 2 + 1, ccy + 1, cp_text);
+    draw_set_alpha(ca);
+    draw_set_colour(c_white);
+    draw_text(cgw / 2, ccy, cp_text);
+    draw_set_alpha(1);
+    draw_set_valign(fa_top);
+    draw_set_halign(fa_left);
+}
 
 // AVVISO DELLA PARATA: arriva un muro e sei navicella -> "SHIFT + Z TO PARRY",
 // sempre piu' grande man mano che i colpi si avvicinano. Sparisce appena diventi mecha,

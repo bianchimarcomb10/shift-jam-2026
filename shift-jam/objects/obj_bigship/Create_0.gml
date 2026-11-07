@@ -24,7 +24,7 @@ save_checkpoint = function() {
     if (saved) return;
     saved = true;
     global.checkpoint = max(global.checkpoint, my_wave);
-    if (instance_exists(obj_game)) obj_game.cp_timer = 150;   // scritta "CHECKPOINT"
+    with (obj_game) { cp_timer = cp_total; cp_text = "Halfway to silence."; }   // la frase al posto di "CHECKPOINT"
 }
 
 // La nave e' FISICA: se ci vai addosso, lo scafo e le torrette ti fanno danno da contatto.
