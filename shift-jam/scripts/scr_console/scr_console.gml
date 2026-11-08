@@ -5,7 +5,7 @@
 /// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
-#macro BUILD "8-NOV-D"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
+#macro BUILD "8-NOV-E"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
 
 global.console_k = 0;   // posizione della leva (0 = SHIP, 1 = MECHA), si muove morbida
 
@@ -167,6 +167,8 @@ function draw_console() {
     var alert = false;
     if (instance_exists(obj_boss) && obj_boss.hint > 0 && obj_boss.transition == 0) {
         msg = ["GOLD", "BEADS:", "PARRY"]; alert = true;
+    } else if (instance_exists(obj_boss) && obj_boss.crane_hint > 0) {
+        msg = ["PARRY", "TEARS", "PAPER"]; alert = true;   // i colpi parati aprono subito le gru di carta
     } else if (pl != noone && global.has_drill && pl.form == 1 && pl.drill_charge >= pl.drill_full) {
         msg = ["SHIFT", "FIRES", "DRILL"]; alert = true;
     } else if (pl != noone && pl.special > 0) {

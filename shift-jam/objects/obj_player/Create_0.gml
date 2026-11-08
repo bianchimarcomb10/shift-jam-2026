@@ -43,6 +43,7 @@ special_use = function(_n) {
 }
 special_cd = 0;         // ritmo dell'arma speciale
 beam_on = false;        // il laser e' acceso in questo fotogramma (lo disegna il Draw)
+beam_top = -20;         // fin dove arriva il raggio (si ferma su scudi e gru del boss)
 
 /// RAZZI: 4 alla volta, partono a ventaglio e ognuno insegue un nemico diverso (i quattro piu' vicini)
 special_rockets = function() {
@@ -87,20 +88,25 @@ special_fan = function() {
     audio_play_sound(snd_shot, 1, false, 0.2);
 }
 
-/// LASER: un raggio azzurro continuo fino in cima allo schermo. Passa attraverso tutto,
+/// LASER: un raggio azzurro continuo fino in cima allo schermo. Passa attraverso tutto (tranne scudi e gru del boss),
 /// fa 15 danni al secondo a ogni nemico nella colonna e brucia i colpi nemici (anche i muri).
 special_beam = function() {
     var bx = x, by = y - 12;
     var killed = false;
+    // SCUDI e GRU DI CARTA del boss fermano il raggio: arriva solo fino al primo che incontra
+    var top = -20;
+    with (obj_shield) if (y < by && abs(x - bx) < 6 + radius) top = max(top, y);
+    with (obj_crane) if (y < by && abs(x - bx) < 6 + radius) top = max(top, y);
+    beam_top = top;
     with (obj_enemy) {
         if (object_index == obj_turret && armored) continue;
-        if (y < by && y > -20 && abs(x - bx) < 6 + radius) {
-            hp -= 0.25;
+        if (y < by && y >= top && abs(x - bx) < 6 + radius) {
+            hp -= (object_index == obj_shield || object_index == obj_crane) ? 0.1 : 0.25;   // scudi e gru reggono di piu'
             if (hp <= 0) { killed = true; global.enemy_boom(id); instance_destroy(); }
         }
     }
     if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
-    with (obj_ebullet) if (y < by && abs(x - bx) < 8) instance_destroy();
-    with (obj_bigship) if (y < by && abs(x - bx) < 30) { hull_hp -= 0.25; hull_flash = 3; }
+    with (obj_ebullet) if (y < by && y > top && abs(x - bx) < 8) instance_destroy();
+    with (obj_bigship) if (y < by && y > top && abs(x - bx) < 30) { hull_hp -= 0.25; hull_flash = 3; }
     if (special_cd == 0) { audio_play_sound(snd_laser, 2, false, 0.35); special_cd = 22; }   // snd_laser (file di Chelios): uno ogni 0,37 s, quanto dura
 }

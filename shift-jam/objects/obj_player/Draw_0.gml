@@ -58,13 +58,24 @@ if (beam_on) {
     gpu_set_blendmode(bm_add);
     draw_set_colour(make_colour_rgb(40, 140, 255));
     draw_set_alpha(0.22 + 0.08 * dsin(current_time * 2));
-    draw_rectangle(bx - 9, 0, bx + 9, btop, false);
+    draw_rectangle(bx - 9, max(0, beam_top), bx + 9, btop, false);
     draw_set_alpha(1);
     gpu_set_blendmode(bm_normal);
     var seg = 0;
-    for (var sy = btop - 13; sy > -32; sy -= 26) {
+    for (var sy = btop - 13; sy > beam_top - 13; sy -= 26) {
         draw_sprite(spr_zapper, (current_time div 50 + seg) mod 8, bx, sy);
         seg += 1;
+    }
+    // fermato da uno scudo o da una gru: schizza contro
+    if (beam_top > 0) {
+        gpu_set_blendmode(bm_add);
+        draw_set_colour(make_colour_rgb(40, 140, 255));
+        draw_set_alpha(0.5);
+        draw_circle(bx, beam_top + 8, 10 + random(3), false);
+        draw_set_alpha(1);
+        gpu_set_blendmode(bm_normal);
+        draw_set_colour(make_colour_rgb(215, 250, 255));
+        draw_circle(bx, beam_top + 8, 4 + random(2), false);
     }
     // dove nasce: un lampo bianco sulla prua
     draw_set_colour(make_colour_rgb(215, 250, 255));

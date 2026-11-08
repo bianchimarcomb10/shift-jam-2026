@@ -5,8 +5,14 @@ ph += 30;
 var cy = y - 12 * sc;       // il punto che colpisce: a meta' strada verso la punta
 // buca i colpi nemici che incontra
 with (obj_ebullet) if (point_distance(x, y, other.x, cy) < 8 * other.sc) instance_destroy();
-// il primo nemico che tocca prende 10 colpi
+// SCUDI e GRU DI CARTA del boss: la trivella li buca e va avanti
+var pierced = false;
+with (obj_shield) if (point_distance(x, y, other.x, cy) < radius + 7 * other.sc) { pierced = true; global.enemy_boom(id); instance_destroy(); }
+with (obj_crane) if (point_distance(x, y, other.x, cy) < radius + 7 * other.sc) { pierced = true; global.enemy_boom(id); instance_destroy(); }
+if (pierced) audio_play_sound(snd_enemy_die, 3, false, 0.6);
+// il primo altro nemico che tocca prende 20 danni
 var e = instance_nearest(x, cy, obj_enemy);
+if (e != noone && (e.object_index == obj_shield || e.object_index == obj_crane)) e = noone;   // gia' bucati qui sopra
 if (e != noone && point_distance(x, cy, e.x, e.y) < e.radius + 7 * sc) {
     e.hp -= 20;   // 10 colpi parati per caricarla: deve fare male (era 10)
     var b = instance_create_layer(x, cy, "Instances", obj_boom);

@@ -40,7 +40,10 @@ if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + pad) {
         instance_destroy();
         exit;
     }
-    e.hp -= dmg;
+    // SCUDI e GRU DI CARTA del boss: ogni colpo toglie 1, qualunque arma sia (razzo, globo, sparo)
+    var guard = (e.object_index == obj_shield || e.object_index == obj_crane);
+    e.hp -= guard ? 1 : dmg;
+    if (parried && e.object_index == obj_crane) e.hp = 0;   // la carta non regge i colpi rimandati
     if (parried && instance_exists(obj_player)) obj_player.drill_add();   // TRIVELLA: un colpo parato a segno carica
     if (kind == 1 && instance_exists(obj_player)) array_push(obj_player.sparks, [x, y, 12]);   // il razzo scoppia
     if (e.hp <= 0) {

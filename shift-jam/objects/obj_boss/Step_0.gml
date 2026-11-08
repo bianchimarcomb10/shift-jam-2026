@@ -14,7 +14,9 @@ if (phase == 1 && hp <= hp_p2) {
     attack = 0;
     attack_timer = 120;
     hint = 360;
-    gift_t = 300;   // i regali continuano: ogni 9 s
+    gift_t = 300;   // i regali continuano (poi a tempo con le gru)
+    crane_t = 90;   // il primo stormo di gru arriva 1,5 s dopo che i Koi si sono rivelati
+    with (obj_shield) { global.enemy_boom(id); instance_destroy(); }   // gli scudi saltano col guscio
     with (obj_ebullet) instance_destroy();
     debris = [];
     for (var i = 0; i < 24; i++) {
@@ -37,7 +39,7 @@ if (stun > 0) { stun -= 1; exit; }
 
 // --- REGALI: un proiettile bianco e nero, lento, verso di te. Spaccalo prima che ti tocchi:
 // a rombo lascia un'arma (R, L, S a turno), rotondo lascia il cuore. Arma e cuore si alternano.
-// Fase 1: mezzo secondo dopo ogni hangar (cosi' resta dietro alle Falene); fase 2: ogni 9 secondi ---
+// Fase 1: mezzo secondo dopo ogni hangar (cosi' resta dietro alle Falene); fase 2: ogni 10 secondi, quando le gru se ne vanno ---
 if (gift_t > 0) {
     gift_t -= 1;
     if (gift_t == 0) {
@@ -47,7 +49,6 @@ if (gift_t > 0) {
         var gtx = instance_exists(obj_player) ? obj_player.x : room_width / 2;
         gp.dir = point_direction(x, gy, gtx, room_height - HUD_H - 40);
         gift_n += 1;
-        if (phase == 2) gift_t = 540;
     }
 }
 
@@ -58,6 +59,24 @@ if (phase == 1) {
     var angry1 = (hp < hp_p2 + hp_p1 / 2);   // sotto meta' guscio: piu' veloce, e i cannoni laterali tirano corde
     var ptx1 = room_width / 2, pty1 = room_height - 80;
     if (instance_exists(obj_player)) { ptx1 = obj_player.x; pty1 = obj_player.y; }
+
+    // SCUDI: le navette con la lastra verde stanno su un arco fra te e la nave madre e si prendono i tuoi colpi.
+    // Un posto rimasto vuoto si riempie dopo 4 s: dall'hangar esce una navetta nuova (sotto meta' guscio sono 5)
+    // Quando apre l'hangar, gli scudi si spostano sui fianchi per 2,5 s: escono le Falene e il regalo,
+    // e per un momento la nave madre e' scoperta
+    shield_n = angry1 ? 5 : 4;
+    if (shield_open > 0) shield_open -= 1;
+    for (var sl = 0; sl < shield_n; sl++) {
+        var taken = false;
+        with (obj_shield) if (slot == sl) taken = true;
+        if (taken) { shield_cd[sl] = 240; continue; }
+        shield_cd[sl] -= 1;
+        if (shield_cd[sl] <= 0) {
+            var sh = instance_create_layer(x + (sl - (shield_n - 1) / 2) * 32, y + 40, "Instances", obj_shield);   // esce da sotto lo scafo
+            sh.slot = sl;
+            shield_cd[sl] = 240;
+        }
+    }
 
     // CANNONI: raffiche mirate a 5 colpi da sinistra e da destra, una ogni 10 fotogrammi
     if (volley_t > 0) {
@@ -105,6 +124,7 @@ if (phase == 1) {
     }
 
     attack_timer -= 1;
+    if (attack == 1 && attack_timer == 30) shield_open = 150;   // mezzo secondo prima dell'hangar gli scudi si scostano (e' l'avviso)
     if (attack_timer <= 0) {
         if (attack == 0) {
             volley_t = 30;                      // 3 raffiche
@@ -142,6 +162,24 @@ if (phase == 1) {
     hp_prev = hp;
     if (pearl_flash > 0) pearl_flash -= 1;
     for (var j = 0; j < 108; j++) if (bead_gone[j] > 0) bead_gone[j] -= 1;   // i grani lanciati ricrescono
+
+    // GRU DI CARTA: ogni 10 s uno stormo d'oro arriva dai due lati e fa muro sotto i Koi.
+    // Arrivano in fila indiana, la piu' vicina al centro davanti (cosi' non si incrociano); sotto meta' vita sono 8 invece di 6
+    if (crane_hint > 0 && hint == 0) crane_hint -= 1;   // parte dopo l'avviso sui grani d'oro
+    crane_t -= 1;
+    if (crane_t <= 0) {
+        var cn = angry ? 8 : 6, half = cn div 2;
+        for (var c2 = 0; c2 < cn; c2++) {
+            var sd = (c2 < half) ? 1 : -1;
+            var back = ((sd == 1) ? (half - 1 - c2) : (c2 - half)) * 28;   // le altre in fila dietro, fuori schermo
+            var cr = instance_create_layer((sd == 1) ? -24 - back : room_width + 24 + back, y + 30, "Instances", obj_crane);
+            cr.slot = c2;
+            cr.side = sd;
+        }
+        crane_t = 600;
+        if (crane_hint < 0) crane_hint = 300;   // la prima volta: l'avviso sul cruscotto
+        gift_t = 500;   // il regalo parte quando le gru se ne sono andate (cosi' non ci passa in mezzo)
+    }
 
     // dove mira l'affondo: il giocatore (o il fondo dello schermo se non c'e')
     var ptx = room_width / 2, pty = room_height - 80;

@@ -228,12 +228,20 @@ global.enemy_boom = function(e) {
         if (instance_exists(obj_player)) array_push(obj_player.sparks, [e.x, e.y, 12]);
         return;
     }
+    // GRU DI CARTA del boss: si apre in un foglio d'oro che cade
+    if (e.object_index == obj_crane) {
+        instance_create_layer(e.x, e.y, "Instances", obj_paper);
+        return;
+    }
+    // SCUDO del boss: la lastra scoppia in un anello di 6 colpi lenti (si parano)
+    if (e.object_index == obj_shield) global.shoot_ring(e.x, e.y + 8, 6, 1.4, 30);
     switch (e.object_index) {
         case obj_moth:    s = spr_boom_fighter; first = 1; r = e.dir - 90;  break;   // Falena = Fighter
         case obj_spear:   s = spr_boom_frigate; first = 2; r = 180;         break;   // Lancia = Frigate
         case obj_stalker: s = spr_boom_support; first = 2; r = e.face - 90; break;   // Inseguitore = Support ship
         case obj_laser:   s = spr_boom_bomber;  first = 1; r = 180; bsc = 2;   break;   // Nave laser = Bomber, grande il doppio
         case obj_carrier: s = spr_boom_fighter; first = 1; r = 0;           break;   // Portatrice: piccola come una Falena
+        case obj_shield:  s = spr_boom_support; first = 2; r = 180; bsc = 0.7; break;   // Scudo: la navetta e' un Inseguitore piccolo
     }
     if (s == -1) return;   // torrette e Custode hanno gia' la loro fine
     // la Lancia bianca e nera lascia il cuore con lo yin-yang

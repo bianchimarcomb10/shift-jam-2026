@@ -3,13 +3,14 @@
 /// Disegnati dal codice: la mala (108 grani), un ensō a pennello che gira e si accorcia con la vita,
 /// la perla al centro (il punto debole) e due carpe che le nuotano attorno.
 /// Attacchi fase 1: cannoni mirati a raffica, hangar di Falene con corda, sipario di due ventagli, anelli sfalsati, spirale.
+/// Difese: in fase 1 le navette SCUDO, in fase 2 il muro di GRU DI CARTA: si prendono i tuoi colpi.
 /// Attacchi fase 2: spirale di squame, grani della mala d'oro (parabili, tornano contro il boss),
 /// affondo della carpa d'oro (avviso d'oro, poi si lancia e scoppia in un anello di squame), petali (rete di due spirali).
 /// Tutti i colpi magenta si parano. Deve essere piu' duro delle ultime ondate.
 /// E' figlio di obj_enemy: colpi, falciata e contatto funzionano come con gli altri nemici.
 phase = 1;
-hp_p2 = 180;              // vita dei Koi (era 150: il boss deve essere piu' duro delle ultime ondate)
-hp_p1 = 260;              // vita della nave madre (era 220)
+hp_p2 = 220;              // vita dei Koi (era 180: con le armi speciali cadeva troppo presto)
+hp_p1 = 300;              // vita della nave madre (era 260)
 hp = hp_p1 + hp_p2;       // un solo contatore: quando scende a hp_p2 il guscio si rompe
 radius = 56;              // la nave madre e' grande
 target_y = 140;           // dove si ferma dopo l'entrata
@@ -34,8 +35,14 @@ petal_t = 0;              // PETALI dei Koi: due spirali che girano in versi opp
 petal_a = 0;
 pearl_t = 90;             // la perla ti spara una corda ogni tanto: stare fermi non basta
 gift_t = 0;               // REGALI: proiettili bianchi e neri che, spaccati, lasciano un'arma o il cuore (obj_gift).
-                          // Fase 1: partono mezzo secondo dopo ogni hangar (dietro alle Falene, che sono piu' veloci: non si toccano). Fase 2: ogni 9 s
+                          // Fase 1: partono mezzo secondo dopo ogni hangar (dietro alle Falene, che sono piu' veloci: non si toccano). Fase 2: ogni 10 s, fra uno stormo di gru e l'altro
 gift_n = 0;
+shield_cd = array_create(5, 0);   // SCUDI (fase 1): navette con una lastra verde fra te e la nave madre (obj_shield).
+                          // Le prime appena arriva; un posto rimasto vuoto si riempie dopo 4 s
+shield_n = 4;             // quante (5 sotto meta' guscio)
+shield_open = 0;          // > 0: gli scudi si aprono sui fianchi per far uscire le Falene dall'hangar (2,5 s)
+crane_t = 0;              // GRU DI CARTA (fase 2): ogni 10 s uno stormo d'oro fa muro sotto i Koi (obj_crane)
+crane_hint = -1;          // l'avviso "PARRY TEARS PAPER" sul cruscotto: 5 s, la prima volta che arrivano le gru
 
 // ===== I KOI DELL'ENSŌ (fase 2) =====
 enso_rot = 0;             // l'ensō gira
