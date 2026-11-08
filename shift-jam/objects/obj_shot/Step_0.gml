@@ -44,7 +44,7 @@ if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + pad) {
     var guard = (e.object_index == obj_shield || e.object_index == obj_crane);
     e.hp -= guard ? 1 : dmg;
     if (parried && e.object_index == obj_crane) e.hp = 0;   // la carta non regge i colpi rimandati
-    if (parried && instance_exists(obj_player)) obj_player.drill_add();   // TRIVELLA: un colpo parato a segno carica
+    if (parried && instance_exists(obj_player)) obj_player.drill_add(sid);   // TRIVELLA: una parata a segno carica (una volta per falciata)
     if (kind == 1 && instance_exists(obj_player)) array_push(obj_player.sparks, [x, y, 12]);   // il razzo scoppia
     if (e.hp <= 0) {
         global.enemy_boom(e);

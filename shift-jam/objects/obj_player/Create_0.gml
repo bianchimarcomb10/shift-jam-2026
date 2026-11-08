@@ -10,11 +10,16 @@ parry_radius = 72;      // la falciata annulla i proiettili un po' oltre la lama
 sparks = [];            // scintille dei proiettili annullati: [x, y, vita]
 tilt = 0;               // inclinazione della navicella in virata
 if (!variable_global_exists("has_drill")) global.has_drill = false;   // la imposta obj_game; qui solo per sicurezza
-drill_charge = 0;       // TRIVELLA: colpi parati che hanno COLPITO un nemico (li conta obj_shot / obj_palm)
+drill_charge = 0;       // TRIVELLA: PARATE andate a segno (falciate che hanno rimandato almeno un colpo su un nemico)
 drill_full = 10;        // a 10 la trivella e' carica: si lancia passando a navicella
-/// un colpo parato ha colpito un nemico: con la trivella in mano, la carica sale di uno
-drill_add = function() {
+sweep_n = 0;            // numero della falciata: i colpi che rimanda se lo portano dietro (sid)
+drill_last = -1;        // l'ultima falciata che ha gia' caricato la trivella
+/// un colpo parato (della falciata _sid) ha colpito un nemico: con la trivella in mano la carica sale di uno,
+/// ma UNA SOLA VOLTA per falciata, anche se ne rimanda tanti (prima ogni colpo contava: bastavano 3 parate)
+drill_add = function(_sid) {
     if (!global.has_drill || drill_charge >= drill_full) return;
+    if (_sid <= drill_last) return;   // questa falciata ha gia' caricato (o e' piu' vecchia)
+    drill_last = _sid;
     drill_charge += 1;
     if (drill_charge >= drill_full) audio_play_sound(snd_shift, 9, false, 0.9);   // carica piena
 }

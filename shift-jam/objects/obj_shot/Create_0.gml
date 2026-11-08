@@ -8,3 +8,4 @@ trail = [];        // ultime posizioni, per la scia che segue la curva
 kind = 0;          // 0 colpo normale, 1 RAZZO a inseguimento, 3 globo del VENTAGLIO (armi speciali, obj_powerup)
 dmg = 1;           // danno a ogni nemico colpito
 drift = 0;         // solo ventaglio: di quanto si allarga in volo (gradi per fotogramma)
+sid = -1;          // solo colpi parati: il numero della falciata che l'ha rimandato (per la carica della trivella)

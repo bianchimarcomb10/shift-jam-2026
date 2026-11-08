@@ -10,7 +10,7 @@ if (!reflected) {
     dir = point_direction(x, y, bs.x, bs.y);
     if (point_distance(x, y, bs.x, bs.y) < bs.radius + radius) {
         bs.hp -= dmg;    // molto piu' di un colpo normale
-        if (instance_exists(obj_player)) obj_player.drill_add();   // anche un grano respinto a segno carica la trivella
+        if (instance_exists(obj_player)) obj_player.drill_add(sid);   // anche un grano respinto a segno carica la trivella (una volta per falciata)
         bs.stun = max(bs.stun, stn);   // e lo stordisce (un palmo 3/4 di secondo, un grano poco)
         if (bs.hp <= 0) with (bs) instance_destroy();
         instance_destroy();

@@ -62,6 +62,7 @@ if (attack && transform_timer == 0) {
         var preach = front ? parry_radius + 8 : parry_radius;
         sweep_cooldown = 30;
         sweep_anim = 10;
+        sweep_n += 1;   // i colpi rimandati da questa falciata caricano la trivella una volta sola
         audio_play_sound(snd_scythe, 4, false, 0.5);
         var killed = false;
         with (obj_enemy) {
@@ -84,6 +85,7 @@ if (attack && transform_timer == 0) {
                     // il colpo torna indietro: parte spinto via dal mecha (a ventaglio), poi curva verso un nemico
                     var r = instance_create_layer(x, y, "Instances", obj_shot);
                     r.parried = true;
+                    r.sid = other.sweep_n;
                     r.hd = point_direction(other.x, other.y, x, y) + random_range(-25, 25);
                     r.v = random_range(2, 3.5);
                 }
@@ -99,12 +101,13 @@ if (attack && transform_timer == 0) {
             if (!reflected && point_distance(x, y, other.x, other.y) <= reach + radius) {
                 parried += 1;   // conta anche lui per la carica della trivella
                 reflected = true;
+                sid = other.sweep_n;
                 spd = 5;
                 audio_play_sound(snd_parry, 8, false, 0.5);
             }
         }
-        // TRIVELLA: la carica non sale qui, alla parata, ma quando il colpo parato COLPISCE un nemico
-        // (obj_shot Step e obj_palm Step chiamano drill_add)
+        // TRIVELLA: la carica non sale qui, alla parata, ma quando un colpo parato COLPISCE un nemico,
+        // e una volta sola per falciata (obj_shot Step e obj_palm Step chiamano drill_add con il numero della falciata)
     }
 }
 

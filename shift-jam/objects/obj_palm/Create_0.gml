@@ -10,3 +10,4 @@ bead = false;  // grano della mala (lo imposta obj_boss)
 turn = 1.2;    // quanto gira per inseguirti (gradi per fotogramma)
 dmg = 15;      // vita tolta al boss quando lo colpisce respinto
 stn = 45;      // per quanto lo stordisce
+sid = -1;      // respinto: il numero della falciata che l'ha respinto (per la carica della trivella)
