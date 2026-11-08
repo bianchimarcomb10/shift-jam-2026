@@ -34,38 +34,91 @@ if (transition > 0) {
 if (hint > 0) hint -= 1;
 if (stun > 0) { stun -= 1; exit; }
 
+// --- REGALI: ogni 9 secondi un proiettile bianco e nero, lento, verso di te. Spaccalo prima che ti tocchi:
+// a rombo lascia un'arma (R, L, S a turno), rotondo lascia il cuore. Arma e cuore si alternano ---
+gift_t -= 1;
+if (gift_t <= 0) {
+    var gy = (phase == 1) ? y + 70 : y;
+    var gp = instance_create_layer(x, gy, "Instances", obj_gift);
+    gp.gift = (gift_n mod 2 == 1) ? 0 : 1 + (gift_n div 2) mod 3;
+    var gtx = instance_exists(obj_player) ? obj_player.x : room_width / 2;
+    gp.dir = point_direction(x, gy, gtx, room_height - HUD_H - 40);
+    gift_n += 1;
+    gift_t = 540;
+}
+
 if (phase == 1) {
     // ===== FASE 1: NAVE MADRE =====
+    // Gli attacchi lunghi (raffiche, anelli, spirale) continuano mentre parte il successivo: si intrecciano.
     x = room_width / 2 + sin(t / 120) * 50;
+    var angry1 = (hp < hp_p2 + hp_p1 / 2);   // sotto meta' guscio: piu' veloce, e i cannoni laterali tirano corde
+    var ptx1 = room_width / 2, pty1 = room_height - 80;
+    if (instance_exists(obj_player)) { ptx1 = obj_player.x; pty1 = obj_player.y; }
+
+    // CANNONI: raffiche mirate a 5 colpi da sinistra e da destra, una ogni 10 fotogrammi
+    if (volley_t > 0) {
+        volley_t -= 1;
+        if (volley_t mod 10 == 0) {
+            for (var c = -1; c <= 1; c += 2) {
+                var cx = x + c * 40, cy = y + 60;   // ai lati della prua
+                var base = point_direction(cx, cy, ptx1, pty1);
+                for (var k = -2; k <= 2; k++) global.shoot(cx, cy, base + k * 9, 2.8);
+            }
+        }
+    }
+    // SIPARIO: due ventagli verso il basso; il secondo, sfalsato di mezzo passo, chiude i buchi del primo
+    if (fan_t > 0) {
+        fan_t -= 1;
+        if (fan_t == 30 || fan_t == 0) {
+            var off = (fan_t == 0) ? 8 : 0;
+            for (var k2 = -5; k2 <= 5; k2++) global.shoot(x, y + 70, 270 + k2 * 16 + off, (fan_t == 0) ? 2.5 : 2.0);
+        }
+    }
+    // ANELLI dalla prua, sfalsati di mezzo passo: i buchi si spostano, bisogna leggerli
+    if (ring_t > 0) {
+        ring_t -= 1;
+        if (ring_t mod 14 == 0) {
+            global.shoot_ring(x, y + 50, 16, angry1 ? 1.8 : 1.6, (ring_n mod 2) * 11.25);
+            ring_n += 1;
+        }
+    }
+    // SPIRALE: tre bracci che girano dalla prua
+    if (spin_t > 0) {
+        spin_t -= 1;
+        if (spin_t mod 6 == 0) {
+            for (var a3 = 0; a3 < 3; a3++) global.shoot(x, y + 50, spin_a + a3 * 120, 1.9);
+            spin_a += angry1 ? 13 : 11;
+        }
+    }
+    // sotto meta' guscio: corde mirate dai cannoni laterali, alternate
+    if (angry1) {
+        rope_t -= 1;
+        if (rope_t <= 0) {
+            var rc = ((t div 90) mod 2 == 0) ? -1 : 1;
+            global.shoot_rope(x + rc * 40, y + 60, point_direction(x + rc * 40, y + 60, ptx1, pty1), 4, 2.4);
+            rope_t = 110;
+        }
+    }
+
     attack_timer -= 1;
     if (attack_timer <= 0) {
         if (attack == 0) {
-            // cannoni laterali: raffica mirata da sinistra e da destra
-            if (instance_exists(obj_player)) {
-                for (var c = -1; c <= 1; c += 2) {
-                    var cx = x + c * 40;   // ai lati della prua
-                    var cy = y + 60;
-                    var base = point_direction(cx, cy, obj_player.x, obj_player.y);
-                    for (var k = -1; k <= 1; k++) {
-                        var b1 = instance_create_layer(cx, cy, "Instances", obj_ebullet);
-                        b1.dir = base + k * 8;
-                        b1.spd = 2.8;
-                    }
-                }
-            }
+            volley_t = 30;                      // 3 raffiche
         } else if (attack == 1) {
-            // hangar: lancia uno sciame di Falene
-            repeat (5) instance_create_layer(x + random_range(-30, 30), y + 30, "Instances", obj_moth);
+            // hangar: uno sciame di Falene, e intanto una corda dalla prua
+            repeat (angry1 ? 7 : 5) instance_create_layer(x + random_range(-30, 30), y + 30, "Instances", obj_moth);
+            global.shoot_rope(x, y + 70, point_direction(x, y + 70, ptx1, pty1), 5, 2.2);
+        } else if (attack == 2) {
+            fan_t = 30;
+        } else if (attack == 3) {
+            ring_t = 42;                        // 3 anelli
+            ring_n = 0;
         } else {
-            // ventaglio verso il basso
-            for (var k2 = -4; k2 <= 4; k2++) {
-                var b2 = instance_create_layer(x, y + 70, "Instances", obj_ebullet);
-                b2.dir = 270 + k2 * 14;
-                b2.spd = 2.2;
-            }
+            spin_t = 90;
+            spin_a = random(360);
         }
-        attack = (attack + 1) mod 3;
-        attack_timer = 80;
+        attack = (attack + 1) mod 5;
+        attack_timer = angry1 ? 70 : 85;
     }
 } else {
     // ===== FASE 2: I KOI DELL'ENSŌ =====
@@ -113,12 +166,14 @@ if (phase == 1) {
         if (array_length(koi_hx[k]) > 100) { array_delete(koi_hx[k], 0, 1); array_delete(koi_hy[k], 0, 1); }
         koi_sample(k);
     }
+    // la carpa d'oro arriva in fondo all'affondo e scoppia in un anello di squame
+    if (lunge_t == 70) global.shoot_ring(koi_bx[1][0], koi_by[1][0], angry ? 18 : 14, 1.6, random(360));
     if (lunge_t >= 120) lunge_t = 0;
 
     // --- SPIRALE: le carpe perdono squame (colpi magenta normali, si parano) ---
     if (spiral_t > 0) {
         spiral_t -= 1;
-        if (spiral_t mod (angry ? 4 : 6) == 0) {
+        if (spiral_t mod 4 == 0) {
             for (var k2 = 0; k2 < 2; k2++) {
                 var sx = koi_bx[k2][6], sy = koi_by[k2][6];
                 var b = instance_create_layer(sx, sy, "Instances", obj_ebullet);
@@ -126,6 +181,25 @@ if (phase == 1) {
                 b.spd = 1.8;
             }
         }
+    }
+
+    // --- PETALI: dalla perla due spirali che girano in versi opposti; si incrociano e fanno una rete ---
+    if (petal_t > 0) {
+        petal_t -= 1;
+        if (petal_t mod (angry ? 6 : 7) == 0) {
+            var ps = angry ? 1.7 : 1.5;
+            global.shoot(x, y, petal_a, ps);
+            global.shoot(x, y, petal_a + 180, ps);
+            global.shoot(x, y, -petal_a + 90, ps);
+            global.shoot(x, y, -petal_a + 270, ps);
+            petal_a += 9;
+        }
+    }
+    // --- la perla ti tira una corda ogni tanto: stare fermi non basta ---
+    pearl_t -= 1;
+    if (pearl_t <= 0) {
+        global.shoot_rope(x, y, point_direction(x, y, ptx, pty), 3, 2.3);
+        pearl_t = angry ? 60 : 90;
     }
 
     // --- GRANI DELLA MALA: brillano d'oro, poi partono verso di te. Si parano e tornano contro il boss ---
@@ -151,15 +225,18 @@ if (phase == 1) {
 
     attack_timer -= 1;
     if (attack_timer <= 0) {
-        var next_timer = angry ? 70 : 100;
+        var next_timer = angry ? 65 : 90;
         if (attack == 0) {
-            spiral_t = 72;
+            spiral_t = 90;
         } else if (attack == 2) {
             lunge_t = 1;          // 30 fotogrammi di avviso d'oro, poi l'affondo
             next_timer = 135;     // aspetta che la carpa sia tornata
+        } else if (attack == 3) {
+            petal_t = 110;
+            petal_a = random(360);
         } else {
             // sceglie i grani dalla parte del giocatore, uno ogni tre
-            var n = angry ? 7 : 5;
+            var n = angry ? 9 : 7;
             var bstep = 360 / 108;
             var j0 = round(angle_difference(point_direction(x, y, ptx, pty), bead_angle) / bstep);
             bead_sel = [];
@@ -169,7 +246,7 @@ if (phase == 1) {
             }
             bead_t = 30;
         }
-        attack = (attack + 1) mod 4;
+        attack = (attack + 1) mod 5;   // spirale, grani, affondo, petali, grani
         attack_timer = next_timer;
     }
 }

@@ -8,7 +8,7 @@ with (obj_ebullet) if (point_distance(x, y, other.x, cy) < 8 * other.sc) instanc
 // il primo nemico che tocca prende 10 colpi
 var e = instance_nearest(x, cy, obj_enemy);
 if (e != noone && point_distance(x, cy, e.x, e.y) < e.radius + 7 * sc) {
-    e.hp -= 10;
+    e.hp -= 20;   // 10 colpi parati per caricarla: deve fare male (era 10)
     var b = instance_create_layer(x, cy, "Instances", obj_boom);
     b.sc = 1.6;
     audio_play_sound(snd_explosion_big, 9, false, 0.8);

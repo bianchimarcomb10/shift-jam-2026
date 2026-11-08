@@ -8,7 +8,7 @@ draw_circle(x, y, 13 + 3 * pulse, false);
 gpu_set_blendmode(bm_normal);
 draw_set_alpha(1);
 // la nave guarda dove vola (la sprite guarda in alto, 90 gradi)
-var ang = point_direction(0, 0, side * 1.4, y - yprevious) - 90;
+var ang = point_direction(0, 0, side * 1.0, y - yprevious) - 90;
 draw_sprite_ext(spr_enemy_carrier, 0, x, y, 1, 1, ang, c_white, 1);
 if (flash > 0) {
     gpu_set_blendmode(bm_add);

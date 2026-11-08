@@ -5,7 +5,7 @@
 /// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
-#macro BUILD "7-NOV-D"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
+#macro BUILD "8-NOV-B"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
 
 global.console_k = 0;   // posizione della leva (0 = SHIP, 1 = MECHA), si muove morbida
 
@@ -98,17 +98,18 @@ function draw_console() {
         console_lamp(lx, y0 + 31, lx + 21, y0 + 40, on, lc);
     }
     if (global.has_drill) {
-        // icona della trivella (un cono con le spire) e tre spie della carica
+        // icona della trivella (un cono con le spire) e dieci spie della carica (colpi parati andati a segno)
         draw_set_colour(label);
         draw_triangle(16, y0 + 60, 28, y0 + 60, 22, y0 + 47, false);
         draw_set_colour(make_colour_rgb(26, 28, 42));
         draw_line(18, y0 + 56, 26, y0 + 54);
         draw_line(20, y0 + 52, 24, y0 + 50);
         var ch = (pl != noone) ? pl.drill_charge : 0;
-        for (var i = 0; i < 3; i++) {
-            var dx = 36 + i * 16;
-            var dc = (ch >= 3 && blink) ? c_white : cyan;
-            console_lamp(dx, y0 + 50, dx + 10, y0 + 58, ch > i, dc);
+        var full = (pl != noone) ? pl.drill_full : 10;
+        for (var i = 0; i < full; i++) {
+            var dx = 34 + i * 6;
+            var dc = (ch >= full && blink) ? c_white : cyan;
+            console_lamp(dx, y0 + 50, dx + 3, y0 + 58, ch > i, dc);
         }
     }
 
@@ -166,13 +167,13 @@ function draw_console() {
     var alert = false;
     if (instance_exists(obj_boss) && obj_boss.hint > 0 && obj_boss.transition == 0) {
         msg = ["GOLD", "BEADS:", "PARRY"]; alert = true;
-    } else if (pl != noone && global.has_drill && pl.form == 1 && pl.drill_charge >= 3) {
+    } else if (pl != noone && global.has_drill && pl.form == 1 && pl.drill_charge >= pl.drill_full) {
         msg = ["SHIFT", "FIRES", "DRILL"]; alert = true;
     } else if (pl != noone && pl.special > 0) {
-        // ARMA SPECIALE: quale e quanti secondi restano; da mecha ricorda che serve la navicella
+        // ARMA SPECIALE: quale e quante munizioni restano; da mecha ricorda che serve la navicella
         var wn = (pl.special == 1) ? "ROCKETS" : ((pl.special == 2) ? "LASER" : "SPREAD");
         if (pl.form == 1) msg = [wn + ":", "SHIFT TO", "SHIP"];
-        else msg = [wn, string(ceil(pl.special_t / 60)) + " SEC"];
+        else msg = [wn, "AMMO " + string(ceil(pl.special_ammo))];
         alert = true;
     } else if (pl != noone && !global.parry_learned && pl.form == 0) {
         var py = pl.y, near = false;

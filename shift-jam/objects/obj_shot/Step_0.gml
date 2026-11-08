@@ -40,6 +40,7 @@ if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + ((kind == 3) ? 6 :
         exit;
     }
     e.hp -= dmg;
+    if (parried && instance_exists(obj_player)) obj_player.drill_add();   // TRIVELLA: un colpo parato a segno carica
     if (kind == 1 && instance_exists(obj_player)) array_push(obj_player.sparks, [x, y, 12]);   // il razzo scoppia
     if (e.hp <= 0) {
         global.enemy_boom(e);

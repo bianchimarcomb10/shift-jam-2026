@@ -15,7 +15,6 @@ if (sweep_cooldown > 0) sweep_cooldown -= 1;
 if (sweep_anim > 0) sweep_anim -= 1;
 if (invuln > 0) invuln -= 1;
 if (shift_flash > 0) shift_flash -= 1;
-if (special_t > 0) { special_t -= 1; if (special_t == 0) special = 0; }   // l'arma speciale dura 10 s
 if (special_cd > 0) special_cd -= 1;
 if (heal_t > 0) heal_t -= 1;
 beam_on = false;
@@ -26,7 +25,7 @@ if (transform_timer > 0) {
     if (transform_timer == 0) form = 1 - form;
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
     // TRIVELLA carica: da mecha a navicella parte, cresce e vola contro il nemico
-    if (form == 1 && global.has_drill && drill_charge >= 3) {
+    if (form == 1 && global.has_drill && drill_charge >= drill_full) {
         instance_create_layer(x + 10 * mech_scale, y - 2 * mech_scale, "Instances", obj_drill_shot);
         drill_charge = 0;
     }
@@ -40,19 +39,20 @@ if (transform_timer > 0) {
 var attack = keyboard_check(ord("Z")) || keyboard_check(vk_space) || keyboard_check(ord("J"));   // Z (con le frecce) o SPAZIO (con WASD)
 if (attack && transform_timer == 0) {
     if (form == 0) {
-        // ARMI SPECIALI (10 s): laser e ventaglio prendono il posto dello sparo, i razzi si aggiungono
+        // ARMI SPECIALI (a munizioni): laser e ventaglio prendono il posto dello sparo, i razzi si aggiungono
         if (special == 2) {
             beam_on = true;
             special_beam();
+            special_use(1);   // un fotogramma di raggio = una munizione
         } else if (special == 3) {
-            if (special_cd == 0) { special_fan(); special_cd = 12; }
+            if (special_cd == 0) { special_fan(); special_cd = 12; special_use(1); }
         } else if (fire_cooldown == 0) {
             // Navicella: sparo in avanti, 10 colpi al secondo
             instance_create_layer(x, y - 12, "Instances", obj_shot);
             audio_play_sound(snd_shot, 1, false, 0.15);   // lo sparo e' continuo: molto basso
             fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
         }
-        if (special == 1 && special_cd == 0) { special_rockets(); special_cd = 30; }   // 4 razzi ogni mezzo secondo
+        if (special == 1 && special_cd == 0) { special_rockets(); special_cd = 30; special_use(4); }   // 4 razzi ogni mezzo secondo
     }
     if (form == 1 && sweep_cooldown == 0) {
         // Mecha: falciata a 360 gradi, ogni 0,5 s.
@@ -103,11 +103,8 @@ if (attack && transform_timer == 0) {
                 audio_play_sound(snd_parry, 8, false, 0.5);
             }
         }
-        // TRIVELLA: ogni colpo rimandato al mittente carica; a 3 e' pronta (alone azzurro + avviso)
-        if (front && parried > 0 && drill_charge < 3) {
-            drill_charge = min(3, drill_charge + parried);
-            if (drill_charge >= 3) audio_play_sound(snd_shift, 9, false, 0.9);
-        }
+        // TRIVELLA: la carica non sale qui, alla parata, ma quando il colpo parato COLPISCE un nemico
+        // (obj_shot Step e obj_palm Step chiamano drill_add)
     }
 }
 
@@ -138,10 +135,10 @@ if (invuln == 0) {
         if (point_distance(x, y, other.x, other.y) < hr + radius) {
             hit = true;
             if (object_index == obj_moth) { global.enemy_boom(id); instance_destroy(); }
+            if (object_index == obj_gift) instance_destroy();   // preso in pieno: fa male e il regalo e' perso
         }
     }
     if (hit) {
-        drill_charge = 0;   // colpito: la serie di parate si interrompe
         global.hp -= 1;
         invuln = 60;   // 1 secondo di invulnerabilita'
         audio_play_sound(snd_hurt, 9, false);

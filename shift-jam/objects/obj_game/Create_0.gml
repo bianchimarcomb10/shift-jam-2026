@@ -221,6 +221,13 @@ global.draw_frame = function(spr, k, px, py, rot, sc) {
 /// Si chiama SOLO quando un nemico viene ucciso (non quando esce dallo schermo).
 global.enemy_boom = function(e) {
     var s = -1, first = 0, r = 0, bsc = 1;
+    // PROIETTILE-REGALO del boss spaccato: lascia cadere il suo regalo, con una scintilla
+    if (e.object_index == obj_gift) {
+        if (e.gift == 0) instance_create_layer(e.x, e.y, "Instances", obj_heart);
+        else { var pg = instance_create_layer(e.x, e.y, "Instances", obj_powerup); pg.kind = e.gift; }
+        if (instance_exists(obj_player)) array_push(obj_player.sparks, [e.x, e.y, 12]);
+        return;
+    }
     switch (e.object_index) {
         case obj_moth:    s = spr_boom_fighter; first = 1; r = e.dir - 90;  break;   // Falena = Fighter
         case obj_spear:   s = spr_boom_frigate; first = 2; r = 180;         break;   // Lancia = Frigate

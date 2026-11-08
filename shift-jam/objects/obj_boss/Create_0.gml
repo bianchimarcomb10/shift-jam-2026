@@ -2,12 +2,14 @@
 /// Fase 1: la nave madre da guerra degli alieni. Fase 2: perso il guscio, restano i KOI DELL'ENSŌ.
 /// Disegnati dal codice: la mala (108 grani), un ensō a pennello che gira e si accorcia con la vita,
 /// la perla al centro (il punto debole) e due carpe che le nuotano attorno.
-/// Attacchi: spirale di squame (magenta, parabili), grani della mala d'oro (parabili, tornano contro il boss),
-/// affondo della carpa d'oro (avviso d'oro, poi si lancia: fa danno da contatto).
+/// Attacchi fase 1: cannoni mirati a raffica, hangar di Falene con corda, sipario di due ventagli, anelli sfalsati, spirale.
+/// Attacchi fase 2: spirale di squame, grani della mala d'oro (parabili, tornano contro il boss),
+/// affondo della carpa d'oro (avviso d'oro, poi si lancia e scoppia in un anello di squame), petali (rete di due spirali).
+/// Tutti i colpi magenta si parano. Deve essere piu' duro delle ultime ondate.
 /// E' figlio di obj_enemy: colpi, falciata e contatto funzionano come con gli altri nemici.
 phase = 1;
-hp_p2 = 150;              // vita del Custode
-hp_p1 = 220;              // vita della nave madre
+hp_p2 = 180;              // vita dei Koi (era 150: il boss deve essere piu' duro delle ultime ondate)
+hp_p1 = 260;              // vita della nave madre (era 220)
 hp = hp_p1 + hp_p2;       // un solo contatore: quando scende a hp_p2 il guscio si rompe
 radius = 56;              // la nave madre e' grande
 target_y = 140;           // dove si ferma dopo l'entrata
@@ -19,6 +21,20 @@ debris = [];
 bead_angle = 0;           // rotazione della mala
 stun = 0;                 // il Custode resta stordito quando un palmo respinto lo colpisce
 hint = 0;                 // per quanto mostrare il suggerimento sulla parata
+
+// ===== ATTACCHI LUNGHI: durano piu' fotogrammi e si sovrappongono all'attacco successivo =====
+volley_t = 0;             // CANNONI: raffiche mirate, una ogni 10 fotogrammi
+fan_t = 0;                // SIPARIO: due ventagli sfalsati, il secondo copre i buchi del primo
+ring_t = 0;               // ANELLI: tre o quattro anelli dalla prua, sfalsati di mezzo passo
+ring_n = 0;
+spin_t = 0;               // SPIRALE della nave madre: tre bracci che girano
+spin_a = 0;
+rope_t = 120;             // sotto meta' vita: corde mirate dai cannoni laterali
+petal_t = 0;              // PETALI dei Koi: due spirali che girano in versi opposti (una rete)
+petal_a = 0;
+pearl_t = 90;             // la perla ti spara una corda ogni tanto: stare fermi non basta
+gift_t = 300;             // REGALI: proiettili bianchi e neri che, spaccati, lasciano un'arma o il cuore (obj_gift)
+gift_n = 0;
 
 // ===== I KOI DELL'ENSŌ (fase 2) =====
 enso_rot = 0;             // l'ensō gira
