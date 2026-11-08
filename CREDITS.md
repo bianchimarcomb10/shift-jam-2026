@@ -2,6 +2,10 @@
 
 Game by Marco Bianchi (Chelios).
 
+Music by Cubesando.
+
+Playtesting: friends of Marco Bianchi (Chelios) and the subscribers of Side Quest Podcast. Thank you all.
+
 ## Third-party assets
 
 | Asset | Autore | Link | Licenza |
