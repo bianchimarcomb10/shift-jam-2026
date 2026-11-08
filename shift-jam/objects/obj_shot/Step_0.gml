@@ -32,7 +32,8 @@ with (obj_laser) if (beam_w > 3 && other.y > y + 20 && abs(other.x - x) < beam_w
 if (burnt) { instance_destroy(); exit; }
 
 var e = instance_nearest(x, y, obj_enemy);
-if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + ((kind == 3) ? 6 : 3)) {
+var pad = ((kind == 3) ? 6 : 3) + ((e != noone && e.object_index == obj_carrier) ? 8 : 0);   // la Portatrice si prende anche di striscio
+if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + pad) {
     // torretta corazzata: lo sparo normale rimbalza (lampo bianco) senza danno; solo i colpi parati la feriscono
     if (e.object_index == obj_turret && e.armored && !parried) {
         e.flash = 6;

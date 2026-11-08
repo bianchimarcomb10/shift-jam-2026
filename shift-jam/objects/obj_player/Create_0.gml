@@ -102,5 +102,5 @@ special_beam = function() {
     if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
     with (obj_ebullet) if (y < by && abs(x - bx) < 8) instance_destroy();
     with (obj_bigship) if (y < by && abs(x - bx) < 30) { hull_hp -= 0.25; hull_flash = 3; }
-    if (special_cd == 0) { audio_play_sound(snd_shot, 1, false, 0.12); special_cd = 6; }   // segnaposto: snd_beam
+    if (special_cd == 0) { audio_play_sound(snd_laser, 2, false, 0.35); special_cd = 22; }   // snd_laser (file di Chelios): uno ogni 0,37 s, quanto dura
 }

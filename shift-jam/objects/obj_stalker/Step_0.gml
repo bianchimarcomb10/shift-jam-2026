@@ -16,12 +16,16 @@ if (stay <= 0) {
     exit;
 }
 
-if (instance_exists(obj_player)) {
-    var dir = point_direction(x, y, obj_player.x, obj_player.y);
-    x += lengthdir_x(spd, dir);
-    y += lengthdir_y(spd, dir);
-}
-if (y < 20) y += 1;   // entra nello schermo prima di inseguire
+// PERCORSO FISSO: entra di lato lungo la sua corsia, in 1,5 s si ferma al suo posto (76 px dal bordo),
+// poi ondeggia a otto e scende piano (al massimo 50 px). Non dipende da dove sei tu
+if (t == 0) { side = (x < room_width / 2) ? 1 : -1; lane_y = y; }
+t += 1;
+var hx = (side == 1) ? 76 : room_width - 76;
+var sx = (side == 1) ? -30 : room_width + 30;
+var k = min(t / 90, 1); k = k * k * (3 - 2 * k);
+var ht = max(0, t - 90);
+x = lerp(sx, hx, k) + 26 * dsin(ht * 1.5) * side;
+y = lane_y + min(ht * 0.12, 50) + 9 * dsin(ht * 3);
 
 fire_timer -= 1;
 if (fire_timer <= 0 && instance_exists(obj_player) && x > 0 && x < room_width) {   // spara solo quando e' sullo schermo

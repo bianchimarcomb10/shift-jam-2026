@@ -12,6 +12,13 @@ Game by Marco Bianchi (Chelios).
 | Pixelart Clouds - Asset Pack (ricolorato) | RocketNinjaGames | https://rocketninjagames.itch.io/pixelart-clouds-asset-pack | CC0 |
 | 1-Bit Pack (ricolorato) | Kenney | https://kenney.nl/assets/1-bit-pack | CC0 |
 
+## Sounds
+
+| Asset | Source | License |
+| --- | --- | --- |
+| `snd_laser` (laserShoot.wav, the special laser) | provided by Marco Bianchi (Chelios) | origin to be confirmed |
+| other sound effects (`snd_shot`, `snd_scythe`, `snd_parry`, ...) | added by Marco Bianchi (Chelios) on 2026-11-04 | origin to be confirmed |
+
 ## Generated graphics
 
 The ground of the opening scene (`spr_bg_ground`) is drawn by `tools/mkground.py` (Python + Pillow + NumPy), with no third-party assets.

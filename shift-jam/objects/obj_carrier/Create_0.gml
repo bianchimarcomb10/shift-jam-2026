@@ -3,7 +3,7 @@
 /// Non schiva: passa una volta sola, ondeggiando, e se non la abbatti in tempo l'arma e' persa.
 /// La crea obj_game con il comando ["carrier", arma, attesa]: arma 1 razzi, 2 laser, 3 ventaglio.
 hp = 2;           // facile da abbattere (era 3)
-radius = 14;      // bersaglio piu' largo della sprite: i colpi la prendono anche di striscio (era 9)
+radius = 9;       // la sprite; i colpi pero' la prendono anche di striscio (obj_shot aggiunge 8 px solo per lei)
 kind = 1;          // che arma porta
 side = 1;          // 1 entra da sinistra, -1 da destra (lo decide obj_game)
 base_y = 90;       // altezza della sua rotta

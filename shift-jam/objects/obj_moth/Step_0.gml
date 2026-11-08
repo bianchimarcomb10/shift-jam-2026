@@ -58,7 +58,7 @@ if (form > 0) {
         case 4: // TENAGLIA: due archi che entrano dai lati e si incrociano
             var k = min(tt / 240, 1);
             x = (side == 1) ? (-20 + tt * 1.6) : (room_width + 20 - tt * 1.6);
-            y = 30 + 260 * dsin(k * 180) + ((side == 1) ? 0 : 40);
+            y = 30 + 260 * dsin(k * 180) + ((side == 1) ? 0 : 70);   // l'arco di destra piu' basso: incrociandosi restano a 40 px
             break;
 
         case 5: // CORRIDOIO LATERALE: attraversa lo schermo da un lato all'altro,
@@ -76,13 +76,16 @@ if (form > 0) {
         case 7: // RUOTA: le falene in cerchio scendono, si fermano e girano (amp = verso).
                 // Ogni secondo sparano tutte insieme verso l'esterno: un anello che nasce gia' girato,
                 // cosi' i varchi si spostano a ogni anello. Ogni falena abbattuta e' un varco in piu'.
-                // Dopo 4 anelli il cerchio si apre come un fiore e le falene volano via
+                // Dopo 4 anelli il cerchio esce: si apre come un fiore (shape 0), sale intero (1) o scivola di lato (2)
             var arrive = 140, hold = 240;
-            var rr = 44;
-            if (tt > arrive + hold) rr += (tt - arrive - hold) * 2.5;
+            var rr = 44, wcx = cx, wcy = min(-50 + tt * 1.5, 160);
+            var out = max(0, tt - arrive - hold);   // fotogrammi da quando esce
+            if (shape == 1) wcy -= out * 2.5;                                  // esce salendo intera
+            else if (shape == 2) wcx += out * 2.2 * ((cx < room_width / 2) ? -1 : 1);   // scivola fuori dal suo lato
+            else rr += out * 2.5;                                              // si apre come un fiore
             var a = idx * 360 / n + tt * 1.2 * sign(amp);
-            x = cx + lengthdir_x(rr, a);
-            y = min(-50 + tt * 1.5, 160) + lengthdir_y(rr, a);
+            x = wcx + lengthdir_x(rr, a);
+            y = wcy + lengthdir_y(rr, a);
             if (tt > arrive && tt <= arrive + hold && (tt - arrive) mod 60 == 0) global.shoot(x, y, a, 1.6);
             break;
 
@@ -132,6 +135,6 @@ if (form > 0) {
     x += lengthdir_x(spd, dir);
     y += lengthdir_y(spd, dir);
 }
-if (y > room_height + 30 || x < -40 || x > room_width + 40 || (form == 7 && t - delay > 380 && y < -40)) {   // la ruota aperta esce anche in alto
+if (y > room_height + 30 || x < -100 || x > room_width + 100 || (form == 7 && t - delay > 380 && y < -100)) {   // la ruota che esce: anche in alto o di lato (margine: il cerchio esce intero)
     if (!(form > 0 && t - delay < 0)) instance_destroy();   // chi aspetta fuori non va distrutto
 }

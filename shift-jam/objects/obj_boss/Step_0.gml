@@ -14,6 +14,7 @@ if (phase == 1 && hp <= hp_p2) {
     attack = 0;
     attack_timer = 120;
     hint = 360;
+    gift_t = 300;   // i regali continuano: ogni 9 s
     with (obj_ebullet) instance_destroy();
     debris = [];
     for (var i = 0; i < 24; i++) {
@@ -34,17 +35,20 @@ if (transition > 0) {
 if (hint > 0) hint -= 1;
 if (stun > 0) { stun -= 1; exit; }
 
-// --- REGALI: ogni 9 secondi un proiettile bianco e nero, lento, verso di te. Spaccalo prima che ti tocchi:
-// a rombo lascia un'arma (R, L, S a turno), rotondo lascia il cuore. Arma e cuore si alternano ---
-gift_t -= 1;
-if (gift_t <= 0) {
-    var gy = (phase == 1) ? y + 70 : y;
-    var gp = instance_create_layer(x, gy, "Instances", obj_gift);
-    gp.gift = (gift_n mod 2 == 1) ? 0 : 1 + (gift_n div 2) mod 3;
-    var gtx = instance_exists(obj_player) ? obj_player.x : room_width / 2;
-    gp.dir = point_direction(x, gy, gtx, room_height - HUD_H - 40);
-    gift_n += 1;
-    gift_t = 540;
+// --- REGALI: un proiettile bianco e nero, lento, verso di te. Spaccalo prima che ti tocchi:
+// a rombo lascia un'arma (R, L, S a turno), rotondo lascia il cuore. Arma e cuore si alternano.
+// Fase 1: mezzo secondo dopo ogni hangar (cosi' resta dietro alle Falene); fase 2: ogni 9 secondi ---
+if (gift_t > 0) {
+    gift_t -= 1;
+    if (gift_t == 0) {
+        var gy = (phase == 1) ? y + 70 : y;
+        var gp = instance_create_layer(x, gy, "Instances", obj_gift);
+        gp.gift = (gift_n mod 2 == 1) ? 0 : 1 + (gift_n div 2) mod 3;
+        var gtx = instance_exists(obj_player) ? obj_player.x : room_width / 2;
+        gp.dir = point_direction(x, gy, gtx, room_height - HUD_H - 40);
+        gift_n += 1;
+        if (phase == 2) gift_t = 540;
+    }
 }
 
 if (phase == 1) {
@@ -106,8 +110,16 @@ if (phase == 1) {
             volley_t = 30;                      // 3 raffiche
         } else if (attack == 1) {
             // hangar: uno sciame di Falene, e intanto una corda dalla prua
-            repeat (angry1 ? 7 : 5) instance_create_layer(x + random_range(-30, 30), y + 30, "Instances", obj_moth);
+            var nm = angry1 ? 7 : 5;
+            for (var q = 0; q < nm; q++) {
+                var oq = q - (nm - 1) / 2;   // sempre lo stesso ventaglio, le falene vanno dritte
+                var mq = instance_create_layer(x + oq * 24, y + 40 + abs(oq) * 6, "Instances", obj_moth);
+                mq.dir = 270 + oq * 14;
+                mq.spd = 2.2;
+                mq.home_time = 0;
+            }
             global.shoot_rope(x, y + 70, point_direction(x, y + 70, ptx1, pty1), 5, 2.2);
+            gift_t = 30;   // dietro alle Falene parte un regalo
         } else if (attack == 2) {
             fan_t = 30;
         } else if (attack == 3) {
@@ -115,7 +127,7 @@ if (phase == 1) {
             ring_n = 0;
         } else {
             spin_t = 90;
-            spin_a = random(360);
+            spin_a = 90;   // parte sempre dallo stesso punto
         }
         attack = (attack + 1) mod 5;
         attack_timer = angry1 ? 70 : 85;
@@ -167,7 +179,7 @@ if (phase == 1) {
         koi_sample(k);
     }
     // la carpa d'oro arriva in fondo all'affondo e scoppia in un anello di squame
-    if (lunge_t == 70) global.shoot_ring(koi_bx[1][0], koi_by[1][0], angry ? 18 : 14, 1.6, random(360));
+    if (lunge_t == 70) global.shoot_ring(koi_bx[1][0], koi_by[1][0], angry ? 18 : 14, 1.6, 0);
     if (lunge_t >= 120) lunge_t = 0;
 
     // --- SPIRALE: le carpe perdono squame (colpi magenta normali, si parano) ---
@@ -233,7 +245,7 @@ if (phase == 1) {
             next_timer = 135;     // aspetta che la carpa sia tornata
         } else if (attack == 3) {
             petal_t = 110;
-            petal_a = random(360);
+            petal_a = 0;
         } else {
             // sceglie i grani dalla parte del giocatore, uno ogni tre
             var n = angry ? 9 : 7;

@@ -33,7 +33,8 @@ rope_t = 120;             // sotto meta' vita: corde mirate dai cannoni laterali
 petal_t = 0;              // PETALI dei Koi: due spirali che girano in versi opposti (una rete)
 petal_a = 0;
 pearl_t = 90;             // la perla ti spara una corda ogni tanto: stare fermi non basta
-gift_t = 300;             // REGALI: proiettili bianchi e neri che, spaccati, lasciano un'arma o il cuore (obj_gift)
+gift_t = 0;               // REGALI: proiettili bianchi e neri che, spaccati, lasciano un'arma o il cuore (obj_gift).
+                          // Fase 1: partono mezzo secondo dopo ogni hangar (dietro alle Falene, che sono piu' veloci: non si toccano). Fase 2: ogni 9 s
 gift_n = 0;
 
 // ===== I KOI DELL'ENSŌ (fase 2) =====

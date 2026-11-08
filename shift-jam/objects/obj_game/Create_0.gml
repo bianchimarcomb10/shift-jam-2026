@@ -296,11 +296,11 @@ spawn_formation = function(_form, _n, _cx, _amp, _shape) {
         m.n = _n;
         m.cx = _cx;
         m.amp = _amp;
-        m.shape = is_undefined(_shape) ? 0 : _shape;   // solo per le formazioni aeree (form 3)
+        m.shape = is_undefined(_shape) ? 0 : _shape;   // formazioni aeree (form 3): la figura; ruota (form 7): come esce
         if (_form == 1) m.delay = i * 12;          // il serpente entra una falena dopo l'altra
         if (_form == 4) {                          // tenaglia: meta' da sinistra, meta' da destra
             m.side = (i mod 2 == 0) ? 1 : -1;
-            m.delay = (i div 2) * 14;
+            m.delay = (i div 2) * 14 + ((m.side == -1) ? 7 : 0);   // sfalsate di mezzo passo
         }
         if (_form == 5) {                          // corridoio: prima una fila da sinistra, poi una da destra piu' in basso
             var half = ceil(_n / 2);
@@ -310,7 +310,7 @@ spawn_formation = function(_form, _n, _cx, _amp, _shape) {
         }
         if (_form == 6) {                          // croce: due file dagli angoli in alto, una falena si' e una no
             m.side = (i mod 2 == 0) ? 1 : -1;
-            m.delay = (i div 2) * 16 + ((m.side == -1) ? 8 : 0);   // sfalsate: al centro passano a zip, senza scontrarsi
+            m.delay = (i div 2) * 40 + ((m.side == -1) ? 20 : 0);  // sfalsate: al centro passano a 25 px l'una dall'altra
         }
         if (_form == 8) {                          // risalita: una fila sola, dal lato _amp (1 sinistra, -1 destra)
             m.side = sign(_amp);
@@ -328,10 +328,11 @@ spawn_formation = function(_form, _n, _cx, _amp, _shape) {
 /// cosi' non si scontrano tra loro e lasciano libero il centro alle Falene.
 /// _pat: come sparano (0 mira, 1 spirale, 2 anello, 3 pioggia: vedi obj_spear).
 /// _heart: 1 = quella al centro della fila e' BIANCA E NERA e lascia un cuore (+1 vita)
-spawn_spears = function(_k, _pat, _heart) {
+spawn_spears = function(_k, _pat, _heart, _xs) {
     for (var i = 0; i < _k; i++) {
-        var sp = instance_create_layer(room_width * (i + 1) / (_k + 1), -30, "Instances", obj_spear);
-        sp.stop_y = 50 + (i mod 2) * 40;   // a zig-zag, sempre uguale
+        var lx = is_array(_xs) ? _xs[i] : room_width * (i + 1) / (_k + 1);   // posizioni scelte a mano, o in fila regolare
+        var sp = instance_create_layer(lx, -30, "Instances", obj_spear);
+        sp.stop_y = 66 + (i mod 2) * 40;   // a zig-zag, sempre uguale; sotto la rotta delle fregate dei muri (y 26)
         sp.special = (_heart == 1 && i == _k div 2);
         sp.pat = _pat;
         sp.sdir = (sp.x < room_width / 2) ? 1 : -1;   // le spirali di sinistra e di destra girano a specchio
@@ -341,11 +342,12 @@ spawn_spears = function(_k, _pat, _heart) {
 
 /// PORTATRICE: una piccola nave bianca e nera che attraversa lo schermo in alto e porta un'arma speciale.
 /// _kind: 1 razzi, 2 laser, 3 ventaglio.  _wait: fotogrammi di attesa.  _side: 1 da sinistra, -1 da destra
-spawn_carrier = function(_kind, _wait, _side) {
+spawn_carrier = function(_kind, _wait, _side, _y) {
     var cr = instance_create_layer(-100, -100, "Instances", obj_carrier);
     cr.kind = _kind;
     cr.wait = _wait;
     cr.side = _side;
+    if (_y > 0) cr.base_y = _y;   // la sua corsia: scelta in modo che non incroci gli altri nemici
 }
 
 /// Navi laser: si fermano in alto, una accanto all'altra, dopo _wait fotogrammi.
@@ -388,16 +390,19 @@ spawn_stalkers = function(_k, _wait, _pat) {
 ///   ["pincer", quante]                      tenaglia dai lati
 ///   ["corridor", quante]                    corridoio laterale
 ///   ["cross", quante]                       CROCE: due file dagli angoli in alto che si incrociano a X
-///   ["wheel", quante, centro x, verso]      RUOTA: cerchio che gira e spara verso l'esterno, poi si apre come un fiore
+///   ["wheel", quante, centro x, verso, uscita]  RUOTA: cerchio che gira e spara verso l'esterno; poi esce:
+///                                           uscita 0 si apre come un fiore, 1 sale intera, 2 scivola fuori dal suo lato
 ///   ["rise", quante, lato]                  RISALITA: una fila che sale DA SOTTO lungo il bordo (1 sinistra, -1 destra)
-///   ["spears", quante, colpo, cuore]        Lance in fila in alto. colpo: 0 mira, 1 spirale, 2 anello, 3 pioggia.
+///   ["spears", quante, colpo, cuore, [x]]   Lance in fila in alto. colpo: 0 mira, 1 spirale, 2 anello, 3 pioggia.
+///                                           [x] (facoltativo): le posizioni, es. [80, 280]
 ///                                           cuore 1 = una e' bianca e nera e lascia un cuore
 ///   ["stalkers", quante, attesa, colpo]     Inseguitori dai lati dopo "attesa" fotogrammi. colpo: 0 mirato, 1 corda
 ///   ["laser", quante, attesa]               Navi laser (raggio continuo, non si para) dopo "attesa" fotogrammi
 ///   ["wall", attesa, tipo, x]               muro di colpi dopo "attesa" fotogrammi. tipo: 0 pieno, 1 con una PORTA
 ///                                           larga 52 px in x, 2 a FRECCIA (il centro cade prima), 3 DOPPIO (due file)
 ///   ["bigship"]                             la nave enorme con le torrette (un'ondata da sola)
-///   ["carrier", arma, attesa, lato]         PORTATRICE: abbattuta lascia un'arma speciale (1 razzi, 2 laser, 3 ventaglio)
+///   ["carrier", arma, attesa, lato, y]      PORTATRICE: abbattuta lascia un'arma speciale (1 razzi, 2 laser, 3 ventaglio);
+///                                           y (facoltativo) = la sua corsia
 ///   ["at", fotogrammi, comando]             un comando qualsiasi, ma piu' tardi (es. ["at", 300, ["snake", 8, 90, 60]])
 /// Per cambiare il gioco basta cambiare questa tabella. I TEMPI (wave_secs, piu' sotto) non cambiano.
 waves = [
@@ -408,20 +413,20 @@ waves = [
     /* 4  */ [["pincer", 10]],
     /* 5  */ [["spears", 2, 2, 1], ["corridor", 8]],                                     // ANELLI: i varchi si spostano a ogni anello. Cuore
     /* 6  */ [["delta", 10, 180], ["stalkers", 1, 300, 0], ["wall", 240, 1, 270]],      // il muro ha una PORTA a destra: passi o pari
-    /* 7  */ [["wheel", 8, 180, 1], ["carrier", 1, 60, 1]],                             // RUOTA; prima Portatrice: i RAZZI
+    /* 7  */ [["wheel", 8, 180, 1], ["carrier", 1, 0, 1, 45]],                         // RUOTA; prima Portatrice: i RAZZI, sopra la ruota
     /* 8  */ [["rise", 7, 1], ["at", 90, ["rise", 7, -1]], ["wall", 250, 3]],            // RISALITA da sotto, poi MURO DOPPIO: due parate a tempo
     // INTERLUDIO
     /* 9  */ [["bigship"]],   // la nave enorme passa; si spengono le torrette (obj_bigship)
     // ATTO II: lo spazio si stringe
-    /* 10 */ [["laser", 1, 60], ["cross", 12], ["stalkers", 2, 330, 1]],               // prima nave laser; Inseguitori a CORDA
-    /* 11 */ [["echelon", 6, 140, 1], ["echelon", 6, 220, -1], ["wall", 200, 2]],      // due scaglioni; muro a FRECCIA
-    /* 12 */ [["spears", 4, 3, 0], ["pincer", 12], ["wall", 380, 1, 180], ["laser", 1, 560], ["carrier", 2, 30, -1]],   // PIOGGIA: corsie che si aprono e chiudono. Portatrice del LASER
+    /* 10 */ [["cross", 12], ["laser", 1, 300], ["at", 380, ["rise", 6, 1]], ["stalkers", 2, 480, 1]],   // prima la CROCE, poi la prima nave laser; RISALITA sotto il raggio; Inseguitori a CORDA
+    /* 11 */ [["echelon", 6, 120, 1], ["echelon", 6, 240, -1], ["wall", 200, 2]],      // due scaglioni; muro a FRECCIA
+    /* 12 */ [["spears", 4, 3, 0], ["pincer", 12], ["wall", 380, 1, 180], ["laser", 1, 560], ["carrier", 2, 330, -1, 160]],   // PIOGGIA: corsie che si aprono e chiudono. Portatrice del LASER, sotto le Lance
     /* 13 */ [["spears", 2, 1, 1], ["corridor", 10]],                                   // SPIRALI a specchio. Cuore
     // ATTO III: tutto insieme
-    /* 14 */ [["wheel", 8, 110, 1], ["wheel", 8, 250, -1], ["wall", 440, 2], ["stalkers", 2, 420, 1], ["laser", 2, 540]],   // due ruote che girano al contrario; poi la gabbia
-    /* 15 */ [["diamond", 9, 90, 1], ["diamond", 9, 270, -1], ["spears", 2, 2, 0], ["wall", 380, 3]],                     // due rombi a specchio sotto gli anelli
-    /* 16 */ [["spears", 3, 0, 1], ["rise", 8, -1], ["wall", 150, 1, 90], ["wall", 300, 1, 270], ["wall", 450, 1, 90], ["carrier", 3, 40, 1]],   // SLALOM: tre porte alternate. Cuore. Portatrice del VENTAGLIO
-    /* 17 */ [["cross", 12], ["spears", 2, 1, 0], ["wall", 300, 1, 180], ["at", 420, ["wheel", 8, 180, -1]], ["wall", 600, 3], ["stalkers", 2, 640, 1], ["laser", 2, 760]]   // il finale: tutto quello che hai imparato
+    /* 14 */ [["wheel", 8, 110, 1, 2], ["wheel", 8, 250, -1, 2], ["wall", 440, 2], ["stalkers", 2, 420, 1], ["laser", 2, 540]],   // due ruote che girano al contrario ed escono di lato; poi la gabbia
+    /* 15 */ [["diamond", 9, 90, 1], ["diamond", 9, 270, -1], ["at", 260, ["spears", 2, 2, 0]], ["wall", 380, 3]],     // due rombi a specchio; dietro di loro gli anelli
+    /* 16 */ [["spears", 3, 0, 1], ["rise", 8, -1], ["wall", 150, 1, 90], ["wall", 300, 1, 270], ["wall", 480, 1, 90], ["carrier", 3, 40, 1, 150]],   // SLALOM: tre porte alternate. Cuore. Portatrice del VENTAGLIO
+    /* 17 */ [["cross", 12], ["at", 330, ["spears", 2, 1, 0, [80, 280]]], ["wall", 300, 1, 180], ["at", 330, ["wheel", 8, 180, -1, 1]], ["wall", 600, 3], ["stalkers", 2, 640, 1], ["laser", 2, 760]]   // il finale: tutto quello che hai imparato
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
 
@@ -515,14 +520,14 @@ spawn_cmd = function(c) {
         case "pincer":   spawn_formation(4, c[1], 0, 0); break;
         case "corridor": spawn_formation(5, c[1], 0, 0); break;
         case "cross":    spawn_formation(6, c[1], 0, 0); break;
-        case "wheel":    spawn_formation(7, c[1], c[2], (array_length(c) > 3) ? c[3] : 1); break;
+        case "wheel":    spawn_formation(7, c[1], c[2], (array_length(c) > 3) ? c[3] : 1, a(c, 4)); break;
         case "rise":     spawn_formation(8, c[1], 0, (array_length(c) > 2) ? c[2] : 1); break;
-        case "spears":   spawn_spears(c[1], a(c, 2), a(c, 3)); break;
+        case "spears":   spawn_spears(c[1], a(c, 2), a(c, 3), a(c, 4)); break;
         case "stalkers": spawn_stalkers(c[1], c[2], a(c, 3)); break;
         case "laser":    spawn_lasers(c[1], c[2]); break;
         case "wall":     array_push(walls, [c[1], a(c, 2), a(c, 3)]); break;
         case "bigship":  instance_create_layer(room_width / 2, -90, "Instances", obj_bigship); break;
-        case "carrier":  spawn_carrier(c[1], c[2], c[3]); break;
+        case "carrier":  spawn_carrier(c[1], c[2], c[3], a(c, 4)); break;
         case "at":       array_push(pending, [c[1], c[2]]); break;
     }
 }
@@ -544,10 +549,10 @@ spawn_wall = function(_type, _gx) {
     }
     // tempo: picchiata (circa 70 px) + corsa fino al bordo + un po' di margine per la cabrata
     var total = ceil((70 + room_width / 2 + 20) / spd_f) + 30;
-    var f1 = instance_create_layer(room_width / 2 - 10, -40, "Instances", obj_frigate);
+    var f1 = instance_create_layer(room_width / 2 - 16, -40, "Instances", obj_frigate);   // 32 px tra le due: non si toccano
     f1.side = -1; f1.spd = spd_f; f1.total = total; f1.slots = [];
     for (var i = array_length(left) - 1; i >= 0; i--) array_push(f1.slots, left[i]);   // dal centro verso sinistra
-    var f2 = instance_create_layer(room_width / 2 + 10, -40, "Instances", obj_frigate);
+    var f2 = instance_create_layer(room_width / 2 + 16, -40, "Instances", obj_frigate);
     f2.side = 1; f2.spd = spd_f; f2.total = total; f2.slots = right;                      // dal centro verso destra
     f1.bspd = 1.5 + min(wave, 16) * 0.03;
     f2.bspd = f1.bspd;

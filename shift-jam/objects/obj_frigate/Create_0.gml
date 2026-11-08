@@ -11,4 +11,5 @@ t = 0;
 phase = 0;       // 0 picchiata, 1 virata, 2 posa il muro, 3 cabrata verso l'alto
 hd = 270;        // direzione in cui vola (270 = giu')
 row_y = 26;      // altezza del muro
-wtype = 0;       // che muro: 0 pieno, 1 con la porta (lo fa obj_game togliendo i posti), 2 a freccia, 3 doppio
+wtype = 0;
+radius = 12;     // solo per il controllo degli scontri nel simulatore: la fregata non si colpisce       // che muro: 0 pieno, 1 con la porta (lo fa obj_game togliendo i posti), 2 a freccia, 3 doppio
