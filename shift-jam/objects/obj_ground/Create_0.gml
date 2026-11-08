@@ -3,10 +3,10 @@ audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
 global.continues = 0;     // nuova partita: si riparte da zero sconfitte
 global.checkpoint = 0;    // e dalla prima ondata
 state = 0;          // 0 = combatte, 1 = sommerso (aspetta SHIFT), 2 = esplosione, 3 = la navicella vola via
-bar = 0;            // accerchiamento: da 0 (libero) a 1 (sommerso)
+bar = 0;            // accerchiamento: da 0 (libero) a 1 (sommerso). Non si disegna piu', decide solo i tempi
 t = 0;              // frame passati nello stato attuale
-spawn_timer = 30;
-spawn_interval = 30;   // frame tra un gruppo e l'altro: scende col tempo
+spawn_timer = 24;
+spawn_interval = 24;   // frame tra un gruppo e l'altro: scende col tempo (era 30)
 flash = 1;          // si parte dal bianco della sequenza d'apertura
 mass = false;       // true durante l'ondata finale: alieni ovunque, niente piu' attacco
 free_time = 180;    // primi 3 secondi (180 frame): il mecha si muove libero

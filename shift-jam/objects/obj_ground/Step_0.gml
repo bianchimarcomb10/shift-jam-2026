@@ -6,8 +6,8 @@ case 0:
     // --- arrivano alieni da tutti e quattro i bordi, sempre piu' spesso ---
     spawn_timer -= 1;
     if (spawn_timer <= 0) {
-        var n = 1 + t div 180;   // ogni 3 secondi un alieno in piu' per gruppo
-        if (mass) n = 6;         // ondata finale: una marea
+        var n = 1 + t div 120;   // ogni 2 secondi un alieno in piu' per gruppo (prima ogni 3: ora sono circa il doppio)
+        if (mass) n = 8;         // ondata finale: una marea
         repeat (n) {
             var side = irandom(3);
             var sx, sy;
@@ -17,9 +17,9 @@ case 0:
             else                { sx = random(room_width); sy = room_height + 10; }
             instance_create_layer(sx, sy, "Instances", obj_grunt);
         }
-        if (mass) spawn_timer = 4;
+        if (mass) spawn_timer = 3;
         else {
-            spawn_interval = max(12, spawn_interval - 1);
+            spawn_interval = max(10, spawn_interval - 1);
             spawn_timer = spawn_interval;
         }
     }
@@ -28,7 +28,8 @@ case 0:
     with (obj_grunt) if (clinging_now) clinging += 1;
 
     if (!mass) {
-        // la barra sale col tempo e per ogni alieno aggrappato, ma prima dell'ondata si ferma all'85%
+        // l'accerchiamento (non si vede piu': la barra in alto e' stata tolta) sale col tempo e per ogni alieno
+        // aggrappato, ma prima dell'ondata si ferma all'85%
         bar = min(0.85, bar + 0.0005 + clinging * 0.0012);
         // l'ondata finale parte a 8 secondi, o prima se la barra e' gia' all'85% (ma mai prima dei 5)
         if (t >= mass_time || (bar >= 0.85 && t >= 300)) mass = true;

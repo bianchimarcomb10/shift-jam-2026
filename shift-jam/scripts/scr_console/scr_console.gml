@@ -5,7 +5,7 @@
 /// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
-#macro BUILD "8-NOV-E"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
+#macro BUILD "8-NOV-F"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
 
 global.console_k = 0;   // posizione della leva (0 = SHIP, 1 = MECHA), si muove morbida
 

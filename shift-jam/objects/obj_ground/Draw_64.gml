@@ -1,14 +1,7 @@
-/// Barra di accerchiamento, SHIFT TO STRUGGLE, esplosione a stelle, frase di Dogen, lampo.
+/// SHIFT TO STRUGGLE, esplosione a stelle, frase di Dogen, lampo.
+/// (la barra di accerchiamento in alto e' stata tolta: non diceva niente che la marea di alieni non mostri gia')
 var cx = room_width / 2;
 var cy = room_height / 2;
-
-if (state < 2) {   // dopo la trasformazione la barra non serve piu'
-    var w = room_width - 40;
-    draw_set_colour(c_dkgray);
-    draw_rectangle(20, 16, 20 + w, 22, false);
-    draw_set_colour(make_colour_rgb(200, 60, 60));
-    draw_rectangle(20, 16, 20 + w * bar, 22, false);
-}
 
 draw_set_halign(fa_center);
 draw_set_valign(fa_middle);
