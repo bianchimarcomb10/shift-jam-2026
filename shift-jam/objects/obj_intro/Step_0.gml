@@ -20,6 +20,9 @@ case 3:   // al posto della frase: "Press SHIFT"
     if (keyboard_check_pressed(vk_shift)) {
         state = 4; t = 0;
         audio_master_gain(1);   // volume pieno solo per questo momento
+        // la musica sfuma mentre le stelle riempiono il cielo (circa 5 s): parte dal volume di prima,
+        // perche' il volume generale e' appena salito da 0.4 a 1
+        music_stop(4500, MUSIC_GAIN * 0.4);
         audio_play_sound(snd_menu, 5, false);
     }
     break;

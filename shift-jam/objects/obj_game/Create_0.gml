@@ -437,6 +437,9 @@ waves = [
     /* 17 */ [["cross", 12], ["at", 330, ["spears", 2, 1, 0, [80, 280]]], ["wall", 300, 1, 180], ["at", 330, ["wheel", 8, 180, -1, 1]], ["wall", 600, 3], ["stalkers", 2, 640, 1], ["laser", 2, 760]]   // il finale: tutto quello che hai imparato
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
+// MUSICA: di solito continua da prima (anche dopo un game over). Se non suona niente, si riparte
+// col brano del punto in cui sei: il boss o le ondate
+if (global.music == -1) music_play((global.checkpoint >= boss_wave) ? "mus_intenso" : "mus_incitante", 1000);
 
 /// SCALETTA FISSA, come in Ikaruga: ogni ondata dura SEMPRE questi secondi, anche se abbatti tutti prima.
 /// Allo scadere i nemici rimasti si ritirano (retreat_all) e parte l'ondata dopo.

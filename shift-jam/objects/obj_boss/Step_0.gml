@@ -264,8 +264,8 @@ if (phase == 1) {
                 p.radius = 6;
                 p.spd = 1.9;
                 p.turn = 1.0;
-                p.dmg = 5;       // respinto toglie meno di un palmo...
-                p.stn = 12;      // ...e stordisce poco, ma ne arrivano tanti
+                p.dmg = 3;       // respinto toglie poco (era 5: i playtester li trovavano troppo generosi)
+                p.stn = 6;       // e stordisce appena (era 12)
                 p.dir = ba;      // parte verso fuori, poi ti insegue piano
                 bead_gone[bj] = 300;
             }
@@ -286,7 +286,7 @@ if (phase == 1) {
             petal_a = 0;
         } else {
             // sceglie i grani dalla parte del giocatore, uno ogni tre
-            var n = angry ? 9 : 7;
+            var n = angry ? 7 : 5;   // erano 9 e 7: troppi regali da rimandare indietro
             var bstep = 360 / 108;
             var j0 = round(angle_difference(point_direction(x, y, ptx, pty), bead_angle) / bstep);
             bead_sel = [];

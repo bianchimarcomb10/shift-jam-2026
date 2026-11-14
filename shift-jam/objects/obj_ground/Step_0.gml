@@ -36,7 +36,7 @@ case 0:
     } else {
         // durante l'ondata la barra si riempie in poco piu' di un secondo
         bar += 0.012;
-        if (bar >= 1) { bar = 1; state = 1; t = 0; }
+        if (bar >= 1) { bar = 1; state = 1; t = 0; siren_start(); }   // SHIFT TO STRUGGLE: suona la sirena
     }
     break;
 
@@ -51,6 +51,8 @@ case 1:
         obj_mech_ground.transformed = true;
         audio_play_sound(snd_explosion_big, 10, false);
         audio_play_sound(snd_shift, 9, false);
+        siren_stop(400);                 // la sirena tace...
+        music_play("mus_incitante");    // ...e col decollo parte la musica, dalla salita
     }
     break;
 

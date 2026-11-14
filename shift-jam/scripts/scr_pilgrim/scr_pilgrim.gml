@@ -11,6 +11,80 @@
 // trasformazione del disegno in corso: centro, scala, schiacciamento in virata, rotazione
 global.pil = { x: 0, y: 0, k: 1, sq: 1, rc: 1, rs: 0 };
 
+/// IL MECHA DALLO SKETCH di Francesco "Rocketbird" Passero (dal 2026-11-14): il mecha non e' piu' a poligoni,
+/// e' fatto di due sprite: spr_mecha_body (12 frame: mantello, fiamme, luci) e spr_mecha_scythe
+/// (36 frame: la falce girata di 10 gradi alla volta; frame 0 = a riposo, lama in basso a destra a 45 gradi).
+/// Origine di tutti e due = la vita, dove le mani tengono la falce. La navicella resta quella a poligoni.
+/// false = torna il mecha a poligoni di prima (per confrontare)
+global.mecha_sketch = true;
+
+/// FALCIATA: parte dal basso (lama in basso a destra), sale sul fianco destro, passa DAVANTI
+/// gia' al secondo frame, fa tutto il giro in senso antiorario e si ferma di nuovo in basso a 45 gradi.
+/// sweep: frame rimasti (10..1, 0 = ferma) | R: raggio della falciata (fin dove taglia)
+function draw_mecha(px, py, tilt, sweep, R, sc, scythe) {
+    var yy = py + 1.5 * dsin(current_time * 0.15) * sc;          // galleggia
+    var rot = -tilt;                                              // si inclina in virata come la navicella
+    var sq = 1 - abs(tilt) / 60;
+    // il mantello: 10 frame al secondo, il doppio mentre falcia
+    var fr = (sweep > 0) ? (current_time div 50) mod 12 : (current_time div 100) mod 12;
+    // quanto e' girata la falce dal riposo (gradi, antiorario): veloce all'inizio, poi rallenta
+    var th = 3 * dsin(current_time * 0.2 - 40);                  // ferma: ondeggia appena col respiro
+    if (sweep > 0) {
+        var u = clamp((11 - sweep) / 10, 0, 1);
+        th = 360 * (1 - power(1 - u, 2));
+    }
+    // la scia azzurra: dietro la lama, larga fino a dove taglia (R)
+    if (sweep > 0 && scythe) {
+        var lead = th + rot;          // la punta della lama a riposo sta a circa 0 gradi (a destra)
+        var len = min(150, th);
+        var fade = sqrt(sweep / 10);
+        var r_out = R * sc, r_in = (R - 24) * sc;
+        gpu_set_blendmode(bm_add);
+        draw_set_colour(make_colour_rgb(40, 140, 255));
+        for (var i = 0; i < 24; i++) {
+            var u0 = i / 24, u1 = (i + 1) / 24;
+            var b0 = lead - u0 * len, b1 = lead - u1 * len;
+            draw_set_alpha(0.6 * (1 - u0) * fade);
+            draw_primitive_begin(pr_trianglestrip);
+            draw_vertex(px + lengthdir_x(r_out, b0), yy + lengthdir_y(r_out, b0));
+            draw_vertex(px + lengthdir_x(r_in + 10 * u0 * sc, b0), yy + lengthdir_y(r_in + 10 * u0 * sc, b0));
+            draw_vertex(px + lengthdir_x(r_out, b1), yy + lengthdir_y(r_out, b1));
+            draw_vertex(px + lengthdir_x(r_in + 10 * u1 * sc, b1), yy + lengthdir_y(r_in + 10 * u1 * sc, b1));
+            draw_primitive_end();
+        }
+        gpu_set_blendmode(bm_normal);
+        draw_set_colour(make_colour_rgb(215, 250, 255));
+        draw_set_alpha(0.4 * sweep / 10);
+        draw_circle(px, yy, r_out, true);          // fin dove arriva
+        draw_set_alpha(1);
+        draw_set_colour(c_white);
+    }
+    draw_sprite_ext(spr_mecha_body, fr, px, yy, sq * sc, sc, rot, c_white, 1);
+    if (scythe) {
+        // frame piu' vicino (10 gradi l'uno) + il resto con la rotazione dello sprite
+        var a = th + rot;
+        var k = round(a / 10);
+        draw_sprite_ext(spr_mecha_scythe, ((k mod 36) + 36) mod 36, px, yy, sc, sc, a - k * 10, c_white, 1);
+    }
+}
+
+/// l'ensō azzurro del cambio forma: si apre e svanisce (flash 1 -> 0)
+function pil_enso(px, py, flash, sc) {
+    if (flash <= 0) return;
+    var r = (12 + 20 * (1 - flash)) * sc;
+    var st = 120 + 200 * (1 - flash);
+    draw_set_colour(make_colour_rgb(215, 250, 255));
+    for (var i = 0; i < 30; i++) {
+        var u0 = i / 30;
+        var b0 = st + u0 * 320, b1 = st + (u0 + 1 / 30) * 320;
+        draw_set_alpha(0.9 * flash * (1 - 0.6 * u0));
+        draw_line_width(px + lengthdir_x(r, b0), py + lengthdir_y(r, b0), px + lengthdir_x(r, b1), py + lengthdir_y(r, b1),
+            max(1, (1 - u0) * 5 * flash + 1));
+    }
+    draw_set_alpha(1);
+    draw_set_colour(c_white);
+}
+
 /// punto locale -> schermo (x e y separati)
 function pil_x(lx, ly) {
     var p = global.pil;
@@ -166,6 +240,12 @@ function pil_sweep(px, py, R, sweep, k, arms) {
 ///       1 = SOSPESO (nello spazio: niente gambe, mantello a strisce, fiamma del volo, falce dritta con la lama a luna)
 /// walk: 0..1 quanto sta camminando (solo GUARDIA)
 function draw_pilgrim(px, py, m, tilt = 0, sweep = 0, sweep_r = 56, flash = 0, ms = 1.2, scythe = true, flame = 1, sc = 1, pose = 1, walk = 0) {
+    if (global.mecha_sketch && m >= 0.5) {
+        // il mecha dello sketch (lo stesso a terra e nello spazio); la trasformazione la copre l'ensō
+        draw_mecha(px, py, tilt, sweep, sweep_r, sc, scythe);
+        pil_enso(px, py, flash, sc);
+        return;
+    }
     var P = global.pil;
     var hover = (pose == 1) ? 1.5 * dsin(current_time * 0.15) * m : 0;   // il SOSPESO galleggia
     P.x = px; P.y = py + hover;
@@ -384,18 +464,6 @@ function draw_pilgrim(px, py, m, tilt = 0, sweep = 0, sweep_r = 56, flash = 0, m
     }
 
     // --- il cambio: un ensō azzurro che si apre e svanisce ---
-    if (flash > 0) {
-        var r = (12 + 20 * (1 - flash)) * sc;
-        var st = 120 + 200 * (1 - flash);
-        draw_set_colour(cyan_l);
-        for (var i = 0; i < 30; i++) {
-            var u0 = i / 30;
-            var b0 = st + u0 * 320, b1 = st + (u0 + 1 / 30) * 320;
-            draw_set_alpha(0.9 * flash * (1 - 0.6 * u0));
-            draw_line_width(px + lengthdir_x(r, b0), py + lengthdir_y(r, b0), px + lengthdir_x(r, b1), py + lengthdir_y(r, b1),
-                max(1, (1 - u0) * 5 * flash + 1));
-        }
-        draw_set_alpha(1);
-    }
+    pil_enso(px, py, flash, sc);
     draw_set_colour(c_white);
 }
