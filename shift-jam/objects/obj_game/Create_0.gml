@@ -20,7 +20,7 @@ boss_preview = false;   // la sagoma della nave madre e' gia' passata? (la guard
 walls = [];             // muri di colpi in arrivo: [conto alla rovescia, tipo, x della porta]
 pending = [];           // comandi dell'ondata che partono piu' tardi (["at", fotogrammi, comando]): [conto alla rovescia, comando]
 // TRIVELLA: poco prima del boss scende dal cielo; il mecha la prende e diventa la sua arma
-global.has_drill = false;   // si riprende ogni volta (anche ripartendo dal checkpoint del boss)
+global.has_drill = false;   // si prende nella scena della trivella; ripartendo dal checkpoint del boss te la ridà Step (fine di lead)
 drill_state = 0;        // 0 = non ancora arrivata, 1 = sta arrivando, 2 = piantata nel mecha
 drill_phrase = 0;       // > 0 mentre si vede la frase della trivella
 boss_phrase = 0;        // > 0 mentre si vede la frase all'arrivo del boss

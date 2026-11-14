@@ -34,7 +34,17 @@ if (lead > 0) {
         wave_t = 0;
         spawn_preview();
     } else {
-        seq_t = 0;   // si riparte dal checkpoint del boss: subito la trivella
+        // si riparte dal checkpoint del boss DOPO la trivella (richiesta di Chelios, 14-11):
+        // ce l'hai gia' in mano, niente scena della trivella; si salta a quando sale la sagoma
+        // della nave madre (seq_t 570), quindi il boss arriva 5,5 s dopo
+        global.has_drill = true;
+        drill_state = 2;
+        with (obj_player) {
+            if (form == 0 && transform_timer == 0) transform_timer = 6;   // la trivella e' del mecha
+            shift_flash = 12;
+        }
+        audio_play_sound(snd_shift, 9, false, 1);
+        seq_t = 570;
     }
 }
 
@@ -60,13 +70,13 @@ if (seq_t < 0) {
 }
 
 // --- LA TRIVELLA: 15 secondi fissi, poi il boss ---
-//   0    s  "Silence is near." (checkpoint)
+//   0    s  "Silence is near." (checkpoint: dopo un game over pero' si riparte da 9,5 s, trivella gia' in mano)
 //   2    s  la trivella compare in alto, enorme, e piomba sul mecha (obj_drill_pickup)
 //   5    s  si pianta nel mecha: "YOUR DRILL IS THE DRILL..."
 //   9,5  s  la sagoma della nave madre sale sullo sfondo
 //   15   s  il boss scende dall'alto: "WHO THE HELL DO YOU THINK I AM?!"
 if (seq_t == 0) {
-    // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti da qui (trivella e poi boss)
+    // CHECKPOINT: sei arrivato al boss finale. Se muori, riparti con la trivella gia' presa (vedi sopra, lead)
     if (global.checkpoint < boss_wave) {
         global.checkpoint = boss_wave;
         cp_timer = cp_total;
