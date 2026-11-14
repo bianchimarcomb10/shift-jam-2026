@@ -73,8 +73,12 @@ if (seq_t == 0) {
         cp_text = "Silence is near.";
     }
     drill_state = 1;
+    if (global.music_name == "mus_incitante") music_stop(2000);   // "Silence is near.": la musica delle ondate sfuma
 }
-if (seq_t == 120) instance_create_layer(room_width / 2, -200, "Instances", obj_drill_pickup);   // si pianta da sola dopo 3 s
+if (seq_t == 120) {
+    instance_create_layer(room_width / 2, -200, "Instances", obj_drill_pickup);   // si pianta da sola dopo 3 s
+    music_play("mus_intenso");   // arriva la trivella: parte la musica del boss (se suona gia', continua)
+}
 if (seq_t == 570) {
     boss_preview = true;
     var bp = instance_create_layer(room_width / 2, room_height + 120, "Instances", obj_preview);

@@ -14,7 +14,7 @@ if (t > 120) {
 }
 
 // mentre la navicella si confonde tra le stelle: la poesia di Ryokan (da 10 a 20 s),
-// poi "A game by..." con la musica (da 20,5 a 25,5 s), il grazie ai playtester (da 26,5 s);
-// infine buio (da 32 s) e si torna al titolo (35 s)
-if (t > 1920) fade = min(1, (t - 1920) / 120);
-if (t > 2100) room_goto(rm_title);
+// poi "A game by..." (da 20,5 s), il mecha e la musica (da 26 s), il grazie ai playtester (da 32 s),
+// la dedica a Ginevra (da 38 s); infine buio (da 45 s) e si torna al titolo (48 s)
+if (t > 2700) fade = min(1, (t - 2700) / 120);
+if (t > 2880) room_goto(rm_title);

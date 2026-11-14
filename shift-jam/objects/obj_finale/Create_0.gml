@@ -7,6 +7,7 @@ fade = 0;
 depth = -100;
 obj_game.finale = true;   // niente piu' ondate ne' interfaccia
 audio_play_sound(snd_explosion_big, 10, false);
+music_stop(3000);   // la musica del boss sfuma: il finale e' in silenzio
 
 with (obj_ebullet) instance_destroy();
 with (obj_palm) instance_destroy();

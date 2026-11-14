@@ -35,7 +35,7 @@ if (form == 0 && transform_timer == 0) {
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 } else if (form == 1 && transform_timer == 0) {
     // anche il mecha SOSPESO vola: la scia esce dalla fiamma sotto il mantello
-    var tlx = random_range(-5, 5) * sq, tly = 17 * mech_scale;
+    var tlx = random_range(-5, 5) * sq, tly = global.mecha_sketch ? 36 : 17 * mech_scale;   // il mecha dello sketch ha le fiamme piu' in basso
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 }
 gpu_set_blendmode(bm_add);

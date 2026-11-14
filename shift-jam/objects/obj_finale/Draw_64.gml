@@ -22,23 +22,42 @@ if (a_poem > 0) {
     draw_text(cx, cy + 48, "- Ryokan Taigu");
 }
 
-// poi i titoli di coda, due cartelli.
-// 1) autore e musica: compare in 1 s, resta 3 s, svanisce in 1 s
-var a_cred = clamp(min((t - 1230) / 60, (1530 - t) / 60), 0, 1);
-if (a_cred > 0) {
-    draw_set_alpha(a_cred);
-    draw_text(cx, cy - 24, "A game by Marco Bianchi");
-    draw_text(cx, cy - 4, "(Chelios)");
-    draw_text(cx, cy + 28, "Music by Cubesando");
+// poi i titoli di coda, quattro cartelli: compaiono in 1 s, restano, svaniscono in 1 s
+// (fnt_main: 11 px a lettera, quindi al massimo 32 lettere per riga)
+// 1) l'autore
+var a1 = clamp(min((t - 1230) / 60, (1500 - t) / 60), 0, 1);
+if (a1 > 0) {
+    draw_set_alpha(a1);
+    draw_text(cx, cy - 10, "A game by Marco Bianchi");
+    draw_text(cx, cy + 10, "(Chelios)");
 }
-// 2) il grazie ai playtester: compare dopo 1 s di vuoto e resta fino al buio
-var a_thx = clamp((t - 1590) / 60, 0, 1);
-if (a_thx > 0) {
-    draw_set_alpha(a_thx);
+// 2) il mecha e la musica
+var a2 = clamp(min((t - 1560) / 60, (1860 - t) / 60), 0, 1);
+if (a2 > 0) {
+    draw_set_alpha(a2);
+    draw_text(cx, cy - 52, "Mecha design by");
+    draw_text(cx, cy - 34, "Francesco \"Rocketbird\" Passero");
+    draw_text(cx, cy + 4, "Music by");
+    draw_text(cx, cy + 22, "Emanuele Luigi Andolfi");
+    draw_text(cx, cy + 40, "(CUBESANDO)");
+}
+// 3) il grazie ai playtester
+var a3 = clamp(min((t - 1920) / 60, (2220 - t) / 60), 0, 1);
+if (a3 > 0) {
+    draw_set_alpha(a3);
     draw_text(cx, cy - 32, "Thank you");
     draw_text(cx, cy - 8, "to all the playtesters");
     draw_text(cx, cy + 8, "who helped me with");
     draw_text(cx, cy + 24, "my very first game.");
+}
+// 4) la dedica: compare per ultima e resta fino al buio
+var a4 = clamp((t - 2280) / 60, 0, 1);
+if (a4 > 0) {
+    draw_set_alpha(a4);
+    draw_text(cx, cy - 32, "Dedicated to");
+    draw_text(cx, cy - 14, "my beloved Ginevra,");
+    draw_text(cx, cy + 10, "without whom I would");
+    draw_text(cx, cy + 28, "do nothing in life.");
 }
 draw_set_alpha(1);
 draw_set_halign(fa_left);
