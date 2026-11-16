@@ -49,10 +49,11 @@ case 1:
         boom_x = obj_mech_ground.x;   // centro dell'esplosione
         boom_y = obj_mech_ground.y;
         obj_mech_ground.transformed = true;
+        siren_stop(60);                  // la sirena tace di colpo...
+        audio_master_gain(0.75);         // ...e l'esplosione si sente forte (era 0.4: torna 0.4 in rm_game, obj_game Create)
         audio_play_sound(snd_explosion_big, 10, false);
         audio_play_sound(snd_shift, 9, false);
-        siren_stop(400);                 // la sirena tace...
-        music_play("mus_incitante");    // ...e col decollo parte la musica, dalla salita
+        // niente musica nel decollo: il brano parte quando hai il comando della navicella (rm_game)
     }
     break;
 

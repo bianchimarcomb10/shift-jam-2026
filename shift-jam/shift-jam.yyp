@@ -20,8 +20,7 @@
   "name":"shift-jam",
   "resources":[
     {"id":{"name":"fnt_main","path":"fonts/fnt_main/fnt_main.yy",},},
-    {"id":{"name":"mus_incitante","path":"sounds/mus_incitante/mus_incitante.yy",},},
-    {"id":{"name":"mus_intenso","path":"sounds/mus_intenso/mus_intenso.yy",},},
+    {"id":{"name":"mus_shift_into_silence","path":"sounds/mus_shift_into_silence/mus_shift_into_silence.yy",},},
     {"id":{"name":"obj_bigship","path":"objects/obj_bigship/obj_bigship.yy",},},
     {"id":{"name":"obj_boom","path":"objects/obj_boom/obj_boom.yy",},},
     {"id":{"name":"obj_boss","path":"objects/obj_boss/obj_boss.yy",},},

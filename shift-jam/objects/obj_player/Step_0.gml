@@ -147,6 +147,8 @@ if (invuln == 0) {
         audio_play_sound(snd_hurt, 9, false);
         if (global.hp <= 0) {
             obj_game.game_over = true;
+            music_stop(1500);   // game over: la musica sfuma (qui andra' il suono di game over del musicista).
+                                // Col continue riparte allineata al punto di ripartenza (obj_game Create, mus_t)
             instance_destroy();
         }
     }

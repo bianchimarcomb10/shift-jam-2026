@@ -6,12 +6,12 @@ for (var i = array_length(global.music_fading) - 1; i >= 0; i--) {
         array_delete(global.music_fading, i, 1);
     }
 }
-// 2. rete di sicurezza per i punti di loop: se la piattaforma li ignora (puo' succedere nel browser),
-//    quando il brano passa la fine del pezzo da ripetere lo riporto indietro a mano
+// 2. i RITORNI (global.music_loops in scr_music): quando il brano arriva alla fine del pezzo che si ripete,
+//    riparte una copia dal punto di ritorno e le due si incrociano per pochi centesimi di secondo
 if (global.music != -1 && audio_is_playing(global.music)) {
     var lp = global.music_loops[$ global.music_name];
     if (!is_undefined(lp)) {
         var pos = audio_sound_get_track_position(global.music);
-        if (pos >= lp[1] + 0.05) audio_sound_set_track_position(global.music, pos - (lp[1] - lp[0]));
+        if (pos >= lp[1] - lp[2]) music_jump(pos - (lp[1] - lp[0]), lp[2] * 1000);
     }
 }

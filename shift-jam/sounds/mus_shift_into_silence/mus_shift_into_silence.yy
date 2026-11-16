@@ -1,6 +1,6 @@
 {
   "$GMSound":"v2",
-  "%Name":"mus_incitante",
+  "%Name":"mus_shift_into_silence",
   "audioGroupId":{
     "name":"audiogroup_default",
     "path":"audiogroups/audiogroup_default",
@@ -10,9 +10,9 @@
   "compression":1,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":107.796621,
+  "duration":356.137415,
   "exportDir":"",
-  "name":"mus_incitante",
+  "name":"mus_shift_into_silence",
   "parent":{
     "name":"shift-jam",
     "path":"shift-jam.yyp",
@@ -21,6 +21,6 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"mus_incitante.ogg",
+  "soundFile":"mus_shift_into_silence.ogg",
   "volume":1.0,
 }

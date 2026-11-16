@@ -2,7 +2,7 @@
 
 Game by Marco Bianchi (Chelios).
 
-Music by Emanuele Luigi Andolfi (Cubesando): "Mood Incitante" (`mus_incitante`, title screen and waves) and "Mood Intenso" (`mus_intenso`, the drill and the boss).
+Music by Emanuele Luigi Andolfi (Cubesando): the soundtrack of the game (`mus_shift_into_silence`), one piece written on the fixed timing of the waves, the drill and the boss. It plays from the moment you take control of the ship; it was encoded to Ogg Vorbis from the WAV the composer delivered.
 
 Mecha design by Francesco "Rocketbird" Passero: the final sketch of the mecha (`spr_mecha_body`, `spr_mecha_scythe` are cut and animated from it).
 
@@ -10,7 +10,7 @@ Dedicated to my beloved Ginevra, without whom I would do nothing in life.
 
 Playtesting: friends of Marco Bianchi (Chelios) and the subscribers of Side Quest Podcast. Thank you all.
 
-**Not covered by the MIT license of this repository:** the music files (`sounds/mus_incitante`, `sounds/mus_intenso`) and the mecha sprites drawn from Francesco Passero's sketch (`sprites/spr_mecha_body`, `sprites/spr_mecha_scythe`). They are used in this game with the permission of their authors, who keep all rights.
+**Not covered by the MIT license of this repository:** the music file (`sounds/mus_shift_into_silence`) and the mecha sprites drawn from Francesco Passero's sketch (`sprites/spr_mecha_body`, `sprites/spr_mecha_scythe`). They are used in this game with the permission of their authors, who keep all rights.
 
 ## Third-party assets
 
@@ -35,7 +35,7 @@ The ground of the opening scene (`spr_bg_ground`) is drawn by `tools/mkground.py
 
 The player's ship (the "pilgrim") is drawn at runtime by `scripts/scr_pilgrim` (GML polygons and lines), with no third-party assets. The Void - Main Ship sprites stay in the project but are no longer drawn.
 
-The mecha comes from the sketch by Francesco "Rocketbird" Passero: the sketch was cut into three layers (body, scythe, flames) and animated with Python + Pillow + NumPy (12 frames of the body, the scythe in 36 rotations). The old mecha made of polygons is still in `scr_pilgrim`: set `global.mecha_sketch = false` to see it again.
+The mecha comes from the sketch by Francesco "Rocketbird" Passero: the sketch was cut into three layers (body, scythe, flames) and animated with Python + Pillow + NumPy (12 frames of the body, the scythe in 36 rotations). The colors were then matched to the ship by `tools/mecha_palette.py`: the shapes are Francesco's, the palette is the ship's. The old mecha made of polygons is still in `scr_pilgrim`: set `global.mecha_sketch = false` to see it again.
 
 ## Quotes
 
