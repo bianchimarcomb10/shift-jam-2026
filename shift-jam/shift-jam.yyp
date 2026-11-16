@@ -20,10 +20,10 @@
   "name":"shift-jam",
   "resources":[
     {"id":{"name":"fnt_main","path":"fonts/fnt_main/fnt_main.yy",},},
+    {"id":{"name":"mus_boss_loop","path":"sounds/mus_boss_loop/mus_boss_loop.yy",},},
     {"id":{"name":"mus_finale","path":"sounds/mus_finale/mus_finale.yy",},},
     {"id":{"name":"mus_main_menu","path":"sounds/mus_main_menu/mus_main_menu.yy",},},
     {"id":{"name":"mus_ost_in_sync","path":"sounds/mus_ost_in_sync/mus_ost_in_sync.yy",},},
-    {"id":{"name":"mus_shift_into_silence","path":"sounds/mus_shift_into_silence/mus_shift_into_silence.yy",},},
     {"id":{"name":"obj_bigship","path":"objects/obj_bigship/obj_bigship.yy",},},
     {"id":{"name":"obj_boom","path":"objects/obj_boom/obj_boom.yy",},},
     {"id":{"name":"obj_boss","path":"objects/obj_boss/obj_boss.yy",},},

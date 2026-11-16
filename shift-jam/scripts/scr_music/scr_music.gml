@@ -1,11 +1,8 @@
-/// MUSICA di Cubesando, i quattro brani (consegnati il 16-11-2026, sera: MUSIC.zip):
+/// MUSICA di Cubesando, i quattro brani (consegnati il 16-11-2026, sera):
 ///   mus_main_menu    (15,8 s)  il menu' principale, in loop; sfuma nell'esplosione di stelle (obj_intro)
-///   mus_ost_in_sync  (4:25,6)  dal decollo della navicella (obj_ground), come il brano di prima
-///   mus_boss_loop              attaccato subito alla fine della Ost, in loop finche' il boss e' vivo.
-///                              NON C'E' ANCORA (non era nello zip): finche' manca, dopo la Ost suona il pezzo del boss
-///                              del brano di prima (mus_shift_into_silence), che e' la stessa musica (vedi music_where)
+///   mus_ost_in_sync  (4:25,6)  dal decollo della navicella (obj_ground)
+///   mus_boss_loop    (53,1 s)  attaccato subito alla fine della Ost, in loop finche' il boss e' vivo (29 misure a 131 bpm)
 ///   mus_finale       (25,2 s)  quando il boss muore; il loop del boss sfuma (obj_finale)
-/// La Ost e' il brano di prima senza i primi 15,832 s (diventati la musica del menu'): Ost a 0:00 = vecchio brano a 0:15,832.
 /// Il tempo della partita (obj_game, mus_t) parte dal decollo: music_where dice quale brano deve suonare e dove.
 /// Scaletta:
 ///   titolo: mus_main_menu in loop. Esplosione di stelle: sfuma in 4 s
@@ -24,20 +21,18 @@
 
 #macro MUSIC_MENU "mus_main_menu"             // il menu' principale
 #macro MUSIC_TRACK "mus_ost_in_sync"          // la partita, dal decollo
-#macro MUSIC_BOSS "mus_boss_loop"             // il loop del boss (quando arriva il file: sounds/mus_boss_loop)
+#macro MUSIC_BOSS "mus_boss_loop"             // il loop del boss
 #macro MUSIC_FINALE "mus_finale"              // il finale
 #macro OST_LEN 265.6489                       // quanto dura la Ost (s): qui comincia il loop del boss
-#macro OST_FROM 15.832                        // la Ost a 0:00 e' il brano di prima a 0:15,832
 #macro MUSIC_MENU_FADE 4000                   // la musica del menu' sfuma nell'esplosione di stelle (dura 5,3 s)
 #macro MUSIC_BOSS_FADE 2000                   // alla morte del boss il loop sfuma mentre parte il finale
 #macro MUSIC_AT_TAKEOFF true   // la Ost parte al decollo della navicella (false = quando hai il comando, inizio di rm_game)
 
 /// I LOOP, in secondi: [torna qui, arrivato qui, dissolvenza incrociata]. Li fa obj_music.
-/// Il menu' ricomincia da capo. mus_boss_loop: quando arriva il file, aggiungere qui [0, la sua durata, 0.02].
-/// mus_shift_into_silence (solo finche' manca il loop del boss): 5:38,19 torna a 4:21,24, stessa battuta (131 bpm).
+/// Tutti e due ricominciano da capo.
 global.music_loops = {
     mus_main_menu: [0, 15.8320, 0.02],
-    mus_shift_into_silence: [261.2450, 338.1916, 0.15]
+    mus_boss_loop: [0, 53.1298, 0.02]
 };
 global.music = -1;          // il brano che suona ora (l'istanza del suono), -1 = nessuno
 global.music_name = "";
@@ -55,17 +50,9 @@ function music_where(_t) {
     _t = max(0, _t);
     if (_t < OST_LEN) return [MUSIC_TRACK, _t];
     var b = _t - OST_LEN;
-    var lp;
-    if (asset_get_type(MUSIC_BOSS) == asset_sound) {
-        lp = global.music_loops[$ MUSIC_BOSS];
-        if (!is_undefined(lp) && b >= lp[1]) b = lp[0] + (b - lp[0]) mod (lp[1] - lp[0]);
-        return [MUSIC_BOSS, b];
-    }
-    // manca il loop del boss: il brano di prima dal punto dove finisce la Ost (4:41,48), col suo ritorno 5:38 -> 4:21
-    var p = b + OST_LEN + OST_FROM;
-    lp = global.music_loops.mus_shift_into_silence;
-    if (p >= lp[1]) p = lp[0] + (p - lp[0]) mod (lp[1] - lp[0]);
-    return ["mus_shift_into_silence", p];
+    var lp = global.music_loops[$ MUSIC_BOSS];
+    if (b >= lp[1]) b = lp[0] + (b - lp[0]) mod (lp[1] - lp[0]);
+    return [MUSIC_BOSS, b];
 }
 
 /// l'oggetto persistente che fa i ritorni e chiude le dissolvenze (passa da una stanza all'altra)

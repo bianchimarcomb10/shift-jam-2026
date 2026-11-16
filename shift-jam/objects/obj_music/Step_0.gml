@@ -16,7 +16,7 @@ if (global.music != -1 && !global.music_noloop && audio_is_playing(global.music)
     }
 }
 // 3. dalla Ost al loop del boss: quando la Ost arriva alla fine parte il brano dopo, attaccato
-//    (music_where in scr_music: il loop del boss, o finche' manca il pezzo del boss del brano di prima)
+//    (music_where in scr_music: il loop del boss da capo)
 if (global.music != -1 && !global.music_noloop && audio_is_playing(global.music) && global.music_name == MUSIC_TRACK) {
     var opos = audio_sound_get_track_position(global.music);
     if (opos >= OST_LEN - 0.02) {
