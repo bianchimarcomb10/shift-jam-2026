@@ -31,7 +31,7 @@ var rc = dcos(-tilt), rs = dsin(-tilt);         // per ruotare un punto (lx, ly)
 
 // scia del motore: le scintille nascono sotto il motore (che si inclina con la nave) e scivolano indietro
 if (form == 0 && transform_timer == 0) {
-    var tlx = random_range(-3, 3) * sq, tly = 14 + bob * 0.6;
+    var tlx = random_range(-3, 3) * sq * global.ship_size, tly = 14 * global.ship_size + bob * 0.6;   // i motori (scr_pilgrim, ship_size)
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 } else if (form == 1 && transform_timer == 0) {
     // anche il mecha SOSPESO vola: la scia esce dalla fiamma sotto il mantello
@@ -55,7 +55,7 @@ draw_set_alpha(1);
 
 // LASER (arma speciale): il raggio azzurro sale dalla prua fino in cima, dietro la navicella
 if (beam_on) {
-    var bx = x, btop = y - 14;
+    var bx = x, btop = y - 14 * global.ship_size;   // la prua (scr_pilgrim, ship_size)
     gpu_set_blendmode(bm_add);
     draw_set_colour(make_colour_rgb(40, 140, 255));
     draw_set_alpha(0.22 + 0.08 * dsin(current_time * 2));

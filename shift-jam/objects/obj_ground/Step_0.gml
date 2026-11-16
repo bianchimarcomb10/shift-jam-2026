@@ -87,9 +87,10 @@ case 2:
         flash = 1;
         state = 3;
         t = 0;
-        // la Ost parte qui, quando il mecha e' diventato navicella e vola via (MUSIC_AT_TAKEOFF in scr_music)
+        // la musica parte qui, quando il mecha e' diventato navicella e vola via (MUSIC_AT_TAKEOFF in scr_music):
+        // la musica del menu' una volta, e appena finisce la Ost, attaccata (global.music_plan, obj_music)
         audio_master_gain(GAME_MASTER);   // l'esplosione e' finita da un pezzo: il volume di quando c'e' la musica (scr_music)
-        if (MUSIC_AT_TAKEOFF) { music_play(MUSIC_TRACK, 0, 0); global.music_shift = -current_time; }
+        if (MUSIC_AT_TAKEOFF) { var mw = music_where(0); music_play(mw[0], 0, mw[1]); global.music_shift = -current_time; }
     }
     break;
 
