@@ -73,6 +73,7 @@
     {"id":{"name":"snd_shift","path":"sounds/snd_shift/snd_shift.yy",},},
     {"id":{"name":"snd_shot","path":"sounds/snd_shot/snd_shot.yy",},},
     {"id":{"name":"snd_siren","path":"sounds/snd_siren/snd_siren.yy",},},
+    {"id":{"name":"snd_star_burst","path":"sounds/snd_star_burst/snd_star_burst.yy",},},
     {"id":{"name":"spr_bg_clouds","path":"sprites/spr_bg_clouds/spr_bg_clouds.yy",},},
     {"id":{"name":"spr_bg_earth","path":"sprites/spr_bg_earth/spr_bg_earth.yy",},},
     {"id":{"name":"spr_bg_ground","path":"sprites/spr_bg_ground/spr_bg_ground.yy",},},
