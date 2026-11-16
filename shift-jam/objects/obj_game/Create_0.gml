@@ -458,9 +458,13 @@ seq_resume = 570; // dal checkpoint del boss si riparte da qui (9,5 s: sale la s
 var mus_go = 2;   // dove riparte la partita, nel tempo del brano
 for (var mi = 0; mi < min(wave, boss_wave); mi++) mus_go += wave_secs[mi];
 if (wave >= boss_wave) mus_go += seq_resume / 60;
-mus_t = mus_go - lead / 60;
+// PROVA (MUSIC_AT_TAKEOFF): il brano e' partito al decollo, quindi e' avanti di quanto e' durato il decollo
+// (circa 6-8 s). Lo misuro qui la prima volta e tutta la partita resta spostata di quel tanto,
+// anche dopo un game over: le ondate arrivano piu' tardi rispetto al brano, sempre della stessa quantita'.
+if (global.music_shift < 0) global.music_shift = (current_time + global.music_shift) / 1000;
+mus_t = mus_go - lead / 60 + global.music_shift;
 mus_on = (mus_t >= 0);   // il brano e' partito?
-if (mus_on) music_play(MUSIC_TRACK, (mus_t > 1) ? 1000 : 0, mus_t);
+if (mus_on) music_play(MUSIC_TRACK, (mus_t > 1) ? 1000 : 0, mus_t);   // se suona gia' (dal decollo) continua
 mus_check = 0;           // ogni mezzo secondo si controlla che il brano sia al passo (music_follow)
 
 /// Tempo scaduto: i nemici rimasti smettono di combattere e se ne vanno, verso il bordo piu' vicino

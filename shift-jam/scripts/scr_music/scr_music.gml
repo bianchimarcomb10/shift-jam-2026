@@ -13,6 +13,8 @@
 
 #macro MUSIC_GAIN 0.8                         // volume della musica (gli effetti sonori non cambiano)
 #macro MUSIC_TRACK "mus_shift_into_silence"   // il brano della partita
+#macro MUSIC_AT_TAKEOFF true   // PROVA di Chelios (16-11): il brano parte al decollo della navicella, non all'inizio di rm_game.
+                               // false = come prima (parte quando hai il comando)
 
 /// I PUNTI DI RITORNO, in secondi: [torna qui, arrivato qui, dissolvenza incrociata].
 /// 5:38,19 e 4:21,24 cadono sulla stessa battuta della griglia (131 bpm): sono 168 battute, 42 misure.
@@ -25,6 +27,7 @@ global.music = -1;          // il brano che suona ora (l'istanza del suono), -1 
 global.music_name = "";
 global.music_fading = [];   // suoni che stanno sfumando: [istanza, quando fermarli]
 global.siren = -1;          // la sirena del prologo, -1 = spenta
+global.music_shift = 0;     // di quanti secondi il brano e' partito prima di rm_game (il decollo, MUSIC_AT_TAKEOFF)
 global.music_t0 = 0;        // current_time dell'ultima partenza o dell'ultimo salto (subito dopo, la posizione non e' affidabile)
 global.music_follow_log = [];   // quando music_follow ha dovuto correggere (current_time)
 global.music_follow_off = false; // true = smette di correggere (vedi music_follow)
