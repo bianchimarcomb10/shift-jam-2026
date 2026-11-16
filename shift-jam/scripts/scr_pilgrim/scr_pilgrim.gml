@@ -69,9 +69,10 @@ function draw_mecha(px, py, tilt, sweep, R, sc, scythe) {
 }
 
 /// BRACCIO del mecha con la trivella (gli sprite di Francesco non hanno braccia: le disegna il codice).
+/// (Non si chiama pil_arm: quel nome ce l'ha gia' il braccio del mecha a poligoni, piu' sotto.)
 /// Spalla (x0, y0), gomito (x1, y1), mano (x2, y2), in pixel dello schermo. w = spessore della manica.
 /// Manica blu scuro del mantello con il contorno d'inchiostro e una riga di luce della stoffa sopra.
-function pil_arm(x0, y0, x1, y1, x2, y2, w = 5) {
+function mecha_drill_arm(x0, y0, x1, y1, x2, y2, w = 5) {
     draw_set_colour(make_colour_rgb(14, 10, 20));          // contorno
     draw_line_width(x0, y0, x1, y1, w + 2);
     draw_line_width(x1, y1, x2, y2, w + 2);
@@ -87,7 +88,7 @@ function pil_arm(x0, y0, x1, y1, x2, y2, w = 5) {
     draw_set_colour(c_white);
 }
 /// PUGNO d'acciaio (5x5 col contorno), centrato in (px, py)
-function pil_fist(px, py) {
+function mecha_drill_fist(px, py) {
     px = round(px); py = round(py);
     draw_set_colour(make_colour_rgb(14, 10, 20));
     draw_rectangle(px - 3, py - 3, px + 2, py + 2, false);

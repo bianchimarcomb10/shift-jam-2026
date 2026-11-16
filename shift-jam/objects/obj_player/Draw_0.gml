@@ -169,15 +169,15 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
     lx = -14 * sq; ly = -16; var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;   // spalla sinistra
     lx = -10 * sq; ly = 11; var lex = x + lx * rc + ly * rs, ley = fy - lx * rs + ly * rc;    // gomito sinistro, in basso
     // le braccia: prima la sinistra che sorregge, poi la destra che impugna
-    pil_arm(lsx, lsy, lex, ley, lhx, lhy);
-    pil_arm(rsx, rsy, rex, rey, rfx, rfy);
+    mecha_drill_arm(lsx, lsy, lex, ley, lhx, lhy);
+    mecha_drill_arm(rsx, rsy, rex, rey, rfx, rfy);
     // il manico d'acciaio sotto il collare, e i due pugni che lo stringono
     draw_set_colour(make_colour_rgb(14, 10, 20));
     draw_rectangle(dbx - 2, dby + 2 * dst, dbx + 1, dby + 2 * dst + 9, false);
     draw_set_colour(make_colour_rgb(60, 70, 95));
     draw_rectangle(dbx - 1, dby + 2 * dst, dbx, dby + 2 * dst + 8, false);
-    pil_fist(lhx, lhy);
-    pil_fist(rfx, rfy);
+    mecha_drill_fist(lhx, lhy);
+    mecha_drill_fist(rfx, rfy);
     // la trivella, sopra a tutto
     global.draw_drill(dbx, dby, dst, dsp, (drill_charge >= drill_full) ? 1 : 0);
     // il vortice: tre archi d'aria azzurra che salgono dalla base alla punta, sempre piu' stretti
