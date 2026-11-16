@@ -6,16 +6,21 @@ for (var i = array_length(global.music_fading) - 1; i >= 0; i--) {
         array_delete(global.music_fading, i, 1);
     }
 }
-// 2. i LOOP (il menu' e il boss) si ripetono da soli: li fa il motore audio (global.music_loops in scr_music).
-// 3. dalla Ost al loop del boss: quando la Ost arriva alla fine parte il loop, attaccato e da capo
-//    (music_where in scr_music)
-if (global.music != -1 && !global.music_noloop && global.music_name == MUSIC_TRACK) {
-    if (audio_is_playing(global.music)) {
-        global.music_ost_pos = audio_sound_get_track_position(global.music);
-        // manca meno di un fotogramma e mezzo alla fine: il loop parte adesso e la Ost sfuma in 20 ms
-        if (global.music_ost_pos >= OST_LEN - 0.025) music_jump(max(0, global.music_ost_pos - OST_LEN), 20, MUSIC_BOSS);
-    } else if (global.music_ost_pos >= OST_LEN - 0.5) {
-        // la Ost e' finita tra un fotogramma e l'altro (il gioco ha rallentato): il loop parte subito
-        music_play(MUSIC_BOSS, 0, 0);
+// 2. la SCALETTA dal decollo (global.music_plan in scr_music): quando un brano arriva alla fine parte quello dopo,
+//    attaccato e da capo, senza spazio: dalla musica del menu' alla Ost, dalla Ost al loop del boss.
+//    I loop (il boss, e il menu' sul titolo) si ripetono da soli: li fa il motore audio.
+if (global.music != -1 && !global.music_noloop && !global.music_looping) {
+    var k = music_plan_index(global.music_name);
+    if (k >= 0 && k < array_length(global.music_plan) - 1) {
+        var len = global.music_plan[k][1];
+        var nx = global.music_plan[k + 1][0];
+        if (audio_is_playing(global.music)) {
+            global.music_end_pos = audio_sound_get_track_position(global.music);
+            // manca meno di un fotogramma e mezzo alla fine: il brano dopo parte adesso e questo sfuma in 20 ms
+            if (global.music_end_pos >= len - 0.025) music_jump(max(0, global.music_end_pos - len), 20, nx);
+        } else if (global.music_end_pos >= len - 0.5) {
+            // finito tra un fotogramma e l'altro (il gioco ha rallentato): quello dopo parte subito
+            music_play(nx, 0, 0);
+        }
     }
 }

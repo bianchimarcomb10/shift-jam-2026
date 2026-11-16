@@ -8,6 +8,6 @@ next_cell = 0;
 star_grow = 90;   // fotogrammi perche' una stella arrivi alla grandezza piena
 star_max_r = 18;  // raggio pieno: copre tutto il suo quadratino, cosi' alla fine non resta nero
 audio_master_gain(GAME_MASTER);   // volume generale di quando c'e' la musica (scr_music); gli effetti per SFX_GAIN
-// la musica del menu' principale di Cubesando, in loop (obj_music); sfuma nell'esplosione di stelle (Step, stato 4)
-music_play(MUSIC_MENU, 0, 0);
+// la musica del menu' principale di Cubesando, in loop (loop del motore audio); sfuma nell'esplosione di stelle (Step, stato 4)
+music_play(MUSIC_MENU, 0, 0, true);
 draw_set_font(fnt_main);   // Press Start 2P per tutte le scritte

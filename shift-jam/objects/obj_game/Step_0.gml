@@ -10,10 +10,10 @@ if (game_over) {
     exit;
 }
 
-// --- MUSICA: la Ost e poi il loop del boss vanno al passo con la scaletta (mus_t, vedi Create). Al game over e nel finale e' gia' sfumata ---
-mus_t += 1 / 60;   // secondi dal decollo: quale brano e dove lo dice music_where (Ost, poi il loop del boss)
+// --- MUSICA: la scaletta (menu', Ost, loop del boss) va al passo con la partita (mus_t, vedi Create). Al game over e nel finale e' gia' sfumata ---
+mus_t += 1 / 60;   // secondi dal decollo: quale brano e dove lo dice music_where (scr_music, global.music_plan)
 if (!mus_on) {
-    if (mus_t >= 0) { mus_on = true; music_play(MUSIC_TRACK, 0, mus_t); }
+    if (mus_t >= 0) { mus_on = true; var mw = music_where(mus_t); music_play(mw[0], 0, mw[1]); }
 } else {
     mus_check += 1;
     if (mus_check mod 30 == 0) music_follow(mus_t);   // finito, perso o fuori passo: lo rimette a posto
