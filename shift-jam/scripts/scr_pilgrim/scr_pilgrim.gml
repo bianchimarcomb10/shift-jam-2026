@@ -68,6 +68,34 @@ function draw_mecha(px, py, tilt, sweep, R, sc, scythe) {
     }
 }
 
+/// BRACCIO del mecha con la trivella (gli sprite di Francesco non hanno braccia: le disegna il codice).
+/// Spalla (x0, y0), gomito (x1, y1), mano (x2, y2), in pixel dello schermo. w = spessore della manica.
+/// Manica blu scuro del mantello con il contorno d'inchiostro e una riga di luce della stoffa sopra.
+function pil_arm(x0, y0, x1, y1, x2, y2, w = 5) {
+    draw_set_colour(make_colour_rgb(14, 10, 20));          // contorno
+    draw_line_width(x0, y0, x1, y1, w + 2);
+    draw_line_width(x1, y1, x2, y2, w + 2);
+    draw_circle(x0, y0, (w + 1) / 2, false);
+    draw_circle(x1, y1, (w + 1) / 2, false);               // il gomito, senza tacche
+    draw_set_colour(make_colour_rgb(45, 51, 94));          // manica: l'ombra del mantello
+    draw_line_width(x0, y0, x1, y1, w);
+    draw_line_width(x1, y1, x2, y2, w);
+    draw_circle(x1, y1, (w - 1) / 2, false);
+    draw_set_colour(make_colour_rgb(78, 92, 168));         // luce della stoffa
+    draw_line(x0 - 1, y0 - 1, x1 - 1, y1 - 1);
+    draw_line(x1 - 1, y1 - 1, x2 - 1, y2 - 1);
+    draw_set_colour(c_white);
+}
+/// PUGNO d'acciaio (5x5 col contorno), centrato in (px, py)
+function pil_fist(px, py) {
+    px = round(px); py = round(py);
+    draw_set_colour(make_colour_rgb(14, 10, 20));
+    draw_rectangle(px - 3, py - 3, px + 2, py + 2, false);
+    draw_set_colour(make_colour_rgb(170, 186, 206));
+    draw_rectangle(px - 2, py - 2, px + 1, py + 1, false);
+    draw_set_colour(c_white);
+}
+
 /// l'ensō azzurro del cambio forma: si apre e svanisce (flash 1 -> 0)
 function pil_enso(px, py, flash, sc) {
     if (flash <= 0) return;
