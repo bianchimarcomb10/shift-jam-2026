@@ -6,7 +6,7 @@ if (drill_phrase > 0) drill_phrase -= 1;
 if (boss_phrase > 0) boss_phrase -= 1;
 
 if (game_over) {
-    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
+    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false, SFX_GAIN); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
 
@@ -58,7 +58,7 @@ if (lead > 0) {
             if (form == 0 && transform_timer == 0) transform_timer = 6;   // la trivella e' del mecha
             shift_flash = 12;
         }
-        audio_play_sound(snd_shift, 9, false, 1);
+        audio_play_sound(snd_shift, 9, false, 1 * SFX_GAIN);
         seq_t = seq_resume;
     }
 }

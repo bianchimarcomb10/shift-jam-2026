@@ -50,7 +50,7 @@ case 1:
         boom_y = obj_mech_ground.y;
         obj_mech_ground.transformed = true;
         siren_stop(60);                  // la sirena tace di colpo...
-        audio_master_gain(0.75);         // ...e l'esplosione si sente forte (era 0.4: torna 0.4 in rm_game, obj_game Create)
+        audio_master_gain(0.75);         // ...e l'esplosione si sente forte (poi GAME_MASTER al decollo, scr_music)
         audio_play_sound(snd_explosion_big, 10, false);
         audio_play_sound(snd_shift, 9, false);
         // niente musica nel decollo: il brano parte quando hai il comando della navicella (rm_game)
@@ -89,7 +89,7 @@ case 2:
         state = 3;
         t = 0;
         // PROVA: il brano parte qui, quando il mecha e' diventato navicella e vola via (MUSIC_AT_TAKEOFF in scr_music)
-        audio_master_gain(0.4);   // l'esplosione e' finita da un pezzo: torna il volume normale prima della musica
+        audio_master_gain(GAME_MASTER);   // l'esplosione e' finita da un pezzo: il volume di quando c'e' la musica (scr_music)
         if (MUSIC_AT_TAKEOFF) { music_play(MUSIC_TRACK, 0, 0); global.music_shift = -current_time; }
     }
     break;

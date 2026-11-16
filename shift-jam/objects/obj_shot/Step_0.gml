@@ -49,7 +49,7 @@ if (e != noone && point_distance(x, y, e.x, e.y) < e.radius + pad) {
     if (e.hp <= 0) {
         global.enemy_boom(e);
         with (e) instance_destroy();
-        audio_play_sound(snd_enemy_die, 3, false, 0.6);
+        audio_play_sound(snd_enemy_die, 3, false, 0.6 * SFX_GAIN);
     }
     instance_destroy();
     exit;

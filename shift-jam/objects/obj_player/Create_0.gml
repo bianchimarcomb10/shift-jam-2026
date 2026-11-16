@@ -21,7 +21,7 @@ drill_add = function(_sid) {
     if (_sid <= drill_last) return;   // questa falciata ha gia' caricato (o e' piu' vecchia)
     drill_last = _sid;
     drill_charge += 1;
-    if (drill_charge >= drill_full) audio_play_sound(snd_shift, 9, false, 0.9);   // carica piena
+    if (drill_charge >= drill_full) audio_play_sound(snd_shift, 9, false, 0.9 * SFX_GAIN);   // carica piena
 }
 mech_scale = 1.2;       // il mecha e' un po' piu' grosso della navicella (la hitbox resta quella)
 trail = [];             // scintille della scia del motore: [x, y, vita]
@@ -74,7 +74,7 @@ special_rockets = function() {
         o.v = 2;
         o.tgt = (chosen[r] != noone) ? chosen[r] : chosen[0];
     }
-    audio_play_sound(snd_shift, 2, false, 0.25);   // segnaposto: snd_rockets
+    audio_play_sound(snd_shift, 2, false, 0.25 * SFX_GAIN);   // segnaposto: snd_rockets
 }
 
 /// VENTAGLIO: 5 globi azzurri. Il ventaglio si apre sempre di piu': stretto appena preso,
@@ -90,7 +90,7 @@ special_fan = function() {
         o.v = 6.5;
         o.drift = i * lerp(0.05, 0.3, k);
     }
-    audio_play_sound(snd_shot, 1, false, 0.2);
+    audio_play_sound(snd_shot, 1, false, 0.2 * SFX_GAIN);
 }
 
 /// LASER: un raggio azzurro continuo fino in cima allo schermo. Passa attraverso tutto (tranne scudi e gru del boss),
@@ -110,8 +110,8 @@ special_beam = function() {
             if (hp <= 0) { killed = true; global.enemy_boom(id); instance_destroy(); }
         }
     }
-    if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
+    if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6 * SFX_GAIN);
     with (obj_ebullet) if (y < by && y > top && abs(x - bx) < 8) instance_destroy();
     with (obj_bigship) if (y < by && y > top && abs(x - bx) < 30) { hull_hp -= 0.25; hull_flash = 3; }
-    if (special_cd == 0) { audio_play_sound(snd_laser, 2, false, 0.35); special_cd = 22; }   // snd_laser (file di Chelios): uno ogni 0,37 s, quanto dura
+    if (special_cd == 0) { audio_play_sound(snd_laser, 2, false, 0.35 * SFX_GAIN); special_cd = 22; }   // snd_laser (file di Chelios): uno ogni 0,37 s, quanto dura
 }

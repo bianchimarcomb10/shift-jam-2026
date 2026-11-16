@@ -45,6 +45,6 @@ if (t >= dur) {
         drill_state = 2;
         drill_phrase = 270;   // "YOUR DRILL IS THE DRILL THAT WILL PIERCE THE HEAVENS!"
     }
-    audio_play_sound(snd_explosion_big, 9, false, 0.6);
-    audio_play_sound(snd_shift, 9, false, 1);
+    audio_play_sound(snd_explosion_big, 9, false, 0.6 * SFX_GAIN);
+    audio_play_sound(snd_shift, 9, false, 1 * SFX_GAIN);
 }

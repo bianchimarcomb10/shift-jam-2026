@@ -13,7 +13,7 @@ if (global.hp < 3 && instance_exists(obj_player) && point_distance(x, y, obj_pla
     global.hp = min(3, global.hp + 1);   // la spia sul cruscotto si riaccende da sola
     obj_player.shift_flash = 12;         // l'ensō azzurro attorno al giocatore: preso
     obj_player.heal_t = 120;             // 2 s di RIPARAZIONE: la nave brilla e il cruscotto scrive HULL REPAIRED
-    audio_play_sound(snd_parry, 8, false, 0.7);   // segnaposto: il musicista fara' snd_heart
+    audio_play_sound(snd_parry, 8, false, 0.7 * SFX_GAIN);   // segnaposto: il musicista fara' snd_heart
     instance_destroy();
     exit;
 }
