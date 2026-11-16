@@ -7,7 +7,9 @@ fade = 0;
 depth = -100;
 obj_game.finale = true;   // niente piu' ondate ne' interfaccia
 audio_play_sound(snd_explosion_big, 10, false);
-music_stop(3000);   // la musica del boss sfuma: il finale e' in silenzio
+// la musica NON si ferma: va avanti fino alla sua chiusa, che si spegne da sola (Chelios, 16-11).
+// Da qui in poi niente ritorno da 5:38 a 4:21 (global.music_noloop in scr_music)
+global.music_noloop = true;
 
 with (obj_ebullet) instance_destroy();
 with (obj_palm) instance_destroy();

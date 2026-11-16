@@ -8,7 +8,7 @@ for (var i = array_length(global.music_fading) - 1; i >= 0; i--) {
 }
 // 2. i RITORNI (global.music_loops in scr_music): quando il brano arriva alla fine del pezzo che si ripete,
 //    riparte una copia dal punto di ritorno e le due si incrociano per pochi centesimi di secondo
-if (global.music != -1 && audio_is_playing(global.music)) {
+if (global.music != -1 && !global.music_noloop && audio_is_playing(global.music)) {
     var lp = global.music_loops[$ global.music_name];
     if (!is_undefined(lp)) {
         var pos = audio_sound_get_track_position(global.music);
