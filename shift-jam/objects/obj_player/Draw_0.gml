@@ -163,13 +163,18 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
     var dby = round(fy - lx * rs + ly * rc - thr);
     var rfx = dbx, rfy = dby + round(2 * dst) + 3;             // pugno destro, sul manico sotto il collare
     var lhx = rfx - 1, lhy = rfy + 5;                          // mano sinistra, a coppa sotto il pugno
-    // spalle e gomiti, nel corpo
-    lx = 21 * sq; ly = -12; var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (dal bordo del mantello)
-    lx = 29 * sq; ly = 8;   var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, in fuori
-    lx = -14 * sq; ly = -16; var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;   // spalla sinistra
-    lx = -10 * sq; ly = 11; var lex = x + lx * rc + ly * rs, ley = fy - lx * rs + ly * rc;    // gomito sinistro, in basso
-    // le braccia: prima la sinistra che sorregge, poi la destra che impugna
-    mecha_drill_arm(lsx, lsy, lex, ley, lhx, lhy);
+    // le braccia, corte (Chelios, 16-11: "un po' troppo lunghe", versione A della bozza):
+    // il DESTRO ha la spalla dietro la trivella e il gomito sotto il collare, e sale al pugno;
+    // il SINISTRO esce da sotto il lembo sinistro del mantello e va in diagonale fino a sotto il pugno
+    lx = 19 * sq; ly = -8;  var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (coperta dalla trivella)
+    lx = 23 * sq; ly = 13;  var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, sotto il collare
+    lx = -13 * sq; ly = 3;  var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;    // dove il sinistro esce dal mantello
+    mecha_drill_arm(lsx, lsy, lsx, lsy, lhx, lhy);
+    // il lembo sinistro del mantello, ridisegnato SOPRA l'attacco del braccio: cosi' il braccio ne esce da sotto.
+    // E' un pezzo dello sprite del corpo (x 24-38, y 40-63 nell'immagine), stesso fotogramma, stesse scala e rotazione
+    var mfr = (sweep_anim > 0) ? (current_time div 50) mod 12 : (current_time div 100) mod 12;   // come draw_mecha
+    lx = (24 - 47) * sq; ly = 40 - 47;
+    draw_sprite_general(spr_mecha_body, mfr, 24, 40, 15, 24, x + lx * rc + ly * rs, fy - lx * rs + ly * rc, sq, 1, -tilt, c_white, c_white, c_white, c_white, 1);
     mecha_drill_arm(rsx, rsy, rex, rey, rfx, rfy);
     // il manico d'acciaio sotto il collare, e i due pugni che lo stringono
     draw_set_colour(make_colour_rgb(14, 10, 20));
