@@ -28,7 +28,7 @@ if ((st == 0 && g.mass) || st == 1) {
 if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || keyboard_check(vk_space) || keyboard_check(ord("J")))) {
     sweep_cooldown = 30;   // una falciata ogni mezzo secondo
     sweep_anim = 10;
-    audio_play_sound(snd_scythe, 4, false);
+    audio_play_sound(snd_scythe, 4, false, SFX_GAIN);   // SFX_GAIN: il volume generale e' GAME_MASTER (scr_music)
     var kills = 0;
     with (obj_grunt) {
         if (point_distance(x, y, other.x, other.y) <= other.sweep_radius) {
@@ -36,7 +36,7 @@ if (st == 0 && !g.mass && sweep_cooldown == 0 && (keyboard_check(ord("Z")) || ke
             instance_destroy();
         }
     }
-    if (kills > 0) audio_play_sound(snd_enemy_die, 3, false);
+    if (kills > 0) audio_play_sound(snd_enemy_die, 3, false, SFX_GAIN);
     // ogni alieno falciato fa scendere un po' la barra: resisti di piu', ma non per sempre
     obj_ground.bar = max(0, obj_ground.bar - kills * 0.004);
 }

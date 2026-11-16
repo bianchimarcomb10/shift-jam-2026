@@ -1,13 +1,14 @@
-/// MUSICA di Cubesando, i quattro brani (consegnati il 16-11-2026, sera):
-///   mus_main_menu    (15,8 s)  sul titolo in loop, e sfuma nell'esplosione di stelle (obj_intro).
-///                              Al decollo suona UNA volta: e' l'attacco della partita (obj_ground)
+/// MUSICA di Cubesando, cinque brani:
+///   mus_intenso      (59,8 s)  "Mood Intenso", sul titolo (Chelios, 16-11 sera): parte da capo e poi gira in loop
+///                              (TITLE_LOOP_START/END) finche' non si va avanti; sfuma nell'esplosione di stelle (obj_intro)
+///   mus_main_menu    (15,8 s)  al decollo suona UNA volta: e' l'attacco della partita (obj_ground)
 ///   mus_ost_in_sync  (4:25,6)  attaccata subito alla fine della musica del menu', senza spazio (obj_music)
 ///   mus_boss_loop    (53,1 s)  attaccato subito alla fine della Ost, in loop finche' il boss e' vivo (29 misure a 131 bpm)
 ///   mus_finale       (25,2 s)  quando il boss muore; il loop del boss sfuma (obj_finale)
 /// Il tempo della partita (obj_game, mus_t) parte dal decollo: music_where dice quale brano deve suonare e dove.
 /// Scaletta:
-///   titolo: mus_main_menu in loop. Esplosione di stelle: sfuma in 4 s
-///   prologo col mecha: niente musica (c'e' la sirena)
+///   titolo: mus_intenso in loop. Esplosione di stelle: la musica sfuma in 4 s mentre sale l'esplosione cinematica
+///   prologo col mecha: niente musica (c'e' la sirena). Quando gli alieni ti sommergono: l'esplosione cinematica
 ///   decollo (il mecha e' esploso ed e' diventato navicella): mus_main_menu una volta, poi la Ost attaccata
 ///   game over: sfuma in 1,5 s (obj_player). Qui andra' il suono di game over di 5 s del musicista
 ///   fine della Ost (4:41,5 dal decollo): il loop del boss, attaccato (obj_music)
@@ -18,21 +19,38 @@
 /// I file sono gia' masterizzati forte (picco -1 dB): il volume si alza nel gioco, non nei file.
 /// Prima: musica 0.8 x volume generale 0.4 = 0.32. Ora: 1.0 x 0.54 = 0.54, cioe' +4,5 dB.
 /// Gli effetti sonori si moltiplicano per SFX_GAIN (0.4 / 0.54), cosi' restano forti come prima.
+/// Il VOLUME GENERALE resta GAME_MASTER dal titolo alla fine del gioco (16-11 sera). Prima nel prologo era 0.4,
+/// all'esplosione 0.75 e al titolo saliva a 1: ma l'esplosione cinematica dura 8 s, e ogni cambio del volume
+/// generale l'avrebbe fatta saltare a meta'. Gli effetti del prologo ora passano per SFX_GAIN come quelli della
+/// partita, quindi si sentono come prima.
 #macro MUSIC_GAIN 1.0                         // volume della musica (era 0.8)
-#macro GAME_MASTER 0.54                       // volume generale quando c'e' la musica: titolo, e dal decollo a tutto rm_game (era 0.4)
+#macro GAME_MASTER 0.54                       // volume generale, dal titolo alla fine (era 0.4)
 #macro SFX_GAIN 0.74                          // 0.4 / 0.54: gli effetti sonori come prima
-#macro STAR_BURST_GAIN 0.8   // l'esplosione di stelle del titolo (snd_star_burst, obj_intro): cosi' arriva al livello
-                             // della musica del menu'. Per alzarla ancora c'e' margine fino a 1.0 (+2 dB)
 
-#macro MUSIC_MENU "mus_main_menu"             // il menu' principale
+/// L'ESPLOSIONE CINEMATICA (snd_explosion_cinematic, 8,3 s; Chelios, 16-11 sera: "abbastanza alto").
+/// Sale per 3,3 s, poi il colpo e il boato fino a 7 s. Al volume pieno e' circa 5 dB sopra la musica del titolo.
+/// Sul titolo parte da capo alla pressione di SHIFT: il colpo cade quando le stelle hanno riempito il cielo.
+/// Nel prologo il colpo deve arrivare subito, quando premi SHIFT: si parte da EXPLOSION_GROUND_FROM.
+#macro EXPLOSION_GAIN 1.0                     // 1.0 = il massimo
+#macro EXPLOSION_GROUND_FROM 3.25             // secondi. 0 = da capo anche li', ma il colpo arriverebbe a decollo gia' iniziato
+
+#macro MUSIC_TITLE "mus_intenso"              // il titolo: "Mood Intenso"
+#macro MUSIC_MENU "mus_main_menu"             // si chiama cosi', ma ora e' l'attacco della partita al decollo
 #macro MUSIC_TRACK "mus_ost_in_sync"          // la partita, dal decollo
 #macro MUSIC_BOSS "mus_boss_loop"             // il loop del boss
 #macro MUSIC_FINALE "mus_finale"              // il finale
 #macro MENU_LEN 15.832063                     // quanto dura la musica del menu' (s)
 #macro OST_LEN 265.6489                       // quanto dura la Ost (s)
 #macro BOSS_LEN 53.129796                     // quanto dura un giro del loop del boss (s)
-#macro MUSIC_MENU_FADE 4000                   // la musica del menu' sfuma nell'esplosione di stelle (dura 5,3 s)
+#macro MUSIC_TITLE_FADE 4000                  // la musica del titolo sfuma nell'esplosione (le stelle durano 5,3 s)
 #macro MUSIC_BOSS_FADE 2000                   // alla morte del boss il loop sfuma mentre parte il finale
+
+/// IL LOOP DEL TITOLO. Mood Intenso comincia quasi in silenzio (i primi 2 s) e il file finisce mentre la musica
+/// va ancora: ripetere tutto il file farebbe un buco. Si ripetono invece 12 misure, da 24,93 a 57,91 s:
+/// 32,98 s, il periodo con cui il brano si ripete. I due punti sono sul campione (a 44100 al secondo) dove l'onda
+/// combacia, cosi' il salto non fa click. Li usa il motore audio di GameMaker (music_play).
+#macro TITLE_LOOP_START (1099245 / 44100)
+#macro TITLE_LOOP_END (2553720 / 44100)
 #macro MUSIC_AT_TAKEOFF true   // la scaletta parte al decollo della navicella (false = quando hai il comando, inizio di rm_game)
 
 /// I BRANI NOMINATI UNO PER UNO. Qui sotto la musica si chiama per nome, tra virgolette (MUSIC_MENU...).
@@ -40,7 +58,7 @@
 /// GameMaker butta via le risorse che il codice non nomina direttamente, e un nome tra virgolette non conta.
 /// Per questo nella 16-NOV-J la musica non si sentiva: GameMaker l'aveva tolta dal gioco. Questa riga la tiene dentro.
 /// Se aggiungi un brano, mettilo anche qui.
-global.music_assets = [mus_main_menu, mus_ost_in_sync, mus_boss_loop, mus_finale];
+global.music_assets = [mus_intenso, mus_main_menu, mus_ost_in_sync, mus_boss_loop, mus_finale];
 
 /// LA SCALETTA DAL DECOLLO (Chelios, 16-11 sera): [brano, quanto dura in secondi], uno dopo l'altro.
 /// Ogni brano attacca appena finisce quello prima, senza spazio (obj_music); l'ultimo si ripete finche' serve.
@@ -50,7 +68,7 @@ global.music_plan = [
     [MUSIC_BOSS, BOSS_LEN]     // il loop del boss
 ];
 /// I LOOP li fa il motore audio di GameMaker (audio_play_sound con loop acceso): ogni giro attacca preciso
-/// anche se il gioco rallenta. Si ripete sempre il loop del boss; la musica del menu' solo sul titolo (obj_intro).
+/// anche se il gioco rallenta. Si ripetono il loop del boss e, sul titolo, Mood Intenso (obj_intro).
 global.music = -1;          // il brano che suona ora (l'istanza del suono), -1 = nessuno
 global.music_name = "";
 global.music_looping = false;   // il brano che suona si ripete da solo (loop del motore audio)?
@@ -101,7 +119,7 @@ function music_ensure() {
 /// (0 = si ferma di colpo) e il nuovo entra con la stessa dissolvenza.
 /// Se sta gia' suonando, non lo fa ripartire.
 /// _loop: si ripete da solo? Se non lo dici: si' il loop del boss, no tutti gli altri
-/// (il titolo lo chiede per la musica del menu').
+/// (il titolo lo chiede per Mood Intenso, che gira tra TITLE_LOOP_START e TITLE_LOOP_END).
 function music_play(_name, _fade_ms = 0, _offset_s = 0, _loop = undefined) {
     if (asset_get_type(_name) != asset_sound) {   // il brano non c'e' nel gioco: lo dice nella finestra Output
         show_debug_message("MUSICA: manca " + string(_name) + " (vedi global.music_assets in scr_music)");
@@ -112,6 +130,11 @@ function music_play(_name, _fade_ms = 0, _offset_s = 0, _loop = undefined) {
     if (global.music_name == _name && global.music != -1 && audio_is_playing(global.music)) return true;
     music_ensure();
     var snd = asset_get_index(_name);
+    if (_name == MUSIC_TITLE) {
+        // il loop del titolo: suona da capo fino a TITLE_LOOP_END, poi riparte sempre da TITLE_LOOP_START
+        audio_sound_loop_start(snd, TITLE_LOOP_START);
+        audio_sound_loop_end(snd, TITLE_LOOP_END);
+    }
     music_stop(_fade_ms);
     global.music = audio_play_sound(snd, 100, _loop, (_fade_ms > 0) ? 0 : MUSIC_GAIN, max(0, _offset_s));
     if (_fade_ms > 0) audio_sound_gain(global.music, MUSIC_GAIN, _fade_ms);
@@ -194,7 +217,7 @@ function music_follow(_t) {
 function siren_start() {
     if (global.siren != -1 && audio_is_playing(global.siren)) return;
     global.siren = audio_play_sound(snd_siren, 50, true, 0);
-    audio_sound_gain(global.siren, 0.6, 400);   // entra in mezzo secondo
+    audio_sound_gain(global.siren, 0.6 * SFX_GAIN, 400);   // entra in mezzo secondo (SFX_GAIN: forte come prima)
 }
 function siren_stop(_fade_ms = 300) {
     if (global.siren == -1) return;

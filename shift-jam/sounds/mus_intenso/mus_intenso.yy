@@ -1,18 +1,18 @@
 {
   "$GMSound":"v2",
-  "%Name":"snd_star_burst",
+  "%Name":"mus_intenso",
   "audioGroupId":{
     "name":"audiogroup_default",
     "path":"audiogroups/audiogroup_default",
   },
   "bitDepth":1,
-  "channelFormat":0,
-  "compression":0,
+  "channelFormat":1,
+  "compression":1,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":3.638186,
+  "duration":59.801542,
   "exportDir":"",
-  "name":"snd_star_burst",
+  "name":"mus_intenso",
   "parent":{
     "name":"shift-jam",
     "path":"shift-jam.yyp",
@@ -21,6 +21,6 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"snd_star_burst.wav",
+  "soundFile":"mus_intenso.ogg",
   "volume":1.0,
 }
