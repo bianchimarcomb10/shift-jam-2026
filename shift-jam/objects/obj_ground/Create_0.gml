@@ -1,6 +1,6 @@
 /// Prologo a terra: il mecha resiste finche' gli alieni non lo sommergono.
 audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
-music_stop(200);          // nel prologo col mecha NIENTE musica (scr_music)
+music_stop(200);          // nel prologo col mecha NIENTE musica (scr_music); qui non ne suona comunque nessuna
 global.continues = 0;     // nuova partita: si riparte da zero sconfitte
 global.checkpoint = 0;    // e dalla prima ondata
 state = 0;          // 0 = combatte, 1 = sommerso (aspetta SHIFT), 2 = esplosione, 3 = la navicella vola via

@@ -1,51 +1,53 @@
-/// MUSICA di Cubesando (richiesta di Chelios, 2026-11-13). Due brani:
-///   mus_incitante  sul titolo, poi dal decollo per tutte le ondate. Comincia con la SALITA (0 - 9 s),
-///                  poi si ripete solo la seconda parte: da 9,089 s a 106,716 s (48 battute a 118 bpm).
-///   mus_intenso    da quando arriva la trivella, per tutto il boss. Prima volta tutto dall'inizio,
-///                  poi si ripete da 24,927 s a 57,909 s (12 battute a 87,3 bpm).
+/// MUSICA di Cubesando, versione finale (consegnata il 16-11-2026): UN SOLO BRANO, mus_shift_into_silence (5:56).
+/// E' scritto sulla scaletta fissa della partita (obj_game Create: wave_secs e seq_len), quindi deve stare al passo:
+///   0:00  hai il comando della navicella (inizio di rm_game)      0:02  prima ondata
+///   1:33  la nave enorme                                          1:57  l'ondata dopo la nave (checkpoint)
+///   4:06  "Silence is near." (checkpoint del boss)                4:15,5 sale la sagoma della nave madre
+///   4:21  il boss: il suo tema entra a 4:21,24
 /// Scaletta:
-///   titolo e frase di Linji: mus_incitante; nell'esplosione di stelle dello start sfuma fino al bianco
-///   prologo col mecha: SILENZIO. Quando compare SHIFT TO STRUGGLE: la sirena (snd_siren, in loop)
-///   premuto SHIFT: la sirena tace e mus_incitante riparte dall'inizio col decollo
-///   la trivella: mus_incitante sfuma su "Silence is near.", mus_intenso parte quando la trivella compare
-///   finale: la musica sfuma. Al game over la musica continua.
-///
-/// I PUNTI DI LOOP sono qui sotto, in secondi: [inizio, fine] del pezzo che si ripete.
-/// Se la cucitura non ti piace, cambia questi numeri e basta.
+///   titolo, prologo col mecha, decollo: NIENTE musica (la sirena del prologo resta: e' un effetto sonoro)
+///   rm_game: il brano parte da 0:00, o dopo un game over dal punto giusto (obj_game Create, mus_t)
+///   game over: sfuma in 1,5 s (obj_player). Qui andra' il suono di game over di 5 s del musicista
+///   boss lungo: arrivato a 5:38,19, prima della chiusa del brano, torna a 4:21,24 (global.music_loops, obj_music)
+///   boss abbattuto: sfuma in 3 s (obj_finale). Il finale per la vittoria lo sta scrivendo il musicista.
 
-#macro MUSIC_GAIN 0.8   // volume della musica (gli effetti sonori non cambiano)
+#macro MUSIC_GAIN 0.8                         // volume della musica (gli effetti sonori non cambiano)
+#macro MUSIC_TRACK "mus_shift_into_silence"   // il brano della partita
 
+/// I PUNTI DI RITORNO, in secondi: [torna qui, arrivato qui, dissolvenza incrociata].
+/// 5:38,19 e 4:21,24 cadono sulla stessa battuta della griglia (131 bpm): sono 168 battute, 42 misure.
+/// La dissolvenza (0,15 s) finisce un attimo prima del colpo che apre il tema del boss.
+/// Si puo' ascoltare la cucitura in /mnt/project-files/audio-prove/cucitura_loop_boss_finale.ogg (a 0:12).
 global.music_loops = {
-    mus_incitante: [9.089, 106.716],
-    mus_intenso:   [24.927, 57.909]
+    mus_shift_into_silence: [261.2450, 338.1916, 0.15]
 };
 global.music = -1;          // il brano che suona ora (l'istanza del suono), -1 = nessuno
 global.music_name = "";
 global.music_fading = [];   // suoni che stanno sfumando: [istanza, quando fermarli]
 global.siren = -1;          // la sirena del prologo, -1 = spenta
+global.music_t0 = 0;        // current_time dell'ultima partenza o dell'ultimo salto (subito dopo, la posizione non e' affidabile)
+global.music_follow_log = [];   // quando music_follow ha dovuto correggere (current_time)
+global.music_follow_off = false; // true = smette di correggere (vedi music_follow)
 
-/// l'oggetto persistente che fa i loop e chiude le dissolvenze (passa da una stanza all'altra)
+/// l'oggetto persistente che fa i ritorni e chiude le dissolvenze (passa da una stanza all'altra)
 function music_ensure() {
     if (!instance_exists(obj_music)) instance_create_depth(0, 0, 0, obj_music);
 }
 
-/// Fa partire un brano dall'inizio (o da _offset_s secondi). Quello di prima sfuma in _fade_ms
-/// millisecondi (0 = si ferma di colpo) e il nuovo entra con la stessa dissolvenza.
+/// Fa partire un brano da _offset_s secondi. Quello di prima sfuma in _fade_ms millisecondi
+/// (0 = si ferma di colpo) e il nuovo entra con la stessa dissolvenza.
 /// Se sta gia' suonando, non lo fa ripartire.
+/// Niente loop del motore audio: i ritorni li fa obj_music, con la dissolvenza incrociata.
 function music_play(_name, _fade_ms = 0, _offset_s = 0) {
     if (asset_get_type(_name) != asset_sound) return false;   // il file non c'e': resta com'e'
     if (global.music_name == _name && global.music != -1 && audio_is_playing(global.music)) return true;
     music_ensure();
     var snd = asset_get_index(_name);
     music_stop(_fade_ms);
-    var lp = global.music_loops[$ _name];
-    if (!is_undefined(lp)) {
-        audio_sound_loop_start(snd, lp[0]);
-        audio_sound_loop_end(snd, lp[1]);
-    }
-    global.music = audio_play_sound(snd, 100, true, (_fade_ms > 0) ? 0 : MUSIC_GAIN, _offset_s);
+    global.music = audio_play_sound(snd, 100, false, (_fade_ms > 0) ? 0 : MUSIC_GAIN, max(0, _offset_s));
     if (_fade_ms > 0) audio_sound_gain(global.music, MUSIC_GAIN, _fade_ms);
     global.music_name = _name;
+    global.music_t0 = current_time;
     return true;
 }
 
@@ -64,6 +66,45 @@ function music_stop(_fade_ms = 0, _from = -1) {
     }
     global.music = -1;
     global.music_name = "";
+}
+
+/// Porta il brano che suona a _offset_s secondi con una dissolvenza incrociata di _xf_ms millisecondi:
+/// parte una seconda copia dal punto nuovo mentre quella di prima sfuma.
+function music_jump(_offset_s, _xf_ms) {
+    if (global.music == -1 || !audio_is_playing(global.music)) return;
+    music_ensure();
+    var old = global.music;
+    global.music = audio_play_sound(asset_get_index(global.music_name), 100, false, 0, max(0, _offset_s));
+    audio_sound_gain(global.music, MUSIC_GAIN, _xf_ms);
+    audio_sound_gain(old, 0, _xf_ms);
+    array_push(global.music_fading, [old, current_time + _xf_ms + 30]);
+    global.music_t0 = current_time;
+}
+
+/// Tiene il brano al passo con la partita. _t: dove dovrebbe essere, in secondi (obj_game, mus_t).
+/// Se e' avanti o indietro di piu' di mezzo secondo (il gioco ha rallentato, la finestra si e' fermata,
+/// la scheda del browser era nascosta) salta al punto giusto con una dissolvenza breve.
+/// Vicino alla cucitura del ritorno non fa niente: li' ci pensa obj_music.
+function music_follow(_t) {
+    if (global.music_follow_off) return;
+    if (global.music == -1 || !audio_is_playing(global.music)) return;
+    if (current_time - global.music_t0 < 1000) return;   // appena partito o saltato: aspetto che si assesti
+    var pos = audio_sound_get_track_position(global.music);
+    var d = pos - _t;
+    var lp = global.music_loops[$ global.music_name];
+    if (!is_undefined(lp)) {
+        if (pos > lp[1] - 1 || _t > lp[1] - 1) return;
+        var len = lp[1] - lp[0];
+        if (pos >= lp[0] && _t >= lp[0]) d = ((d mod len) + len * 1.5) mod len - len * 0.5;   // lo stesso punto in due giri diversi
+    }
+    if (abs(d) <= 0.5) return;
+    // rete di sicurezza: se deve correggere piu' di 3 volte in 20 s c'e' qualcosa che non va
+    // (un computer molto lento, o la posizione letta e' sbagliata): smette, invece di far balbettare la musica
+    var jl = global.music_follow_log;
+    for (var i = array_length(jl) - 1; i >= 0; i--) if (current_time - jl[i] > 20000) array_delete(jl, i, 1);
+    if (array_length(jl) >= 3) { global.music_follow_off = true; return; }
+    array_push(jl, current_time);
+    music_jump(_t, 150);
 }
 
 /// La sirena del prologo: un allarme che sale e scende, in loop finche' non la spegni.

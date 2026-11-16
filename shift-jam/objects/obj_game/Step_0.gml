@@ -10,6 +10,21 @@ if (game_over) {
     exit;
 }
 
+// --- MUSICA: il brano va al passo con la scaletta (mus_t, vedi Create). Al game over e nel finale e' gia' sfumato ---
+mus_t += 1 / 60;
+var mlp = global.music_loops[$ MUSIC_TRACK];
+if (mus_t >= mlp[1]) mus_t -= mlp[1] - mlp[0];   // boss lungo: il brano torna al tema del boss (obj_music)
+if (!mus_on) {
+    if (mus_t >= 0) { mus_on = true; music_play(MUSIC_TRACK, 0, mus_t); }
+} else {
+    mus_check += 1;
+    if (mus_check mod 30 == 0) {
+        // finito o perso (per esempio la scheda del browser e' rimasta nascosta a lungo): riparte dal punto giusto
+        if (global.music == -1 || !audio_is_playing(global.music)) music_play(MUSIC_TRACK, 300, mus_t);
+        else music_follow(mus_t);
+    }
+}
+
 // i muri programmati arrivano anche mentre sale l'anteprima successiva
 for (var wi = array_length(walls) - 1; wi >= 0; wi--) {
     var wl = walls[wi];   // [conto alla rovescia, tipo, x della porta]
@@ -44,7 +59,7 @@ if (lead > 0) {
             shift_flash = 12;
         }
         audio_play_sound(snd_shift, 9, false, 1);
-        seq_t = 570;
+        seq_t = seq_resume;
     }
 }
 
@@ -83,11 +98,9 @@ if (seq_t == 0) {
         cp_text = "Silence is near.";
     }
     drill_state = 1;
-    if (global.music_name == "mus_incitante") music_stop(2000);   // "Silence is near.": la musica delle ondate sfuma
 }
 if (seq_t == 120) {
     instance_create_layer(room_width / 2, -200, "Instances", obj_drill_pickup);   // si pianta da sola dopo 3 s
-    music_play("mus_intenso");   // arriva la trivella: parte la musica del boss (se suona gia', continua)
 }
 if (seq_t == 570) {
     boss_preview = true;

@@ -9,8 +9,8 @@
 /// Tutti i colpi magenta si parano. Deve essere piu' duro delle ultime ondate.
 /// E' figlio di obj_enemy: colpi, falciata e contatto funzionano come con gli altri nemici.
 phase = 1;
-hp_p2 = 220;              // vita dei Koi (era 180: con le armi speciali cadeva troppo presto)
-hp_p1 = 300;              // vita della nave madre (era 260)
+hp_p2 = 154;              // vita dei Koi (era 220: -30% il 16-11, per stare nella musica del boss)
+hp_p1 = 210;              // vita della nave madre (era 300: -30% il 16-11)
 hp = hp_p1 + hp_p2;       // un solo contatore: quando scende a hp_p2 il guscio si rompe
 radius = 56;              // la nave madre e' grande
 target_y = 140;           // dove si ferma dopo l'entrata

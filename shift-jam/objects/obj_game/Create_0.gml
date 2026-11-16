@@ -437,9 +437,6 @@ waves = [
     /* 17 */ [["cross", 12], ["at", 330, ["spears", 2, 1, 0, [80, 280]]], ["wall", 300, 1, 180], ["at", 330, ["wheel", 8, 180, -1, 1]], ["wall", 600, 3], ["stalkers", 2, 640, 1], ["laser", 2, 760]]   // il finale: tutto quello che hai imparato
 ];
 boss_wave = array_length(waves);   // dopo l'ultima ondata arriva il boss
-// MUSICA: di solito continua da prima (anche dopo un game over). Se non suona niente, si riparte
-// col brano del punto in cui sei: il boss o le ondate
-if (global.music == -1) music_play((global.checkpoint >= boss_wave) ? "mus_intenso" : "mus_incitante", 1000);
 
 /// SCALETTA FISSA, come in Ikaruga: ogni ondata dura SEMPRE questi secondi, anche se abbatti tutti prima.
 /// Allo scadere i nemici rimasti si ritirano (retreat_all) e parte l'ondata dopo.
@@ -449,6 +446,22 @@ if (global.music == -1) music_play((global.checkpoint >= boss_wave) ? "mus_inten
 /// Se cambi un numero qui, cambia anche la musica: avvisa il musicista.
 wave_secs = [11, 11, 12, 9, 11, 14, 11, 12, 24, 16, 13, 18, 12, 18, 16, 16, 20];
 seq_len = 900;    // la sequenza della trivella: 15 secondi esatti
+seq_resume = 570; // dal checkpoint del boss si riparte da qui (9,5 s: sale la sagoma della nave madre, trivella gia' in mano)
+
+/// MUSICA (scr_music): il brano di Cubesando e' scritto su questa scaletta, quindi va al passo con lei.
+/// mus_t = dove dovrebbe essere il brano adesso, in secondi; lo manda avanti Step.
+/// Quando finisce "lead" il brano deve trovarsi dove riparte la partita: la prima ondata (0:02),
+/// l'ondata dopo la nave enorme (1:57) o la sagoma della nave madre (4:15,5).
+/// Partita nuova: lead e' 2 s, quindi il brano parte adesso da 0:00.
+/// Dopo un game over lead e' 5 s (il sutra): il brano parte 5 s prima di quel punto, entrando piano
+/// (dalla nave enorme a 1:52, dal boss a 4:10,5); dall'inizio invece aspetta 3 s e parte da 0:00.
+var mus_go = 2;   // dove riparte la partita, nel tempo del brano
+for (var mi = 0; mi < min(wave, boss_wave); mi++) mus_go += wave_secs[mi];
+if (wave >= boss_wave) mus_go += seq_resume / 60;
+mus_t = mus_go - lead / 60;
+mus_on = (mus_t >= 0);   // il brano e' partito?
+if (mus_on) music_play(MUSIC_TRACK, (mus_t > 1) ? 1000 : 0, mus_t);
+mus_check = 0;           // ogni mezzo secondo si controlla che il brano sia al passo (music_follow)
 
 /// Tempo scaduto: i nemici rimasti smettono di combattere e se ne vanno, verso il bordo piu' vicino
 /// (su o giu'). Li muove la Begin Step di obj_enemy. Il boss e le torrette della nave enorme restano.
