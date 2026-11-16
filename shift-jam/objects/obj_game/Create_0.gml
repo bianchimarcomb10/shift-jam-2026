@@ -448,8 +448,9 @@ wave_secs = [11, 11, 12, 9, 11, 14, 11, 12, 24, 16, 13, 18, 12, 18, 16, 16, 20];
 seq_len = 900;    // la sequenza della trivella: 15 secondi esatti
 seq_resume = 570; // dal checkpoint del boss si riparte da qui (9,5 s: sale la sagoma della nave madre, trivella gia' in mano)
 
-/// MUSICA (scr_music): il brano di Cubesando e' scritto su questa scaletta, quindi va al passo con lei.
-/// mus_t = dove dovrebbe essere il brano adesso, in secondi; lo manda avanti Step.
+/// MUSICA (scr_music): la Ost di Cubesando e' scritta su questa scaletta, quindi va al passo con lei.
+/// mus_t = secondi dal decollo, cioe' dove dovrebbe essere la Ost adesso; lo manda avanti Step.
+/// Dopo la fine della Ost (4:25,6) music_where passa al loop del boss.
 /// Quando finisce "lead" il brano deve trovarsi dove riparte la partita: la prima ondata (0:02),
 /// l'ondata dopo la nave enorme (1:57) o la sagoma della nave madre (4:15,5).
 /// Partita nuova: lead e' 2 s, quindi il brano parte adesso da 0:00.
@@ -464,7 +465,7 @@ if (wave >= boss_wave) mus_go += seq_resume / 60;
 if (global.music_shift < 0) global.music_shift = (current_time + global.music_shift) / 1000;
 mus_t = mus_go - lead / 60 + global.music_shift;
 mus_on = (mus_t >= 0);   // il brano e' partito?
-if (mus_on) music_play(MUSIC_TRACK, (mus_t > 1) ? 1000 : 0, mus_t);   // se suona gia' (dal decollo) continua
+if (mus_on) { var mw = music_where(mus_t); music_play(mw[0], (mus_t > 1) ? 1000 : 0, mw[1]); }   // se suona gia' (dal decollo) continua
 mus_check = 0;           // ogni mezzo secondo si controlla che il brano sia al passo (music_follow)
 
 /// Tempo scaduto: i nemici rimasti smettono di combattere e se ne vanno, verso il bordo piu' vicino
