@@ -1,5 +1,6 @@
 /// Prologo a terra: il mecha resiste finche' gli alieni non lo sommergono.
-audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
+audio_master_gain(GAME_MASTER);   // il volume generale resta quello del titolo (scr_music): la coda
+                                  // dell'esplosione del titolo arriva fin qui, e cosi' non fa salti
 music_stop(200);          // nel prologo col mecha NIENTE musica (scr_music); qui non ne suona comunque nessuna
 global.continues = 0;     // nuova partita: si riparte da zero sconfitte
 global.checkpoint = 0;    // e dalla prima ondata

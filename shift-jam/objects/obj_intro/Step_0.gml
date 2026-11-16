@@ -19,12 +19,11 @@ case 2:   // la frase resta 5 secondi (compare e svanisce piano)
 case 3:   // al posto della frase: "Press SHIFT"
     if (keyboard_check_pressed(vk_shift)) {
         state = 4; t = 0;
-        audio_master_gain(1);   // volume pieno solo per questo momento
-        // l'esplosione di stelle: snd_menu alzato di 12 dB (snd_star_burst), cosi' si sente forte quanto la musica
-        audio_play_sound(snd_star_burst, 5, false, STAR_BURST_GAIN);
-        // la musica del menu' sfuma nell'esplosione di stelle. Il volume generale e' appena salito a 1:
-        // la dissolvenza parte da MUSIC_GAIN x GAME_MASTER, cosi' la musica non fa un salto
-        music_stop(MUSIC_MENU_FADE, MUSIC_GAIN * GAME_MASTER);
+        // l'esplosione cinematica (scr_music): sale per 3,3 s mentre le stelle si accendono sempre piu' in fretta,
+        // e il colpo cade quando il cielo e' tutto bianco. Il boato continua nel prologo e si spegne li'
+        audio_play_sound(snd_explosion_cinematic, 5, false, EXPLOSION_GAIN);
+        // la musica del titolo sfuma nell'esplosione: in 4 s, mentre l'esplosione sale
+        music_stop(MUSIC_TITLE_FADE);
     }
     break;
 

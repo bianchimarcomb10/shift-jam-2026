@@ -113,7 +113,7 @@ if (attack && transform_timer == 0) {
 
 // --- Colpi subiti ---
 if (invuln == 0) {
-    var hr = (form == 0) ? 6 : 10;   // hitbox: navicella piccola, mecha grande
+    var hr = (form == 0) ? 6 : global.mecha_hit_r;   // hitbox: navicella 6, mecha 12 (scr_pilgrim)
     var hit = false;
     with (obj_ebullet) {
         if (point_distance(x, y, other.x, other.y) < hr + 3) { hit = true; instance_destroy(); }

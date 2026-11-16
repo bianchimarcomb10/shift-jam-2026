@@ -5,7 +5,8 @@
 /// Si chiama da obj_game (Draw GUI): legge le variabili di obj_game (game_over).
 
 #macro HUD_H 72   // altezza del cruscotto: sotto questa riga non si gioca
-#macro BUILD "16-NOV-L"   // la versione, scritta in piccolo sul titolo: dice quale zip e' installato
+#macro BUILD "16-NOV-M"   // la versione: dal 16-11 non si vede piu' nel gioco (va su itch.io); si legge nella
+                          // finestra Output di GameMaker quando parte il titolo (obj_intro Create)
 
 global.console_k = 0;   // posizione della leva (0 = SHIP, 1 = MECHA), si muove morbida
 

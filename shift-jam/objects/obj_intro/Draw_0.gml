@@ -11,14 +11,6 @@ case 1:
     draw_set_alpha(a_title);
     draw_text_transformed(cx, cy - 60, game_title, 3, 3, 0);
     if (state == 1 || (current_time div 500) mod 2 == 0) draw_text(cx, cy + 80, "Press SHIFT to continue");
-    // la VERSIONE, in piccolo nell'angolo: serve a capire quale zip e' installato
-    draw_set_halign(fa_right);
-    draw_set_valign(fa_bottom);
-    draw_set_colour(make_colour_rgb(90, 96, 130));
-    draw_text(room_width - 6, room_height - 6, "BUILD " + BUILD);
-    draw_set_colour(c_white);
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_middle);
     break;
 
 case 2:

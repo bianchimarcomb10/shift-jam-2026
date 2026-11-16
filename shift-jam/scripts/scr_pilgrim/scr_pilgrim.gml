@@ -19,12 +19,14 @@ global.pil = { x: 0, y: 0, k: 1, sq: 1, rc: 1, rs: 0 };
 global.mecha_sketch = true;
 
 /// GRANDEZZA DEL MECHA (Chelios, 16-11: "riducimi la dimensione del mecha, rendendola coerente con il suo hitbox";
-/// la sera: "il mecha ingrandiscilo leggerissimamente").
-/// Gli sprite sono 94x94 e il mantello e' largo 40 px: a 0.5 era largo 20 px, quanto la hitbox (raggio 10, obj_player Step);
-/// a 0.55 e' largo 22 px.
+/// la sera: "il mecha ingrandiscilo leggerissimamente", 0.55; poi "aumenta il mecha del 20% e adatta la hitbox", 0.66).
+/// Gli sprite sono 94x94 e il mantello e' largo 40 px: a 0.5 era largo 20 px, quanto la hitbox di allora (raggio 10);
+/// a 0.66 e' largo 26 px.
 /// Vale per il mecha in volo, per quello a terra e per la trivella in mano (obj_player Draw).
 /// Il raggio della falciata (fin dove taglia) NON cambia: la scia arriva sempre li'.
-global.mecha_size = 0.55;
+global.mecha_size = 0.66;
+/// HITBOX del mecha: un cerchio, cresciuto col mecha del 20% (era 10). Quella della navicella e' 6 (obj_player Step).
+global.mecha_hit_r = 12;
 
 /// GRANDEZZA DELLA NAVICELLA (Chelios, 16-11 sera: "rendi la navicella un pochino piu' coerente con la sua hitbox").
 /// La navicella a poligoni (draw_pilgrim) a 1 e' larga 36 px da un'ala all'altra e alta 33 dal muso ai motori;

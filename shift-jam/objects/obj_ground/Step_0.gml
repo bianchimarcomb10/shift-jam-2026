@@ -50,8 +50,9 @@ case 1:
         boom_y = obj_mech_ground.y;
         obj_mech_ground.transformed = true;
         siren_stop(60);                  // la sirena tace di colpo...
-        audio_master_gain(0.75);         // ...e l'esplosione si sente forte (poi GAME_MASTER al decollo, scr_music)
-        audio_play_sound(snd_explosion_big, 10, false);
+        // ...ed esplode: l'esplosione cinematica parte gia' dal colpo (EXPLOSION_GROUND_FROM in scr_music),
+        // il boato copre le stelle che riempiono lo schermo e si spegne mentre la navicella vola via
+        audio_play_sound(snd_explosion_cinematic, 10, false, EXPLOSION_GAIN, EXPLOSION_GROUND_FROM);
         audio_play_sound(snd_shift, 9, false);
     }
     break;
@@ -88,8 +89,8 @@ case 2:
         state = 3;
         t = 0;
         // la musica parte qui, quando il mecha e' diventato navicella e vola via (MUSIC_AT_TAKEOFF in scr_music):
-        // la musica del menu' una volta, e appena finisce la Ost, attaccata (global.music_plan, obj_music)
-        audio_master_gain(GAME_MASTER);   // l'esplosione e' finita da un pezzo: il volume di quando c'e' la musica (scr_music)
+        // la musica del menu' una volta, e appena finisce la Ost, attaccata (global.music_plan, obj_music).
+        // Il boato dell'esplosione e' ancora nell'aria: si spegne in un secondo e mezzo sotto la musica
         if (MUSIC_AT_TAKEOFF) { var mw = music_where(0); music_play(mw[0], 0, mw[1]); global.music_shift = -current_time; }
     }
     break;
