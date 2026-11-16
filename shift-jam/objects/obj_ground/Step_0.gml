@@ -38,10 +38,13 @@ case 0:
         bar += 0.012;
         if (bar >= 1) { bar = 1; state = 1; t = 0; siren_start(); }   // SHIFT TO STRUGGLE: suona la sirena
     }
+    // lo sciame segue gli alieni (e conta due volte quelli aggrappati), il battito l'accerchiamento (scr_music)
+    ambience_update(instance_number(obj_grunt) + clinging, bar);
     break;
 
 case 1:
     // --- sommerso: tutto si ferma, si aspetta SHIFT ---
+    ambience_update(instance_number(obj_grunt), 1);   // lo sciame resta addosso, il battito al massimo
     if (keyboard_check_pressed(vk_shift)) {
         state = 2;
         t = 0;
@@ -50,6 +53,7 @@ case 1:
         boom_y = obj_mech_ground.y;
         obj_mech_ground.transformed = true;
         siren_stop(60);                  // la sirena tace di colpo...
+        ambience_stop(60);               // ...e con lei vento, sciame e battito (scr_music)
         // ...ed esplode: l'esplosione cinematica parte gia' dal colpo (EXPLOSION_GROUND_FROM in scr_music),
         // il boato copre le stelle che riempiono lo schermo e si spegne mentre la navicella vola via
         audio_play_sound(snd_explosion_cinematic, 10, false, EXPLOSION_GAIN, EXPLOSION_GROUND_FROM);
