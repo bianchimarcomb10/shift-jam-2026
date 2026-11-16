@@ -18,11 +18,19 @@ global.pil = { x: 0, y: 0, k: 1, sq: 1, rc: 1, rs: 0 };
 /// false = torna il mecha a poligoni di prima (per confrontare)
 global.mecha_sketch = true;
 
-/// GRANDEZZA DEL MECHA (Chelios, 16-11: "riducimi la dimensione del mecha, rendendola coerente con il suo hitbox").
-/// Gli sprite sono 94x94 e il mantello e' largo 40 px: a 0.5 e' largo 20 px, quanto la hitbox (raggio 10, obj_player Step).
+/// GRANDEZZA DEL MECHA (Chelios, 16-11: "riducimi la dimensione del mecha, rendendola coerente con il suo hitbox";
+/// la sera: "il mecha ingrandiscilo leggerissimamente").
+/// Gli sprite sono 94x94 e il mantello e' largo 40 px: a 0.5 era largo 20 px, quanto la hitbox (raggio 10, obj_player Step);
+/// a 0.55 e' largo 22 px.
 /// Vale per il mecha in volo, per quello a terra e per la trivella in mano (obj_player Draw).
 /// Il raggio della falciata (fin dove taglia) NON cambia: la scia arriva sempre li'.
-global.mecha_size = 0.5;
+global.mecha_size = 0.55;
+
+/// GRANDEZZA DELLA NAVICELLA (Chelios, 16-11 sera: "rendi la navicella un pochino piu' coerente con la sua hitbox").
+/// La navicella a poligoni (draw_pilgrim) a 1 e' larga 36 px da un'ala all'altra e alta 33 dal muso ai motori;
+/// la hitbox e' un cerchio di raggio 6 (obj_player Step). A 0.85 e' larga 31 px.
+/// Vale in volo, al decollo del prologo e nel finale.
+global.ship_size = 0.85;
 
 /// VERSO DELLA FALCIATA: 1 = antiorario, -1 = orario.
 global.sweep_dir = 1;
@@ -309,7 +317,7 @@ function draw_pilgrim(px, py, m, tilt = 0, sweep = 0, sweep_r = 56, flash = 0, m
     P.x = px; P.y = py + hover;
     P.sq = 1 - abs(tilt) / 60;              // inclinato: si stringe come se girasse su se stesso
     P.rc = dcos(-tilt); P.rs = dsin(-tilt);
-    P.k = lerp(1, ms, m) * sc;
+    P.k = lerp(global.ship_size, ms, m) * sc;   // navicella: global.ship_size
 
     var ink    = make_colour_rgb(14, 10, 20);
     var hat    = make_colour_rgb(214, 226, 222);
