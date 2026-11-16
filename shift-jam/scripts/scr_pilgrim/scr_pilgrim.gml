@@ -18,53 +18,82 @@ global.pil = { x: 0, y: 0, k: 1, sq: 1, rc: 1, rs: 0 };
 /// false = torna il mecha a poligoni di prima (per confrontare)
 global.mecha_sketch = true;
 
-/// FALCIATA: parte dal basso (lama in basso a destra), sale sul fianco destro, passa DAVANTI
-/// gia' al secondo frame, fa tutto il giro in senso antiorario e si ferma di nuovo in basso a 45 gradi.
-/// sweep: frame rimasti (10..1, 0 = ferma) | R: raggio della falciata (fin dove taglia)
+/// GRANDEZZA DEL MECHA (Chelios, 16-11: "riducimi la dimensione del mecha, rendendola coerente con il suo hitbox").
+/// Gli sprite sono 94x94 e il mantello e' largo 40 px: a 0.5 e' largo 20 px, quanto la hitbox (raggio 10, obj_player Step).
+/// Vale per il mecha in volo, per quello a terra e per la trivella in mano (obj_player Draw).
+/// Il raggio della falciata (fin dove taglia) NON cambia: la scia arriva sempre li'.
+global.mecha_size = 0.5;
+
+/// VERSO DELLA FALCIATA: 1 = antiorario, -1 = orario.
+global.sweep_dir = 1;
+
+/// FALCIATA (Chelios, 16-11: "parte dalla sua punta e si muove in senso antiorario"):
+/// primo frame fermo, con un lampo sulla PUNTA della lama; poi la falce fa tutto il giro e la scia nasce
+/// dalla punta e si allarga fino a dove taglia (R). Veloce all'inizio, poi rallenta e si ferma in basso a destra.
+/// sweep: frame rimasti (10..1, 0 = ferma) | R: raggio della falciata | sc: scala del disegno (1 nel gioco)
 function draw_mecha(px, py, tilt, sweep, R, sc, scythe) {
-    var yy = py + 1.5 * dsin(current_time * 0.15) * sc;          // galleggia
+    var ms = sc * global.mecha_size;                              // scala degli sprite
+    var yy = py + 1.5 * dsin(current_time * 0.15) * ms;          // galleggia
     var rot = -tilt;                                              // si inclina in virata come la navicella
     var sq = 1 - abs(tilt) / 60;
     // il mantello: 10 frame al secondo, il doppio mentre falcia
     var fr = (sweep > 0) ? (current_time div 50) mod 12 : (current_time div 100) mod 12;
-    // quanto e' girata la falce dal riposo (gradi, antiorario): veloce all'inizio, poi rallenta
+    // quanto e' girata la falce dal riposo (gradi, positivo = antiorario)
     var th = 3 * dsin(current_time * 0.2 - 40);                  // ferma: ondeggia appena col respiro
+    var dir = global.sweep_dir;
     if (sweep > 0) {
-        var u = clamp((11 - sweep) / 10, 0, 1);
-        th = 360 * (1 - power(1 - u, 2));
+        var u = clamp((10 - sweep) / 9, 0, 1);                    // sweep 10 = ancora ferma, sweep 1 = giro finito
+        th = dir * 360 * (1 - power(1 - u, 2));
     }
-    // la scia azzurra: dietro la lama, larga fino a dove taglia (R)
+    // la scia azzurra: comincia sulla punta della lama e resta dietro (rispetto al verso del giro)
     if (sweep > 0 && scythe) {
-        var lead = th + rot;          // la punta della lama a riposo sta a circa 0 gradi (a destra)
-        var len = min(150, th);
+        var tip_r = 39 * ms, heel_r = 22 * ms;                    // punta e bordo interno della lama (sprite: 39 e 22 px)
+        var lead = th + rot + 4;                                  // a riposo la punta sta a 4 gradi (a destra)
+        var len = min(150, abs(th));
         var fade = sqrt(sweep / 10);
-        var r_out = R * sc, r_in = (R - 24) * sc;
+        var r_cut = R * sc;
         gpu_set_blendmode(bm_add);
-        draw_set_colour(make_colour_rgb(40, 140, 255));
-        for (var i = 0; i < 24; i++) {
-            var u0 = i / 24, u1 = (i + 1) / 24;
-            var b0 = lead - u0 * len, b1 = lead - u1 * len;
-            draw_set_alpha(0.6 * (1 - u0) * fade);
-            draw_primitive_begin(pr_trianglestrip);
-            draw_vertex(px + lengthdir_x(r_out, b0), yy + lengthdir_y(r_out, b0));
-            draw_vertex(px + lengthdir_x(r_in + 10 * u0 * sc, b0), yy + lengthdir_y(r_in + 10 * u0 * sc, b0));
-            draw_vertex(px + lengthdir_x(r_out, b1), yy + lengthdir_y(r_out, b1));
-            draw_vertex(px + lengthdir_x(r_in + 10 * u1 * sc, b1), yy + lengthdir_y(r_in + 10 * u1 * sc, b1));
-            draw_primitive_end();
+        if (len > 0) {
+            for (var i = 0; i < 24; i++) {
+                var u0 = i / 24, u1 = (i + 1) / 24;
+                var b0 = lead - dir * u0 * len, b1 = lead - dir * u1 * len;
+                // sulla punta e' larga quanto la lama, poi si allarga fino a dove taglia
+                var g0 = min(1, u0 / 0.3), g1 = min(1, u1 / 0.3);
+                var o0 = tip_r + (r_cut - tip_r) * g0, o1 = tip_r + (r_cut - tip_r) * g1;
+                var i0 = heel_r + (r_cut - 20 * sc - heel_r) * g0, i1 = heel_r + (r_cut - 20 * sc - heel_r) * g1;
+                draw_set_colour(make_colour_rgb(40, 140, 255));
+                draw_set_alpha(0.6 * (1 - u0) * fade);
+                draw_primitive_begin(pr_trianglestrip);
+                draw_vertex(px + lengthdir_x(o0, b0), yy + lengthdir_y(o0, b0));
+                draw_vertex(px + lengthdir_x(i0, b0), yy + lengthdir_y(i0, b0));
+                draw_vertex(px + lengthdir_x(o1, b1), yy + lengthdir_y(o1, b1));
+                draw_vertex(px + lengthdir_x(i1, b1), yy + lengthdir_y(i1, b1));
+                draw_primitive_end();
+                // il filo chiaro sul bordo esterno: fin dove arriva
+                draw_set_colour(make_colour_rgb(215, 250, 255));
+                draw_set_alpha(0.7 * (1 - u0) * fade);
+                draw_line(px + lengthdir_x(o0, b0), yy + lengthdir_y(o0, b0), px + lengthdir_x(o1, b1), yy + lengthdir_y(o1, b1));
+            }
+        }
+        // il lampo sulla punta, nei primi due frame
+        if (sweep >= 9) {
+            var tx = px + lengthdir_x(tip_r, lead), ty = yy + lengthdir_y(tip_r, lead);
+            var ls = (sweep == 10) ? 4 : 3;
+            draw_set_colour(make_colour_rgb(215, 250, 255));
+            draw_set_alpha(1);
+            draw_line(tx - ls, ty, tx + ls, ty);
+            draw_line(tx, ty - ls, tx, ty + ls);
         }
         gpu_set_blendmode(bm_normal);
-        draw_set_colour(make_colour_rgb(215, 250, 255));
-        draw_set_alpha(0.4 * sweep / 10);
-        draw_circle(px, yy, r_out, true);          // fin dove arriva
         draw_set_alpha(1);
         draw_set_colour(c_white);
     }
-    draw_sprite_ext(spr_mecha_body, fr, px, yy, sq * sc, sc, rot, c_white, 1);
+    draw_sprite_ext(spr_mecha_body, fr, px, yy, sq * ms, ms, rot, c_white, 1);
     if (scythe) {
         // frame piu' vicino (10 gradi l'uno) + il resto con la rotazione dello sprite
         var a = th + rot;
         var k = round(a / 10);
-        draw_sprite_ext(spr_mecha_scythe, ((k mod 36) + 36) mod 36, px, yy, sc, sc, a - k * 10, c_white, 1);
+        draw_sprite_ext(spr_mecha_scythe, ((k mod 36) + 36) mod 36, px, yy, ms, ms, a - k * 10, c_white, 1);
     }
 }
 
@@ -87,13 +116,13 @@ function mecha_drill_arm(x0, y0, x1, y1, x2, y2, w = 5) {
     draw_line(x1 - 1, y1 - 1, x2 - 1, y2 - 1);
     draw_set_colour(c_white);
 }
-/// PUGNO d'acciaio (5x5 col contorno), centrato in (px, py)
-function mecha_drill_fist(px, py) {
+/// PUGNO d'acciaio col contorno, centrato in (px, py). r = 3: 6x6 (mecha grande), r = 2: 4x4 (mecha a meta')
+function mecha_drill_fist(px, py, r = 3) {
     px = round(px); py = round(py);
     draw_set_colour(make_colour_rgb(14, 10, 20));
-    draw_rectangle(px - 3, py - 3, px + 2, py + 2, false);
+    draw_rectangle(px - r, py - r, px + r - 1, py + r - 1, false);
     draw_set_colour(make_colour_rgb(170, 186, 206));
-    draw_rectangle(px - 2, py - 2, px + 1, py + 1, false);
+    draw_rectangle(px - r + 1, py - r + 1, px + r - 2, py + r - 2, false);
     draw_set_colour(c_white);
 }
 

@@ -1,6 +1,7 @@
 // dove piantarsi: la mano del mecha, nel punto esatto dove la terra' (obj_player Draw)
-var tx = instance_exists(obj_player) ? obj_player.x + 10 * obj_player.mech_scale : room_width / 2;
-var ty = instance_exists(obj_player) ? obj_player.y - 2 * obj_player.mech_scale : room_height * 0.7;
+// (la mano del mecha sta 15 px a destra a grandezza piena: con il mecha a meta' grandezza, 7.5)
+var tx = instance_exists(obj_player) ? obj_player.x + 15 * global.mecha_size : room_width / 2;
+var ty = instance_exists(obj_player) ? obj_player.y : room_height * 0.7;
 
 if (planted) {
     boom += 1;

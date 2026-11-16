@@ -35,7 +35,8 @@ if (form == 0 && transform_timer == 0) {
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 } else if (form == 1 && transform_timer == 0) {
     // anche il mecha SOSPESO vola: la scia esce dalla fiamma sotto il mantello
-    var tlx = random_range(-5, 5) * sq, tly = global.mecha_sketch ? 36 : 17 * mech_scale;   // il mecha dello sketch ha le fiamme piu' in basso
+    var tlx = random_range(-5, 5) * sq, tly = global.mecha_sketch ? 36 * global.mecha_size : 17 * mech_scale;   // il mecha dello sketch ha le fiamme piu' in basso
+    if (global.mecha_sketch) tlx *= global.mecha_size;
     array_push(trail, [x + tlx * rc + tly * rs, y - tlx * rs + tly * rc, 14]);
 }
 gpu_set_blendmode(bm_add);
@@ -151,38 +152,46 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
     // Gira sempre e vibra (e' accesa), con l'aria che sale attorno al cono e tre scintille sulla punta.
     // Nell'attacco scatta in alto con le due braccia e gira veloce.
     // Bozze e anteprima animata: /mnt/project-files/trivella-bozze/
-    var dst = 2.4;                                             // un "pixel" della trivella (era 1)
+    // Dal 16-11 il mecha e' a meta' grandezza (global.mecha_size, scr_pilgrim): tutte le misure qui sotto
+    // sono quelle del mecha grande moltiplicate per ms, cosi' trivella e braccia restano nelle stesse proporzioni.
+    var ms = global.mecha_size;
+    var dst = 2.4 * ms;                                        // un "pixel" della trivella
     var dH = 20 * dst;                                         // altezza del cono
-    var thr = (sweep_anim > 0) ? sweep_anim * 1.6 : 0;
+    var thr = (sweep_anim > 0) ? sweep_anim * 1.6 * ms : 0;
     var dsp = current_time * ((sweep_anim > 0) ? 1.5 : 0.48);  // gira sempre (prima 0.3)
-    var fy = y + 1.5 * dsin(current_time * 0.15);              // galleggia insieme al corpo (draw_mecha)
+    var fy = y + 1.5 * ms * dsin(current_time * 0.15);         // galleggia insieme al corpo (draw_mecha)
     var jit = (current_time div 50) mod 2;                     // vibra di un pixel
     // un punto del corpo (lx, ly) sullo schermo: stretto e ruotato in virata come lo sprite del mecha
-    var lx = 15 * sq, ly = 0;                                  // la mano (prima era a 12, -2.4)
+    var lx = 15 * sq * ms, ly = 0;                             // la mano
     var dbx = round(x + lx * rc + ly * rs) + jit;              // centro della base (il collare)
     var dby = round(fy - lx * rs + ly * rc - thr);
-    var rfx = dbx, rfy = dby + round(2 * dst) + 3;             // pugno destro, sul manico sotto il collare
-    var lhx = rfx - 1, lhy = rfy + 5;                          // mano sinistra, a coppa sotto il pugno
+    var rfx = dbx, rfy = dby + round(2 * dst) + round(3 * ms); // pugno destro, sul manico sotto il collare
+    var lhx = rfx - 1, lhy = rfy + round(5 * ms);              // mano sinistra, a coppa sotto il pugno
     // le braccia, corte (Chelios, 16-11: "un po' troppo lunghe", versione A della bozza):
     // il DESTRO ha la spalla dietro la trivella e il gomito sotto il collare, e sale al pugno;
     // il SINISTRO esce da sotto il lembo sinistro del mantello e va in diagonale fino a sotto il pugno
-    lx = 19 * sq; ly = -8;  var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (coperta dalla trivella)
-    lx = 23 * sq; ly = 13;  var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, sotto il collare
-    lx = -13 * sq; ly = 3;  var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;    // dove il sinistro esce dal mantello
-    mecha_drill_arm(lsx, lsy, lsx, lsy, lhx, lhy);
+    lx = 19 * sq * ms; ly = -8 * ms;  var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (coperta dalla trivella)
+    lx = 23 * sq * ms; ly = 13 * ms;  var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, sotto il collare
+    lx = -13 * sq * ms; ly = 3 * ms;  var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;    // dove il sinistro esce dal mantello
+    var aw = 5 * ms;                                           // spessore delle maniche
+    mecha_drill_arm(lsx, lsy, lsx, lsy, lhx, lhy, aw);
     // il lembo sinistro del mantello, ridisegnato SOPRA l'attacco del braccio: cosi' il braccio ne esce da sotto.
     // E' un pezzo dello sprite del corpo (x 24-38, y 40-63 nell'immagine), stesso fotogramma, stesse scala e rotazione
     var mfr = (sweep_anim > 0) ? (current_time div 50) mod 12 : (current_time div 100) mod 12;   // come draw_mecha
-    lx = (24 - 47) * sq; ly = 40 - 47;
-    draw_sprite_general(spr_mecha_body, mfr, 24, 40, 15, 24, x + lx * rc + ly * rs, fy - lx * rs + ly * rc, sq, 1, -tilt, c_white, c_white, c_white, c_white, 1);
-    mecha_drill_arm(rsx, rsy, rex, rey, rfx, rfy);
+    lx = (24 - 47) * sq * ms; ly = (40 - 47) * ms;
+    draw_sprite_general(spr_mecha_body, mfr, 24, 40, 15, 24, x + lx * rc + ly * rs, fy - lx * rs + ly * rc, sq * ms, ms, -tilt, c_white, c_white, c_white, c_white, 1);
+    mecha_drill_arm(rsx, rsy, rex, rey, rfx, rfy, aw);
     // il manico d'acciaio sotto il collare, e i due pugni che lo stringono
+    var hw = max(1, round(2 * ms)), hl = 9 * ms;
     draw_set_colour(make_colour_rgb(14, 10, 20));
-    draw_rectangle(dbx - 2, dby + 2 * dst, dbx + 1, dby + 2 * dst + 9, false);
-    draw_set_colour(make_colour_rgb(60, 70, 95));
-    draw_rectangle(dbx - 1, dby + 2 * dst, dbx, dby + 2 * dst + 8, false);
-    mecha_drill_fist(lhx, lhy);
-    mecha_drill_fist(rfx, rfy);
+    draw_rectangle(dbx - hw, dby + 2 * dst, dbx + hw - 1, dby + 2 * dst + hl, false);
+    if (hw >= 2) {
+        draw_set_colour(make_colour_rgb(60, 70, 95));
+        draw_rectangle(dbx - hw + 1, dby + 2 * dst, dbx + hw - 2, dby + 2 * dst + hl - 1, false);
+    }
+    var fs = max(2, ceil(3 * ms));                             // pugni: 6x6 a grandezza piena, 4x4 a meta'
+    mecha_drill_fist(lhx, lhy, fs);
+    mecha_drill_fist(rfx, rfy, fs);
     // la trivella, sopra a tutto
     global.draw_drill(dbx, dby, dst, dsp, (drill_charge >= drill_full) ? 1 : 0);
     // il vortice: tre archi d'aria azzurra che salgono dalla base alla punta, sempre piu' stretti
@@ -190,10 +199,10 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
     draw_set_colour(make_colour_rgb(60, 170, 255));
     for (var k = 0; k < 3; k++) {
         var vf = frac(current_time / 700 + k / 3);           // 0 = base, 1 = punta
-        var vy = dby - vf * dH, vr = 8 * dst * (1 - vf) * 0.9 + 3;
+        var vy = dby - vf * dH, vr = 8 * dst * (1 - vf) * 0.9 + 3 * ms;
         draw_set_alpha(0.67 * max(0, 1 - abs(vf - 0.5) * 1.2));
         for (var va = 200; va < 340; va += 20) {
-            draw_line(dbx + vr * dcos(va), vy + 2 * dsin(va), dbx + vr * dcos(va + 20), vy + 2 * dsin(va + 20));
+            draw_line(dbx + vr * dcos(va), vy + 2 * ms * dsin(va), dbx + vr * dcos(va + 20), vy + 2 * ms * dsin(va + 20));
         }
     }
     gpu_set_blendmode(bm_normal);
@@ -203,8 +212,8 @@ if (form == 1 && transform_timer == 0 && global.has_drill) {
     var tk = current_time / 50, tipy = dby - dH - dst;
     for (var s2 = 0; s2 < 3; s2++) {
         var sph = (tk * 0.37 + s2 * 1.9) * 3;                // radianti
-        var srr = 4 + ((floor(tk) + s2 * 5) mod 8);
-        draw_point(dbx + srr * cos(sph), tipy - 2 + srr * 0.5 * sin(sph));
+        var srr = (4 + ((floor(tk) + s2 * 5) mod 8)) * ms;
+        draw_point(dbx + srr * cos(sph), tipy - 2 * ms + srr * 0.5 * sin(sph));
     }
     draw_set_colour(c_white);
     if (sweep_anim > 0) {

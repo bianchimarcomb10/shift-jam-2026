@@ -6,7 +6,7 @@ t = 0;              // fotogrammi da quando e' comparsa
 dur = 180;          // dopo 3 secondi si pianta
 hover = 90;         // per 1,5 s scende piano, enorme, sopra di te; poi piomba
 sc = 8;             // grandezza (8 = enorme, 1 = quella in mano al mecha)
-sc_end = 1;          // alla fine e' grande quanto quella in mano al mecha: il passaggio non si vede
+sc_end = 2.4 * global.mecha_size;   // alla fine e' grande quanto quella in mano al mecha (obj_player Draw: dst): il passaggio non si vede
 ph = 0;             // rotazione della spirale
 hx = x;             // dove si trova quando smette di scendere piano e comincia a piombare
 hy = 0;
