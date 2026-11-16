@@ -74,6 +74,10 @@ global.music_name = "";
 global.music_looping = false;   // il brano che suona si ripete da solo (loop del motore audio)?
 global.music_fading = [];   // suoni che stanno sfumando: [istanza, quando fermarli]
 global.siren = -1;          // la sirena del prologo, -1 = spenta
+global.amb_wind = -1;       // vento del prologo (ambience_start), -1 = spento
+global.amb_swarm = -1;      // sciame del prologo
+global.amb_swarm_g = 0;     // quanto e' forte lo sciame adesso (0..1), segue piano gli alieni
+global.amb_beat_next = 0;   // fotogrammi al prossimo battito
 global.music_noloop = false;  // true = niente piu' passaggio al brano dopo (boss abbattuto)
 global.music_shift = 0;     // di quanti secondi la scaletta e' partita prima di rm_game (il decollo, MUSIC_AT_TAKEOFF)
 global.music_t0 = 0;        // current_time dell'ultima partenza o dell'ultimo salto (subito dopo, la posizione non e' affidabile)
@@ -225,4 +229,62 @@ function siren_stop(_fade_ms = 300) {
     audio_sound_gain(global.siren, 0, _fade_ms);
     array_push(global.music_fading, [global.siren, current_time + _fade_ms]);
     global.siren = -1;
+}
+
+/// I SUONI DELL'ACCERCHIAMENTO nel prologo (Chelios, 16-11 notte: "e' troppo silenzioso... no musica").
+/// Tre strati generati da tools/prologue_sounds.py, nessun file di terzi:
+///   snd_wind       il vento tra le rovine, basso, per tutto il prologo (entra in 2 s dal bianco)
+///   snd_swarm      lo sciame: chele, zampette, ronzio. Il volume segue quanti alieni ci sono e quanti
+///                  sono aggrappati al mecha: con 60 e' al massimo
+///   snd_heartbeat  un battito cupo che parte quando l'accerchiamento (obj_ground.bar) arriva a BEAT_FROM
+///                  e accelera fino a uno ogni 0,42 s; continua sotto la sirena
+/// Alla pressione di SHIFT si spengono tutti in 60 ms, come la sirena: resta l'esplosione.
+/// Bozza ascoltata da Chelios: https://claude.ai/artifact/AwLpHnu8fvn3d582E9pkRj
+#macro WIND_GAIN 0.31        // il vento (sotto GAME_MASTER: circa -34 LUFS, un fondo)
+#macro SWARM_GAIN 0.85       // lo sciame al massimo
+#macro SWARM_FULL 60         // alieni (piu' quelli aggrappati) per lo sciame al massimo
+#macro BEAT_GAIN 0.83        // il battito piu' forte (all'inizio e' al 55%)
+#macro BEAT_FROM 0.15        // l'accerchiamento a cui parte il battito (circa 5 s dopo l'inizio)
+
+/// obj_ground Create: parte il vento, lo sciame e' pronto ma muto
+function ambience_start() {
+    ambience_stop(0);
+    music_ensure();
+    global.amb_wind = audio_play_sound(snd_wind, 40, true, 0);
+    audio_sound_gain(global.amb_wind, WIND_GAIN, 2000);
+    global.amb_swarm = audio_play_sound(snd_swarm, 40, true, 0);
+    global.amb_swarm_g = 0;
+    global.amb_beat_next = 0;
+}
+
+/// obj_ground Step, finche' non premi SHIFT: _aliens = alieni sullo schermo (piu' gli aggrappati),
+/// _bar = l'accerchiamento (0..1)
+function ambience_update(_aliens, _bar) {
+    var target = power(clamp(_aliens / SWARM_FULL, 0, 1), 0.7);
+    global.amb_swarm_g = lerp(global.amb_swarm_g, target, 0.03);   // segue piano: niente scatti
+    if (global.amb_swarm != -1) audio_sound_gain(global.amb_swarm, SWARM_GAIN * global.amb_swarm_g, 0);
+    if (_bar >= BEAT_FROM) {
+        var u = clamp((_bar - BEAT_FROM) / (1 - BEAT_FROM), 0, 1);
+        global.amb_beat_next -= 1;
+        if (global.amb_beat_next <= 0) {
+            audio_play_sound(snd_heartbeat, 45, false, BEAT_GAIN * (0.55 + 0.45 * u));
+            global.amb_beat_next = round(60 * lerp(1.1, 0.42, u));   // da un battito ogni 1,1 s a uno ogni 0,42
+        }
+    }
+}
+
+/// alla pressione di SHIFT (e all'inizio, per sicurezza): tutto tace
+function ambience_stop(_fade_ms = 60) {
+    var l = [global.amb_wind, global.amb_swarm];
+    for (var i = 0; i < 2; i++) {
+        if (l[i] == -1) continue;
+        if (_fade_ms > 0 && audio_is_playing(l[i])) {
+            music_ensure();
+            audio_sound_gain(l[i], 0, _fade_ms);
+            array_push(global.music_fading, [l[i], current_time + _fade_ms]);
+        } else audio_stop_sound(l[i]);
+    }
+    audio_stop_sound(snd_heartbeat);
+    global.amb_wind = -1;
+    global.amb_swarm = -1;
 }
