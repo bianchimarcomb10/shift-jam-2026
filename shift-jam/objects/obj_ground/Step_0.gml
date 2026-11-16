@@ -88,6 +88,9 @@ case 2:
         flash = 1;
         state = 3;
         t = 0;
+        // PROVA: il brano parte qui, quando il mecha e' diventato navicella e vola via (MUSIC_AT_TAKEOFF in scr_music)
+        audio_master_gain(0.4);   // l'esplosione e' finita da un pezzo: torna il volume normale prima della musica
+        if (MUSIC_AT_TAKEOFF) { music_play(MUSIC_TRACK, 0, 0); global.music_shift = -current_time; }
     }
     break;
 

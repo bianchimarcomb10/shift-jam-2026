@@ -3,6 +3,7 @@ audio_master_gain(0.4);   // torna il volume normale dopo l'apertura
 music_stop(200);          // nel prologo col mecha NIENTE musica (scr_music); qui non ne suona comunque nessuna
 global.continues = 0;     // nuova partita: si riparte da zero sconfitte
 global.checkpoint = 0;    // e dalla prima ondata
+global.music_shift = 0;   // il brano non e' ancora partito (scr_music, MUSIC_AT_TAKEOFF)
 state = 0;          // 0 = combatte, 1 = sommerso (aspetta SHIFT), 2 = esplosione, 3 = la navicella vola via
 bar = 0;            // accerchiamento: da 0 (libero) a 1 (sommerso). Non si disegna piu', decide solo i tempi
 t = 0;              // frame passati nello stato attuale
