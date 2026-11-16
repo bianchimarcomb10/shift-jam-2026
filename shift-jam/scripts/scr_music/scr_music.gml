@@ -9,7 +9,8 @@
 ///   rm_game: il brano parte da 0:00, o dopo un game over dal punto giusto (obj_game Create, mus_t)
 ///   game over: sfuma in 1,5 s (obj_player). Qui andra' il suono di game over di 5 s del musicista
 ///   boss lungo: arrivato a 5:38,19, prima della chiusa del brano, torna a 4:21,24 (global.music_loops, obj_music)
-///   boss abbattuto: sfuma in 3 s (obj_finale). Il finale per la vittoria lo sta scrivendo il musicista.
+///   boss abbattuto: il brano NON si ferma e non torna piu' indietro: va fino alla fine, che e' scritta
+///   per spegnersi da sola (Chelios, 16-11: lo "shift into silence" e' nella musica). obj_finale, global.music_noloop
 
 #macro MUSIC_GAIN 0.8                         // volume della musica (gli effetti sonori non cambiano)
 #macro MUSIC_TRACK "mus_shift_into_silence"   // il brano della partita
@@ -27,6 +28,7 @@ global.music = -1;          // il brano che suona ora (l'istanza del suono), -1 
 global.music_name = "";
 global.music_fading = [];   // suoni che stanno sfumando: [istanza, quando fermarli]
 global.siren = -1;          // la sirena del prologo, -1 = spenta
+global.music_noloop = false;  // true = niente piu' ritorni: il brano va fino alla fine e si spegne da solo (boss abbattuto)
 global.music_shift = 0;     // di quanti secondi il brano e' partito prima di rm_game (il decollo, MUSIC_AT_TAKEOFF)
 global.music_t0 = 0;        // current_time dell'ultima partenza o dell'ultimo salto (subito dopo, la posizione non e' affidabile)
 global.music_follow_log = [];   // quando music_follow ha dovuto correggere (current_time)
@@ -43,6 +45,7 @@ function music_ensure() {
 /// Niente loop del motore audio: i ritorni li fa obj_music, con la dissolvenza incrociata.
 function music_play(_name, _fade_ms = 0, _offset_s = 0) {
     if (asset_get_type(_name) != asset_sound) return false;   // il file non c'e': resta com'e'
+    global.music_noloop = false;   // un brano che (ri)parte torna a fare i ritorni
     if (global.music_name == _name && global.music != -1 && audio_is_playing(global.music)) return true;
     music_ensure();
     var snd = asset_get_index(_name);
