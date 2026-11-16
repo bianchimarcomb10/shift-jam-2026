@@ -39,7 +39,7 @@ if (hull_hp <= 0) {
         }
     }
     with (obj_turret) if (ship == other.id) { silent = true; instance_destroy(); }   // saltano con le sbarre
-    audio_play_sound(snd_enemy_die, 3, false, 1);
+    audio_play_sound(snd_enemy_die, 3, false, 1 * SFX_GAIN);
     save_checkpoint();
     instance_destroy();
     exit;

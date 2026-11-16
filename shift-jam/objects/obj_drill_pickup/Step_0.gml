@@ -1,6 +1,7 @@
 // dove piantarsi: la mano del mecha, nel punto esatto dove la terra' (obj_player Draw)
-var tx = instance_exists(obj_player) ? obj_player.x + 10 * obj_player.mech_scale : room_width / 2;
-var ty = instance_exists(obj_player) ? obj_player.y - 2 * obj_player.mech_scale : room_height * 0.7;
+// (la mano del mecha sta 15 px a destra a grandezza piena: con il mecha a meta' grandezza, 7.5)
+var tx = instance_exists(obj_player) ? obj_player.x + 15 * global.mecha_size : room_width / 2;
+var ty = instance_exists(obj_player) ? obj_player.y : room_height * 0.7;
 
 if (planted) {
     boom += 1;
@@ -44,6 +45,6 @@ if (t >= dur) {
         drill_state = 2;
         drill_phrase = 270;   // "YOUR DRILL IS THE DRILL THAT WILL PIERCE THE HEAVENS!"
     }
-    audio_play_sound(snd_explosion_big, 9, false, 0.6);
-    audio_play_sound(snd_shift, 9, false, 1);
+    audio_play_sound(snd_explosion_big, 9, false, 0.6 * SFX_GAIN);
+    audio_play_sound(snd_shift, 9, false, 1 * SFX_GAIN);
 }

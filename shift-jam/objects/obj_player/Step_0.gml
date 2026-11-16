@@ -31,7 +31,7 @@ if (transform_timer > 0) {
     }
     shift_flash = 12;       // l'ensō azzurro del cambio (lo disegna draw_pilgrim)
     transform_timer = 6;    // 6 frame = 0,1 s: cambiare forma deve essere un riflesso, non una scelta lenta
-    audio_play_sound(snd_shift, 5, false, 0.5);
+    audio_play_sound(snd_shift, 5, false, 0.5 * SFX_GAIN);
     switch_cooldown = 12;   // 12 frame = 0,2 s
 }
 
@@ -49,7 +49,7 @@ if (attack && transform_timer == 0) {
         } else if (fire_cooldown == 0) {
             // Navicella: sparo in avanti, 10 colpi al secondo
             instance_create_layer(x, y - 12, "Instances", obj_shot);
-            audio_play_sound(snd_shot, 1, false, 0.15);   // lo sparo e' continuo: molto basso
+            audio_play_sound(snd_shot, 1, false, 0.15 * SFX_GAIN);   // lo sparo e' continuo: molto basso
             fire_cooldown = 7;   // era 6: circa 8,5 colpi al secondo invece di 10
         }
         if (special == 1 && special_cd == 0) { special_rockets(); special_cd = 30; special_use(4); }   // 4 razzi ogni mezzo secondo
@@ -63,7 +63,7 @@ if (attack && transform_timer == 0) {
         sweep_cooldown = 30;
         sweep_anim = 10;
         sweep_n += 1;   // i colpi rimandati da questa falciata caricano la trivella una volta sola
-        audio_play_sound(snd_scythe, 4, false, 0.5);
+        audio_play_sound(snd_scythe, 4, false, 0.5 * SFX_GAIN);
         var killed = false;
         with (obj_enemy) {
             if (object_index == obj_turret && armored) continue;   // la corazza non si taglia: va colpita coi colpi parati
@@ -73,7 +73,7 @@ if (attack && transform_timer == 0) {
                 if (hp <= 0) { killed = true; global.enemy_boom(id); instance_destroy(); }
             }
         }
-        if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6);
+        if (killed) audio_play_sound(snd_enemy_die, 3, false, 0.6 * SFX_GAIN);
         // PARATA: la falciata annulla tutti i proiettili nemici nel suo raggio, con una scintilla
         // e i colpi parati tornano indietro contro i nemici (al massimo 12 per falciata)
         var parried = 0;
@@ -94,7 +94,7 @@ if (attack && transform_timer == 0) {
                 instance_destroy();
             }
         }
-        if (parried > 0) audio_play_sound(snd_parry, 7, false, 0.5);
+        if (parried > 0) audio_play_sound(snd_parry, 7, false, 0.5 * SFX_GAIN);
         // PARATA: la falciata respinge i palmi d'oro del Custode
         with (obj_palm) {
             if (front && abs(angle_difference(point_direction(other.x, other.y, x, y), 90)) > 55) continue;
@@ -103,7 +103,7 @@ if (attack && transform_timer == 0) {
                 reflected = true;
                 sid = other.sweep_n;
                 spd = 5;
-                audio_play_sound(snd_parry, 8, false, 0.5);
+                audio_play_sound(snd_parry, 8, false, 0.5 * SFX_GAIN);
             }
         }
         // TRIVELLA: la carica non sale qui, alla parata, ma quando un colpo parato COLPISCE un nemico,
@@ -144,7 +144,7 @@ if (invuln == 0) {
     if (hit) {
         global.hp -= 1;
         invuln = 60;   // 1 secondo di invulnerabilita'
-        audio_play_sound(snd_hurt, 9, false);
+        audio_play_sound(snd_hurt, 9, false, SFX_GAIN);
         if (global.hp <= 0) {
             obj_game.game_over = true;
             music_stop(1500);   // game over: la musica sfuma (qui andra' il suono di game over del musicista).

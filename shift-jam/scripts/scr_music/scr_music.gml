@@ -9,10 +9,20 @@
 ///   rm_game: il brano parte da 0:00, o dopo un game over dal punto giusto (obj_game Create, mus_t)
 ///   game over: sfuma in 1,5 s (obj_player). Qui andra' il suono di game over di 5 s del musicista
 ///   boss lungo: arrivato a 5:38,19, prima della chiusa del brano, torna a 4:21,24 (global.music_loops, obj_music)
-///   boss abbattuto: il brano NON si ferma e non torna piu' indietro: va fino alla fine, che e' scritta
-///   per spegnersi da sola (Chelios, 16-11: lo "shift into silence" e' nella musica). obj_finale, global.music_noloop
+///   boss abbattuto: il brano sfuma fino al silenzio in 10 s (MUSIC_FINALE_FADE, obj_finale).
+///   (Dalla PR #59 andava avanti fino alla sua chiusa; il musicista, 16-11, lo vuole sfumare subito.)
 
-#macro MUSIC_GAIN 0.8                         // volume della musica (gli effetti sonori non cambiano)
+/// VOLUMI (il musicista, 16-11: "musica troppo bassa, alzerei 4/5 dB").
+/// Il file del brano e' gia' masterizzato forte (picco -1 dB): il volume si alza nel gioco, non nel file.
+/// Prima: musica 0.8 x volume generale 0.4 = 0.32. Ora: 1.0 x 0.54 = 0.54, cioe' +4,5 dB.
+/// Gli effetti sonori di rm_game si moltiplicano per SFX_GAIN (0.4 / 0.54), cosi' restano forti come prima.
+#macro MUSIC_GAIN 1.0                         // volume della musica (era 0.8)
+#macro GAME_MASTER 0.54                       // volume generale mentre c'e' la musica: dal decollo a tutto rm_game (era 0.4)
+#macro SFX_GAIN 0.74                          // 0.4 / 0.54: gli effetti sonori di rm_game come prima
+/// FINALE (il musicista, 16-11: "quando il boss muore cominciare a mettere il fade alla musica",
+/// per arrivare prima al silenzio): alla morte del boss il brano sfuma fino al silenzio in questi millisecondi.
+/// 10 s: il silenzio arriva quando le stelle si fermano, prima della poesia di Ryokan (obj_finale).
+#macro MUSIC_FINALE_FADE 10000
 #macro MUSIC_TRACK "mus_shift_into_silence"   // il brano della partita
 #macro MUSIC_AT_TAKEOFF true   // PROVA di Chelios (16-11): il brano parte al decollo della navicella, non all'inizio di rm_game.
                                // false = come prima (parte quando hai il comando)

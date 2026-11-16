@@ -5,7 +5,7 @@ t += 1;
 // --- passaggio di fase: il guscio della nave madre si rompe ---
 if (phase == 1 && hp <= hp_p2) {
     phase = 2;
-    audio_play_sound(snd_explosion_big, 10, false);   // il guscio salta via
+    audio_play_sound(snd_explosion_big, 10, false, SFX_GAIN);   // il guscio salta via
     // la fase 2 riparte da DOVE e' esploso il guscio (Chelios, 16-11: prima scattava di colpo verso destra)
     mv_x0 = x;
     mv_dir = (cos(t / 120) >= 0) ? 1 : -1;   // da che parte stava andando
@@ -287,7 +287,7 @@ if (phase == 1) {
                 p.dir = ba;      // parte verso fuori, poi ti insegue piano
                 bead_gone[bj] = 300;
             }
-            audio_play_sound(snd_shift, 6, false, 0.4);
+            audio_play_sound(snd_shift, 6, false, 0.4 * SFX_GAIN);
         }
     }
 

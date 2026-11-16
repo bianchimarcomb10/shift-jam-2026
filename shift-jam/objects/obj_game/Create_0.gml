@@ -1,7 +1,7 @@
 /// Controllore della partita: manda le ondate di nemici.
 /// Nasce quando il mecha si trasforma (rm_ground) o all'inizio di rm_game.
 randomize();
-audio_master_gain(0.4);   // volume generale piu' basso
+audio_master_gain(GAME_MASTER);   // volume generale (scr_music: la musica +4,5 dB, gli effetti come prima)
 global.hp = 3;          // il giocatore regge 3 colpi
 lead = 120;             // 2 secondi prima della prima ondata (5 dopo un continue, col sutra)
 wave_t = -1;            // fotogrammi da quando e' iniziata l'ondata attuale (-1 = non ancora)
@@ -586,5 +586,5 @@ spawn_wall = function(_type, _gx) {
     f2.bspd = f1.bspd;
     f1.wtype = _type;
     f2.wtype = _type;
-    audio_play_sound(snd_menu, 6, false);   // segnale provvisorio: arriva un muro
+    audio_play_sound(snd_menu, 6, false, SFX_GAIN);   // segnale provvisorio: arriva un muro
 }
