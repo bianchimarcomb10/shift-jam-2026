@@ -14,6 +14,7 @@ hp_p1 = 210;              // vita della nave madre (era 300: -30% il 16-11)
 hp = hp_p1 + hp_p2;       // un solo contatore: quando scende a hp_p2 il guscio si rompe
 radius = 56;              // la nave madre e' grande
 target_y = 140;           // dove si ferma dopo l'entrata
+mv_x0 = 0; mv_dir = 1; mv_off = 0; mv_sync = false; mv_ease = 1;   // il movimento della fase 2 parte da dove e' esploso il guscio (Step)
 t = 0;
 attack = 0;
 attack_timer = 90;

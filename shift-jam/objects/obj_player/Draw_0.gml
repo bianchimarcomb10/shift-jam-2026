@@ -144,39 +144,42 @@ if (global.has_drill) {
 }
 
 if (form == 1 && transform_timer == 0 && global.has_drill) {
-    // la TRIVELLA GRANDE (Chelios, 16-11: "in mano risulta troppo piccola"): cono 28x40, il doppio di prima.
-    // Sta nella mano di prima, a destra: la destra la impugna sotto il collare, la sinistra attraversa la pancia
-    // e sorregge il pugno da sotto. Gira sempre e vibra (e' accesa), con l'aria che sale attorno al cono
-    // e tre scintille sulla punta. Nell'attacco scatta in alto con le due braccia e gira veloce.
+    // la TRIVELLA GRANDE (Chelios, 16-11: "in mano risulta troppo piccola", poi "un pochino piu' grande"): cono 34x48.
+    // Sta nella mano di prima, a destra (spostata di 3 px in fuori e 2 in giu', cosi' non copre il cappello):
+    // la destra la impugna sotto il collare, la sinistra attraversa la pancia e sorregge il pugno da sotto.
+    // La trivella si disegna SOPRA le braccia (Chelios: "occhio che va sotto").
+    // Gira sempre e vibra (e' accesa), con l'aria che sale attorno al cono e tre scintille sulla punta.
+    // Nell'attacco scatta in alto con le due braccia e gira veloce.
     // Bozze e anteprima animata: /mnt/project-files/trivella-bozze/
-    var dst = 2;                                               // un "pixel" della trivella (era 1)
+    var dst = 2.4;                                             // un "pixel" della trivella (era 1)
     var dH = 20 * dst;                                         // altezza del cono
     var thr = (sweep_anim > 0) ? sweep_anim * 1.6 : 0;
     var dsp = current_time * ((sweep_anim > 0) ? 1.5 : 0.48);  // gira sempre (prima 0.3)
     var fy = y + 1.5 * dsin(current_time * 0.15);              // galleggia insieme al corpo (draw_mecha)
     var jit = (current_time div 50) mod 2;                     // vibra di un pixel
     // un punto del corpo (lx, ly) sullo schermo: stretto e ruotato in virata come lo sprite del mecha
-    var lx = 12 * sq, ly = -2.4;                               // la mano di prima: x + 10 * mech_scale
+    var lx = 15 * sq, ly = 0;                                  // la mano (prima era a 12, -2.4)
     var dbx = round(x + lx * rc + ly * rs) + jit;              // centro della base (il collare)
     var dby = round(fy - lx * rs + ly * rc - thr);
-    var rfx = dbx, rfy = dby + 2 * dst + 3;                    // pugno destro, sul manico sotto il collare
+    var rfx = dbx, rfy = dby + round(2 * dst) + 3;             // pugno destro, sul manico sotto il collare
     var lhx = rfx - 1, lhy = rfy + 5;                          // mano sinistra, a coppa sotto il pugno
     // spalle e gomiti, nel corpo
-    lx = 19 * sq; ly = -16; var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (dal bordo del mantello)
-    lx = 23 * sq; ly = 2;   var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, in fuori
+    lx = 21 * sq; ly = -12; var rsx = x + lx * rc + ly * rs, rsy = fy - lx * rs + ly * rc;    // spalla destra (dal bordo del mantello)
+    lx = 29 * sq; ly = 8;   var rex = x + lx * rc + ly * rs, rey = fy - lx * rs + ly * rc;    // gomito destro, in fuori
     lx = -14 * sq; ly = -16; var lsx = x + lx * rc + ly * rs, lsy = fy - lx * rs + ly * rc;   // spalla sinistra
-    lx = -10 * sq; ly = 8;  var lex = x + lx * rc + ly * rs, ley = fy - lx * rs + ly * rc;    // gomito sinistro, in basso
-    // il manico d'acciaio sotto il collare
+    lx = -10 * sq; ly = 11; var lex = x + lx * rc + ly * rs, ley = fy - lx * rs + ly * rc;    // gomito sinistro, in basso
+    // le braccia: prima la sinistra che sorregge, poi la destra che impugna
+    pil_arm(lsx, lsy, lex, ley, lhx, lhy);
+    pil_arm(rsx, rsy, rex, rey, rfx, rfy);
+    // il manico d'acciaio sotto il collare, e i due pugni che lo stringono
     draw_set_colour(make_colour_rgb(14, 10, 20));
     draw_rectangle(dbx - 2, dby + 2 * dst, dbx + 1, dby + 2 * dst + 9, false);
     draw_set_colour(make_colour_rgb(60, 70, 95));
     draw_rectangle(dbx - 1, dby + 2 * dst, dbx, dby + 2 * dst + 8, false);
-    global.draw_drill(dbx, dby, dst, dsp, (drill_charge >= drill_full) ? 1 : 0);
-    // le braccia: prima la sinistra che sorregge, poi la destra che impugna
-    pil_arm(lsx, lsy, lex, ley, lhx, lhy);
     pil_fist(lhx, lhy);
-    pil_arm(rsx, rsy, rex, rey, rfx, rfy);
     pil_fist(rfx, rfy);
+    // la trivella, sopra a tutto
+    global.draw_drill(dbx, dby, dst, dsp, (drill_charge >= drill_full) ? 1 : 0);
     // il vortice: tre archi d'aria azzurra che salgono dalla base alla punta, sempre piu' stretti
     gpu_set_blendmode(bm_add);
     draw_set_colour(make_colour_rgb(60, 170, 255));

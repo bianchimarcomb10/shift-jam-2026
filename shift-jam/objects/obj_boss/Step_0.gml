@@ -6,6 +6,11 @@ t += 1;
 if (phase == 1 && hp <= hp_p2) {
     phase = 2;
     audio_play_sound(snd_explosion_big, 10, false);   // il guscio salta via
+    // la fase 2 riparte da DOVE e' esploso il guscio (Chelios, 16-11: prima scattava di colpo verso destra)
+    mv_x0 = x;
+    mv_dir = (cos(t / 120) >= 0) ? 1 : -1;   // da che parte stava andando
+    mv_sync = true;
+    mv_ease = 0;
     hp = hp_p2;
     radius = 28;
     hp_prev = hp;
@@ -156,7 +161,20 @@ if (phase == 1) {
     // ===== FASE 2: I KOI DELL'ENSŌ =====
     bead_angle += 0.4;
     enso_rot += 1.2;                          // l'ensō gira
-    x = room_width / 2 + sin(t / 80) * 70;
+    // ondeggia di 70 px (in fase 1 erano 50, piu' lento). La prima volta il suo orologio si allinea
+    // al punto in cui e' esploso il guscio e al verso in cui andava, poi parte da fermo in un secondo e mezzo:
+    // prima la formula nuova lo metteva di colpo da un'altra parte dello schermo (e le carpe si stiracchiavano)
+    if (mv_sync) {
+        var a0 = arcsin(clamp((mv_x0 - room_width / 2) / 70, -1, 1));
+        if (mv_dir < 0) a0 = pi - a0;
+        mv_off = a0 * 80 - t;
+        mv_sync = false;
+    }
+    var mvx = room_width / 2 + sin((t + mv_off) / 80) * 70;
+    if (mv_ease < 1) {
+        mv_ease = min(1, mv_ease + 1 / 90);
+        x = lerp(mv_x0, mvx, mv_ease * mv_ease * (3 - 2 * mv_ease));
+    } else x = mvx;
     var angry = (hp < hp_p2 / 2);             // sotto meta' vita: piu' veloce e piu' fitto
     if (hp < hp_prev) pearl_flash = 4;        // colpito: la perla lampeggia
     hp_prev = hp;

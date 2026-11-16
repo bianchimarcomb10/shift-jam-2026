@@ -26,7 +26,7 @@ if (transform_timer > 0) {
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
     // TRIVELLA carica: da mecha a navicella parte, cresce e vola contro il nemico
     if (form == 1 && global.has_drill && drill_charge >= drill_full) {
-        instance_create_layer(x + 10 * mech_scale, y - 2 * mech_scale, "Instances", obj_drill_shot);
+        instance_create_layer(x + 15, y, "Instances", obj_drill_shot);   // dalla mano del mecha (obj_player Draw)
         drill_charge = 0;
     }
     shift_flash = 12;       // l'ensō azzurro del cambio (lo disegna draw_pilgrim)
