@@ -15,3 +15,12 @@ if (global.music != -1 && !global.music_noloop && audio_is_playing(global.music)
         if (pos >= lp[1] - lp[2]) music_jump(pos - (lp[1] - lp[0]), lp[2] * 1000);
     }
 }
+// 3. dalla Ost al loop del boss: quando la Ost arriva alla fine parte il brano dopo, attaccato
+//    (music_where in scr_music: il loop del boss, o finche' manca il pezzo del boss del brano di prima)
+if (global.music != -1 && !global.music_noloop && audio_is_playing(global.music) && global.music_name == MUSIC_TRACK) {
+    var opos = audio_sound_get_track_position(global.music);
+    if (opos >= OST_LEN - 0.02) {
+        var nx = music_where(OST_LEN + max(0, opos - OST_LEN));
+        music_jump(nx[1], 20, nx[0]);
+    }
+}

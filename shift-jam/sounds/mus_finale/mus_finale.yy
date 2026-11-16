@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"mus_finale",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":1,
+  "compression":1,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":25.190862,
+  "exportDir":"",
+  "name":"mus_finale",
+  "parent":{
+    "name":"shift-jam",
+    "path":"shift-jam.yyp",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"mus_finale.ogg",
+  "volume":1.0,
+}

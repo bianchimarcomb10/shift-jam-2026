@@ -2,7 +2,7 @@
 
 Game by Marco Bianchi (Chelios).
 
-Music by Emanuele Luigi Andolfi (Cubesando): the soundtrack of the game (`mus_shift_into_silence`), one piece written on the fixed timing of the waves, the drill and the boss. It plays from the moment you take control of the ship; it was encoded to Ogg Vorbis from the WAV the composer delivered.
+Music by Emanuele Luigi Andolfi (Cubesando): the soundtrack of the game, written on the fixed timing of the waves, the drill and the boss. `mus_main_menu` loops on the title screen; `mus_ost_in_sync` plays from the ship's take-off; the boss music follows it; `mus_finale` plays when the boss is defeated. The Ogg files are the ones the composer delivered. `mus_shift_into_silence` is the earlier single-piece version, kept until the boss loop file is added.
 
 Mecha design by Francesco "Rocketbird" Passero: the final sketch of the mecha (`spr_mecha_body`, `spr_mecha_scythe` are cut and animated from it).
 
@@ -10,7 +10,7 @@ Dedicated to my beloved Ginevra, without whom I would do nothing in life.
 
 Playtesting: friends of Marco Bianchi (Chelios) and the subscribers of Side Quest Podcast. Thank you all.
 
-**Not covered by the MIT license of this repository:** the music file (`sounds/mus_shift_into_silence`) and the mecha sprites drawn from Francesco Passero's sketch (`sprites/spr_mecha_body`, `sprites/spr_mecha_scythe`). They are used in this game with the permission of their authors, who keep all rights.
+**Not covered by the MIT license of this repository:** the music files (`sounds/mus_*`) and the mecha sprites drawn from Francesco Passero's sketch (`sprites/spr_mecha_body`, `sprites/spr_mecha_scythe`). They are used in this game with the permission of their authors, who keep all rights.
 
 ## Third-party assets
 

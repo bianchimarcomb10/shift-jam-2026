@@ -4,7 +4,7 @@ switch (state) {
 case 0:   // titolo: aspetta SHIFT
     if (keyboard_check_pressed(vk_shift)) {
         state = 1; t = 0;
-        audio_play_sound(snd_menu, 5, false);
+        audio_play_sound(snd_menu, 5, false, SFX_GAIN);
     }
     break;
 
@@ -21,6 +21,9 @@ case 3:   // al posto della frase: "Press SHIFT"
         state = 4; t = 0;
         audio_master_gain(1);   // volume pieno solo per questo momento
         audio_play_sound(snd_menu, 5, false);
+        // la musica del menu' sfuma nell'esplosione di stelle. Il volume generale e' appena salito a 1:
+        // la dissolvenza parte da MUSIC_GAIN x GAME_MASTER, cosi' la musica non fa un salto
+        music_stop(MUSIC_MENU_FADE, MUSIC_GAIN * GAME_MASTER);
     }
     break;
 
