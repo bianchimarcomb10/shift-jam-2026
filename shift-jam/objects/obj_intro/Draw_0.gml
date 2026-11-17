@@ -11,6 +11,19 @@ case 1:
     draw_set_alpha(a_title);
     draw_text_transformed(cx, cy - 60, game_title, 3, 3, 0);
     if (state == 1 || (current_time div 500) mod 2 == 0) draw_text(cx, cy + 80, "Press SHIFT to continue");
+    // la STELLA (Chelios, 17-11): dopo il finale la navicella resta qui, ferma, nel punto del cielo
+    // dove e' diventata una stella (obj_finale: room_width / 2 + 40, 170). Solo per questa sessione (scr_pause)
+    if (global.cleared) {
+        var sx = cx + 40, sy = 170;
+        draw_point(sx, sy);
+        draw_set_alpha(a_title * 0.6);
+        draw_point(sx - 1, sy); draw_point(sx + 1, sy); draw_point(sx, sy - 1); draw_point(sx, sy + 1);
+        draw_set_alpha(a_title * 0.3);
+        draw_point(sx - 2, sy); draw_point(sx + 2, sy); draw_point(sx, sy - 2); draw_point(sx, sy + 2);
+        draw_set_alpha(a_title * 0.12);
+        draw_point(sx - 3, sy); draw_point(sx + 3, sy); draw_point(sx, sy - 3); draw_point(sx, sy + 3);
+        draw_set_alpha(a_title);
+    }
     break;
 
 case 2:

@@ -2,7 +2,7 @@ if (wall) {
     // MURO VIVO: un'increspatura parte dal centro e corre verso i bordi, come un sasso nell'acqua.
     // Quando il muro cade l'onda si allarga un po'.
     wamp += (((hold > 0) ? 4 : 8) - wamp) * 0.05;
-    var off = wamp * dsin(current_time * 0.25 - wph);
+    var off = wamp * dsin((current_time - global.pause_ms) * 0.25 - wph);   // senza il tempo della pausa (scr_pause)
     y += off - woff;
     woff = off;
 }

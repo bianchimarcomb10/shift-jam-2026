@@ -1,4 +1,5 @@
 /// Movimento, trasformazione, attacchi, colpi subiti.
+if (global.paused) exit;   // PAUSA (obj_pause): resto acceso solo perche' il cruscotto legge le mie variabili
 
 // --- Movimento (WASD o frecce) ---
 var mx = (keyboard_check(vk_right) || keyboard_check(ord("D"))) - (keyboard_check(vk_left) || keyboard_check(ord("A")));
@@ -26,7 +27,10 @@ if (transform_timer > 0) {
 } else if (keyboard_check_pressed(vk_shift) && switch_cooldown == 0) {
     // TRIVELLA carica: da mecha a navicella parte, cresce e vola contro il nemico
     if (form == 1 && global.has_drill && drill_charge >= drill_full) {
-        instance_create_layer(x + 15, y, "Instances", obj_drill_shot);   // dalla mano del mecha (obj_player Draw)
+        // dalla mano del mecha e grande come quella in mano (obj_player Draw: 15 e 2.4 per la grandezza del mecha).
+        // Prima partiva a 15 px e a 2.4 pieni: col mecha a 0.66 faceva un salto del 50% (17-11)
+        var dsh = instance_create_layer(x + 15 * global.mecha_size, y, "Instances", obj_drill_shot);
+        dsh.sc = 2.4 * global.mecha_size;
         drill_charge = 0;
     }
     shift_flash = 12;       // l'ensō azzurro del cambio (lo disegna draw_pilgrim)
@@ -145,7 +149,9 @@ if (invuln == 0) {
         global.hp -= 1;
         invuln = 60;   // 1 secondo di invulnerabilita'
         audio_play_sound(snd_hurt, 9, false, SFX_GAIN);
+        screen_shake(2, 12);   // colpito: lo schermo trema appena (scr_pause)
         if (global.hp <= 0) {
+            screen_shake(3, 24);   // lo scafo cede
             obj_game.game_over = true;
             music_stop(1500);   // game over: la musica sfuma (qui andra' il suono di game over del musicista).
                                 // Col continue riparte allineata al punto di ripartenza (obj_game Create, mus_t)

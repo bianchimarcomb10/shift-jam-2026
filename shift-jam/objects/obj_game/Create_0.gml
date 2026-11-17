@@ -1,7 +1,8 @@
 /// Controllore della partita: manda le ondate di nemici.
 /// Nasce quando il mecha si trasforma (rm_ground) o all'inizio di rm_game.
 randomize();
-audio_master_gain(GAME_MASTER);   // volume generale (scr_music: la musica +4,5 dB, gli effetti come prima)
+master_gain_apply();   // volume generale (scr_pause: zero se hai premuto M; scr_music: la musica +4,5 dB, gli effetti come prima)
+global.shake_t = 0;    // nessuna scossa rimasta dalla partita di prima (scr_pause)
 global.hp = 3;          // il giocatore regge 3 colpi
 lead = 120;             // 2 secondi prima della prima ondata (5 dopo un continue, col sutra)
 wave_t = -1;            // fotogrammi da quando e' iniziata l'ondata attuale (-1 = non ancora)

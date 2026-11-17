@@ -7,7 +7,7 @@ cells = [];  // posti dove si accenderanno (una per quadratino di griglia, in or
 next_cell = 0;
 star_grow = 90;   // fotogrammi perche' una stella arrivi alla grandezza piena
 star_max_r = 18;  // raggio pieno: copre tutto il suo quadratino, cosi' alla fine non resta nero
-audio_master_gain(GAME_MASTER);   // volume generale (scr_music): resta questo fino alla fine; gli effetti per SFX_GAIN
+master_gain_apply();   // volume generale (scr_pause: GAME_MASTER di scr_music, o zero se hai premuto M): resta questo fino alla fine; gli effetti per SFX_GAIN
 // "Mood Intenso" di Cubesando: da capo, poi in loop finche' non si va avanti (TITLE_LOOP_START/END in scr_music);
 // sfuma nell'esplosione di stelle (Step, stato 3 -> 4)
 music_play(MUSIC_TITLE, 0, 0, true);

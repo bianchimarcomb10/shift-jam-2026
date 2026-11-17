@@ -46,5 +46,5 @@ if (t >= dur) {
         drill_phrase = 270;   // "YOUR DRILL IS THE DRILL THAT WILL PIERCE THE HEAVENS!"
     }
     audio_play_sound(snd_explosion_big, 9, false, 0.6 * SFX_GAIN);
-    audio_play_sound(snd_shift, 9, false, 1 * SFX_GAIN);
+    audio_play_sound(snd_drill_get, 9, false, 1 * SFX_GAIN);   // si pianta nel mecha e prende giri (tools/game_sounds.py)
 }

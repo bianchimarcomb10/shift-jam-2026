@@ -1,4 +1,6 @@
 /// Ondate a TEMPO FISSO (scaletta in obj_game Create, wave_secs), poi la trivella (15 s), poi il boss.
+if (global.paused) exit;   // PAUSA (obj_pause): resto acceso solo per disegnare il cruscotto, mus_t non avanza
+screen_shake_update();     // la scossa dello schermo (scr_pause)
 if (finale) exit;   // durante il finale non succede piu' niente
 if (sutra_timer > 0) sutra_timer -= 1;
 if (cp_timer > 0) cp_timer -= 1;
@@ -52,7 +54,7 @@ if (lead > 0) {
             if (form == 0 && transform_timer == 0) transform_timer = 6;   // la trivella e' del mecha
             shift_flash = 12;
         }
-        audio_play_sound(snd_shift, 9, false, 1 * SFX_GAIN);
+        audio_play_sound(snd_drill_get, 9, false, 1 * SFX_GAIN);   // la trivella torna in mano (tools/game_sounds.py)
         seq_t = seq_resume;
     }
 }

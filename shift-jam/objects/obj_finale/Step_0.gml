@@ -11,6 +11,8 @@ if (t > 120) {
     ship_y = lerp(start_y, 170, e);
     ship_x = lerp(start_x, room_width / 2 + 40, e);
     scale = 1 - e;
+    // la navicella e' diventata un punto tra le stelle: da ora sul titolo resta la sua stella (obj_intro, scr_pause)
+    if (scale <= 0.1) global.cleared = true;
 }
 
 // mentre la navicella si confonde tra le stelle: la poesia di Ryokan (da 10 a 20 s),

@@ -18,6 +18,7 @@ if (e != noone && point_distance(x, cy, e.x, e.y) < e.radius + 7 * sc) {
     var b = instance_create_layer(x, cy, "Instances", obj_boom);
     b.sc = 1.6;
     audio_play_sound(snd_explosion_big, 9, false, 0.8 * SFX_GAIN);
+    screen_shake(3, 14);   // la trivella va a segno (scr_pause)
     if (e.hp <= 0) {
         global.enemy_boom(e);
         with (e) instance_destroy();
