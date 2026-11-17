@@ -1,6 +1,7 @@
 /// Interfaccia: il CRUSCOTTO in fondo (scr_console: vita, leva dello SHIFT, schermo con comandi e avvisi)
 /// e, nell'area di gioco, solo le scritte grandi: sutra, avviso della parata, frasi, STRUGGLE.
 if (finale) exit;   // nel finale lo schermo resta vuoto
+if (global.paused) { draw_console(); exit; }   // in pausa (obj_pause) solo il cruscotto, sopra lo schermo fermo
 draw_set_colour(c_white);
 draw_set_halign(fa_left);
 // il sutra della ripartenza: entra e sfuma, al centro dello schermo

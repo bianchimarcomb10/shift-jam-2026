@@ -1,5 +1,5 @@
 /// Prologo a terra: il mecha resiste finche' gli alieni non lo sommergono.
-audio_master_gain(GAME_MASTER);   // il volume generale resta quello del titolo (scr_music): la coda
+master_gain_apply();              // il volume generale (scr_pause) resta quello del titolo (scr_music): la coda
                                   // dell'esplosione del titolo arriva fin qui, e cosi' non fa salti
 music_stop(200);          // nel prologo col mecha NIENTE musica (scr_music); qui non ne suona comunque nessuna
 ambience_start();         // ma vento, sciame e battito (scr_music): l'accerchiamento si sente

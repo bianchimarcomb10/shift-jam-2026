@@ -10,6 +10,17 @@ draw_set_valign(fa_middle);
 var cx = room_width / 2;
 var cy = room_height / 2 + 60;   // sotto il punto dove la navicella sparisce
 
+// le RINASCITE (Chelios, 17-11): quante volte sei ripartito dopo un game over (global.continues).
+// Una riga sola, mentre la navicella comincia a salire, prima della poesia: da 3 a 8 s, i tempi del finale non cambiano.
+// In alto, dove la navicella non e' ancora arrivata
+var a_r = clamp(min((t - 180) / 60, (480 - t) / 60), 0, 1);
+if (a_r > 0) {
+    var rn = global.continues;
+    var rtxt = (rn == 0) ? "Never reborn." : ((rn == 1) ? "Reborn once." : "Reborn " + string(rn) + " times.");
+    draw_set_alpha(a_r);
+    draw_text(cx, room_height / 2 - 90, rtxt);
+}
+
 // poesia di Ryokan: compare in 1 s, resta, svanisce in 1 s
 var a_poem = clamp(min((t - 600) / 60, (1200 - t) / 60), 0, 1);
 if (a_poem > 0) {

@@ -7,6 +7,7 @@ fade = 0;
 depth = -100;
 obj_game.finale = true;   // niente piu' ondate ne' interfaccia
 audio_play_sound(snd_explosion_big, 10, false, SFX_GAIN);
+screen_shake(3, 40);   // l'ultima esplosione: la piu' lunga, poi il silenzio (scr_pause, la muove obj_game)
 // la musica del finale di Cubesando parte adesso, e il loop del boss sfuma in 2 s (il musicista, 16-11).
 // Il finale suona una volta sola (25 s) e finisce nel silenzio da solo.
 global.music_noloop = true;      // il loop del boss, mentre sfuma, non ricomincia

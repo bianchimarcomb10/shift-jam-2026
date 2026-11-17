@@ -1,3 +1,4 @@
+if (global.paused) exit;   // PAUSA (obj_pause): resto acceso solo per la barra della vita (Draw GUI)
 // --- entrata lenta, senza attaccare ---
 if (y < target_y) { y += 1.2; exit; }
 t += 1;
@@ -6,6 +7,7 @@ t += 1;
 if (phase == 1 && hp <= hp_p2) {
     phase = 2;
     audio_play_sound(snd_explosion_big, 10, false, SFX_GAIN);   // il guscio salta via
+    screen_shake(3, 30);   // (scr_pause)
     // la fase 2 riparte da DOVE e' esploso il guscio (Chelios, 16-11: prima scattava di colpo verso destra)
     mv_x0 = x;
     mv_dir = (cos(t / 120) >= 0) ? 1 : -1;   // da che parte stava andando
@@ -287,7 +289,7 @@ if (phase == 1) {
                 p.dir = ba;      // parte verso fuori, poi ti insegue piano
                 bead_gone[bj] = 300;
             }
-            audio_play_sound(snd_shift, 6, false, 0.4 * SFX_GAIN);
+            audio_play_sound(snd_beads, 6, false, 0.4 * SFX_GAIN);   // i grani partono: campanelli (tools/game_sounds.py)
         }
     }
 

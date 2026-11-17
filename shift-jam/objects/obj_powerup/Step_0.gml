@@ -25,7 +25,7 @@ if (instance_exists(obj_player) && point_distance(x, y, obj_player.x, obj_player
         special_full = special_ammo;
         shift_flash = 12;   // l'ensō azzurro: preso
     }
-    audio_play_sound(snd_shift, 8, false, 0.8 * SFX_GAIN);   // segnaposto: il musicista fara' snd_powerup
+    audio_play_sound(snd_powerup, 8, false, 0.8 * SFX_GAIN);   // arma speciale presa (tools/game_sounds.py)
     instance_destroy();
     exit;
 }

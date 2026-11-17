@@ -117,6 +117,7 @@ function music_near_seam(_t) {
 /// l'oggetto persistente che attacca un brano della scaletta a quello prima e chiude le dissolvenze (passa da una stanza all'altra)
 function music_ensure() {
     if (!instance_exists(obj_music)) instance_create_depth(0, 0, 0, obj_music);
+    if (!instance_exists(obj_pause)) instance_create_depth(0, 0, 0, obj_pause);   // pausa (P/ESC) e audio muto (M), scr_pause
 }
 
 /// Fa partire un brano da _offset_s secondi. Quello di prima sfuma in _fade_ms millisecondi
