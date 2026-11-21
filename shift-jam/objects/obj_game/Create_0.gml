@@ -15,6 +15,7 @@ cp_timer = 0;           // > 0 mentre si vede la frase del checkpoint (niente pa
 cp_total = 240;        // la frase dura 4 secondi: 1 per comparire, 2 ferma, 1 per svanire
 cp_text = "";          // quale frase: la sceglie chi salva il checkpoint
 game_over = false;
+game_over_t = 0;       // fotogrammi passati dal game over: per i primi GAMEOVER_LOCK lo SHIFT non fa ripartire
 boss_spawned = false;
 finale = false;         // true durante il finale "Silenzio"
 boss_preview = false;   // la sagoma della nave madre e' gia' passata? (la guarda obj_sky)

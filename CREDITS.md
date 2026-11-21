@@ -2,7 +2,7 @@
 
 Game by Marco Bianchi (Chelios).
 
-Music by Emanuele Luigi Andolfi (Cubesando): the soundtrack of the game, written on the fixed timing of the waves, the drill and the boss. `mus_intenso` ("Mood Intenso") loops on the title screen and fades into the star burst; `mus_main_menu` plays once at the ship's take-off and `mus_ost_in_sync` follows it with no gap; `mus_boss_loop` follows the Ost and loops during the boss fight; `mus_finale` plays when the boss is defeated. The Ogg files are the ones the composer delivered.
+Music by Emanuele Luigi Andolfi (Cubesando): the soundtrack of the game, written on the fixed timing of the waves, the drill and the boss. `mus_intenso` ("Mood Intenso") loops on the title screen and fades into the star burst; `mus_main_menu` plays once at the ship's take-off and `mus_ost_in_sync` follows it with no gap; `mus_boss_loop` follows the Ost and loops during the boss fight; `mus_finale` plays when the boss is defeated; `mus_game_over` plays when the hull breaks. The Ogg files are the ones the composer delivered.
 
 Mecha design by Francesco "Rocketbird" Passero: the final sketch of the mecha (`spr_mecha_body`, `spr_mecha_scythe` are cut and animated from it).
 
