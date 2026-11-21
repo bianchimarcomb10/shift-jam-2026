@@ -1,16 +1,18 @@
-/// MUSICA di Cubesando, cinque brani:
+/// MUSICA di Cubesando, cinque brani e il suono del game over:
 ///   mus_intenso      (59,8 s)  "Mood Intenso", sul titolo (Chelios, 16-11 sera): parte da capo e poi gira in loop
 ///                              (TITLE_LOOP_START/END) finche' non si va avanti; sfuma nell'esplosione di stelle (obj_intro)
 ///   mus_main_menu    (15,8 s)  al decollo suona UNA volta: e' l'attacco della partita (obj_ground)
 ///   mus_ost_in_sync  (4:25,6)  attaccata subito alla fine della musica del menu', senza spazio (obj_music)
 ///   mus_boss_loop    (53,1 s)  attaccato subito alla fine della Ost, in loop finche' il boss e' vivo (29 misure a 131 bpm)
 ///   mus_finale       (25,2 s)  quando il boss muore; il loop del boss sfuma (obj_finale)
+///   mus_game_over    (3,9 s)   quando lo scafo cede (obj_player): la musica sfuma in fretta e parte questo (21-11)
 /// Il tempo della partita (obj_game, mus_t) parte dal decollo: music_where dice quale brano deve suonare e dove.
 /// Scaletta:
 ///   titolo: mus_intenso in loop. Esplosione di stelle: la musica sfuma in 4 s mentre sale l'esplosione cinematica
 ///   prologo col mecha: niente musica (c'e' la sirena). Quando gli alieni ti sommergono: l'esplosione cinematica
 ///   decollo (il mecha e' esploso ed e' diventato navicella): mus_main_menu una volta, poi la Ost attaccata
-///   game over: sfuma in 1,5 s (obj_player). Qui andra' il suono di game over di 5 s del musicista
+///   game over: la musica sfuma in GAMEOVER_MUSIC_FADE e suona mus_game_over (gameover_play, obj_player).
+///              Se premi SHIFT prima che finisca, sfuma in GAMEOVER_STOP_FADE mentre riparte la partita (obj_game)
 ///   fine della Ost (4:41,5 dal decollo): il loop del boss, attaccato (obj_music)
 ///   boss abbattuto: parte mus_finale e il loop del boss sfuma in 2 s (MUSIC_BOSS_FADE, obj_finale)
 /// Dal decollo la Ost cade dove cadeva la stessa musica nel brano unico di stamattina (16-11): 15,8 s dopo.
@@ -44,6 +46,11 @@
 #macro BOSS_LEN 53.129796                     // quanto dura un giro del loop del boss (s)
 #macro MUSIC_TITLE_FADE 4000                  // la musica del titolo sfuma nell'esplosione (le stelle durano 5,3 s)
 #macro MUSIC_BOSS_FADE 2000                   // alla morte del boss il loop sfuma mentre parte il finale
+#macro GAMEOVER_MUSIC_FADE 300                // game over: la musica se ne va in fretta, perche' il suono di Cubesando
+                                              // parte subito pieno e non si deve impastare col brano (era 1500)
+#macro GAMEOVER_GAIN 1.0                      // volume del suono del game over (1 = come la musica)
+#macro GAMEOVER_STOP_FADE 400                 // premi SHIFT prima che finisca: sfuma mentre riparte la partita
+#macro GAMEOVER_LOCK 45                       // i primi 0,75 s dopo il game over lo SHIFT non fa ripartire (obj_game Step)
 
 /// IL LOOP DEL TITOLO. Mood Intenso comincia quasi in silenzio (i primi 2 s) e il file finisce mentre la musica
 /// va ancora: ripetere tutto il file farebbe un buco. Si ripetono invece 12 misure, da 24,93 a 57,91 s:
@@ -74,6 +81,7 @@ global.music_name = "";
 global.music_looping = false;   // il brano che suona si ripete da solo (loop del motore audio)?
 global.music_fading = [];   // suoni che stanno sfumando: [istanza, quando fermarli]
 global.siren = -1;          // la sirena del prologo, -1 = spenta
+global.gameover_snd = -1;   // il suono del game over che sta suonando, -1 = nessuno
 global.amb_wind = -1;       // vento del prologo (ambience_start), -1 = spento
 global.amb_swarm = -1;      // sciame del prologo
 global.amb_swarm_g = 0;     // quanto e' forte lo sciame adesso (0..1), segue piano gli alieni
@@ -224,6 +232,28 @@ function siren_start() {
     global.siren = audio_play_sound(snd_siren, 50, true, 0);
     audio_sound_gain(global.siren, 0.6 * SFX_GAIN, 400);   // entra in mezzo secondo (SFX_GAIN: forte come prima)
 }
+/// IL GAME OVER (Cubesando, 21-11): mus_game_over, 3,9 s, una volta sola. Lo chiama obj_player quando lo scafo cede,
+/// subito dopo music_stop(GAMEOVER_MUSIC_FADE). Il file finisce nel silenzio: dopo resta solo SHIFT TO STRUGGLE.
+function gameover_play() {
+    gameover_stop(0);
+    global.gameover_snd = audio_play_sound(mus_game_over, 10, false, GAMEOVER_GAIN * MUSIC_GAIN);
+}
+
+/// ferma il suono del game over, sfumando in _fade_ms (0 = di colpo). Da obj_game, quando premi SHIFT per ripartire
+function gameover_stop(_fade_ms = GAMEOVER_STOP_FADE) {
+    if (global.gameover_snd == -1) return;
+    if (audio_is_playing(global.gameover_snd)) {
+        if (_fade_ms > 0) {
+            music_ensure();
+            audio_sound_gain(global.gameover_snd, 0, _fade_ms);
+            array_push(global.music_fading, [global.gameover_snd, current_time + _fade_ms]);
+        } else {
+            audio_stop_sound(global.gameover_snd);
+        }
+    }
+    global.gameover_snd = -1;
+}
+
 function siren_stop(_fade_ms = 300) {
     if (global.siren == -1) return;
     music_ensure();

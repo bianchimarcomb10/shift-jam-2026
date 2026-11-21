@@ -8,7 +8,15 @@ if (drill_phrase > 0) drill_phrase -= 1;
 if (boss_phrase > 0) boss_phrase -= 1;
 
 if (game_over) {
-    if (keyboard_check_pressed(vk_shift)) { audio_play_sound(snd_menu, 5, false, SFX_GAIN); global.continues += 1; room_goto(rm_game); }   // si riprova dallo spazio, senza rifare il prologo
+    // ripassata 21-11: chi sta premendo SHIFT per trasformarsi mentre muore non deve ripartire subito
+    // senza vedere lo schermo del game over ne' sentire il suono di Cubesando
+    game_over_t += 1;
+    if (game_over_t > GAMEOVER_LOCK && keyboard_check_pressed(vk_shift)) {
+        gameover_stop();   // se il game over di Cubesando suona ancora, sfuma (scr_music)
+        audio_play_sound(snd_menu, 5, false, SFX_GAIN);
+        global.continues += 1;
+        room_goto(rm_game);
+    }   // si riprova dallo spazio, senza rifare il prologo
     exit;
 }
 

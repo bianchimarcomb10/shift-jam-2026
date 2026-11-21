@@ -22,6 +22,7 @@
     {"id":{"name":"fnt_main","path":"fonts/fnt_main/fnt_main.yy",},},
     {"id":{"name":"mus_boss_loop","path":"sounds/mus_boss_loop/mus_boss_loop.yy",},},
     {"id":{"name":"mus_finale","path":"sounds/mus_finale/mus_finale.yy",},},
+    {"id":{"name":"mus_game_over","path":"sounds/mus_game_over/mus_game_over.yy",},},
     {"id":{"name":"mus_intenso","path":"sounds/mus_intenso/mus_intenso.yy",},},
     {"id":{"name":"mus_main_menu","path":"sounds/mus_main_menu/mus_main_menu.yy",},},
     {"id":{"name":"mus_ost_in_sync","path":"sounds/mus_ost_in_sync/mus_ost_in_sync.yy",},},

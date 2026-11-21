@@ -153,8 +153,9 @@ if (invuln == 0) {
         if (global.hp <= 0) {
             screen_shake(3, 24);   // lo scafo cede
             obj_game.game_over = true;
-            music_stop(1500);   // game over: la musica sfuma (qui andra' il suono di game over del musicista).
-                                // Col continue riparte allineata al punto di ripartenza (obj_game Create, mus_t)
+            music_stop(GAMEOVER_MUSIC_FADE);   // game over: la musica se ne va in fretta...
+            gameover_play();                   // ...e suona il game over di Cubesando (scr_music).
+                                               // Col continue la musica riparte allineata al punto di ripartenza (obj_game Create, mus_t)
             instance_destroy();
         }
     }
