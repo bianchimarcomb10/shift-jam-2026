@@ -1,5 +1,12 @@
 t += 1;
 
+// HTML5: Mood Intenso parte appena il browser libera l'audio (il primo clic o il primo tasto),
+// ma solo finche' siamo sul titolo: dall'esplosione di stelle in poi deve restare spenta
+if (!title_music_on && state <= 3 && audio_system_is_available()) {
+    title_music_on = true;
+    music_play(MUSIC_TITLE, 0, 0, true);
+}
+
 switch (state) {
 case 0:   // titolo: aspetta SHIFT
     if (keyboard_check_pressed(vk_shift)) {
