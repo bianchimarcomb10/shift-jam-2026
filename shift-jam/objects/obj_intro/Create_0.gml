@@ -10,7 +10,10 @@ star_max_r = 18;  // raggio pieno: copre tutto il suo quadratino, cosi' alla fin
 master_gain_apply();   // volume generale (scr_pause: GAME_MASTER di scr_music, o zero se hai premuto M): resta questo fino alla fine; gli effetti per SFX_GAIN
 // "Mood Intenso" di Cubesando: da capo, poi in loop finche' non si va avanti (TITLE_LOOP_START/END in scr_music);
 // sfuma nell'esplosione di stelle (Step, stato 3 -> 4)
-music_play(MUSIC_TITLE, 0, 0, true);
+// HTML5 (browser): l'audio resta bloccato finche' non clicchi o premi un tasto. In quel caso qui non parte:
+// la fa partire lo Step appena l'audio e' libero (title_music_on). Su Windows parte subito, come prima.
+title_music_on = audio_system_is_available();
+if (title_music_on) music_play(MUSIC_TITLE, 0, 0, true);
 // la versione non si vede piu' nel gioco (va su itch.io): si legge solo nella finestra Output di GameMaker
 show_debug_message("SHIFT INTO SILENCE - BUILD " + BUILD);
 draw_set_font(fnt_main);   // Press Start 2P per tutte le scritte
